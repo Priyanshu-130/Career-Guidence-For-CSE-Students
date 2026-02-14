@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Learning - Career Guidance</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+    <style>
+        .roadmap-step {
+            background: #1f2937;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #14b8a6;
+            border-radius: 4px;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: #111827;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            border: 1px solid #374151;
+        }
+
+        .highlight {
+            color: #14b8a6;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div style="font-weight: bold; color: var(--neon-blue);">
+            <a href="home.html" style="color: inherit; text-decoration: none;">CSE PathFinder</a>
+        </div>
+        <div>
+            <a href="domains.html" class="btn" style="padding: 5px 15px; font-size: 0.8rem; border: none;">All
+                Domains</a>
+            <button class="btn-secondary" onclick="logout()"
+                style="padding: 5px 10px; font-size: 0.8rem;">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Machine Learning</h1>
+
+        <div class="card">
+            <h2 style="color: #14b8a6;">About the Domain</h2>
+            <p>Machine Learning (ML) focuses on algorithms that allow computers to learn from data and improve
+                predictions without being explicitly programmed. It is the math-heavy engine behind AI.</p>
+        </div>
+
+        <!-- Section 1: Stats & Career Scope -->
+        <h3 style="margin-top: 30px; border-bottom: 1px solid #374151; padding-bottom: 10px;">Career Insights</h3>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="highlight">6-9 Months</div>
+                <small>Learning Time</small>
+            </div>
+            <div class="stat-card">
+                <div class="highlight">High</div>
+                <small>Job Security</small>
+            </div>
+            <div class="stat-card">
+                <div class="highlight">Growing</div>
+                <small>Hiring Demand</small>
+            </div>
+            <div class="stat-card">
+                <div class="highlight">Data-Driven</div>
+                <small>Future Scope</small>
+            </div>
+        </div>
+
+        <!-- Section 2: Info Grid -->
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; margin-top: 20px;">
+
+            <div class="card">
+                <h3 style="color: var(--neon-blue);">Prerequisites</h3>
+                <ul style="text-align: left; line-height: 1.8;">
+                    <li><b>Math:</b> Statistics, Probability, Linear Algebra, Calculus.</li>
+                    <li><b>Programming:</b> Python, R, SQL.</li>
+                    <li><b>Libraries:</b> Scikit-learn, Pandas, NumPy, Matplotlib.</li>
+                    <li><b>Concepts:</b> Regression, Classification, Clustering, EDA.</li>
+                    <li><b>Tools:</b> Jupyter Notebooks, Git.</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3 style="color: var(--neon-purple);">Top Companies</h3>
+                <ul style="text-align: left; line-height: 1.8;">
+                    <li>Amazon (Recommendation Systems)</li>
+                    <li>Netflix (Personalization)</li>
+                    <li>Uber/Ola (Pricing Algorithms)</li>
+                    <li>JPMorgan, Goldman Sachs (FinTech)</li>
+                    <li>Flipkart, Myntra (Analytics)</li>
+                    <li>Healthcare Startups</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3 style="color: #14b8a6;">Real-Life Applications</h3>
+                <ul style="text-align: left; line-height: 1.8;">
+                    <li><b>Recommendations:</b> "People who bought this also bought..."</li>
+                    <li><b>Finance:</b> Credit scoring and fraud detection.</li>
+                    <li><b>Healthcare:</b> Predicting patient risk factors.</li>
+                    <li><b>Marketing:</b> Customer churn prediction.</li>
+                    <li><b>Price Prediction:</b> Stock market or real estate pricing.</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3 style="color: #10b981;">Top Job Hubs in India</h3>
+                <p>ML jobs are often found in tech and finance hubs:</p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+                    <span class="btn" style="padding: 5px 10px; font-size: 0.9rem;">Bangalore</span>
+                    <span class="btn" style="padding: 5px 10px; font-size: 0.9rem;">Gurgaon (FinTech)</span>
+                    <span class="btn" style="padding: 5px 10px; font-size: 0.9rem;">Mumbai (Finance)</span>
+                    <span class="btn" style="padding: 5px 10px; font-size: 0.9rem;">Hyderabad</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="color: var(--neon-blue);">Global Opportunities</h3>
+                <p>ML is a global skill:</p>
+                <ul style="text-align: left; line-height: 1.8;">
+                    <li>🇺🇸 <b>USA:</b> New York (FinTech) & Silicon Valley.</li>
+                    <li>🇬🇧 <b>UK:</b> London (FinTech/Banking AI).</li>
+                    <li>🇸🇬 <b>Singapore:</b> Asian financial hub.</li>
+                    <li>🇨🇳 <b>China:</b> Massive adoption in consumer tech.</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Section 3: Roadmap -->
+        <h3 style="margin-top: 40px; border-bottom: 1px solid #374151; padding-bottom: 10px;">Learning Roadmap</h3>
+        <div class="card" style="text-align: left;">
+            <div class="roadmap-step">
+                <b>Step 1: Python & Math</b><br>
+                Master Python. Refresh Statistics and Probability (Distributions, Hypothesis Testing).
+            </div>
+            <div class="roadmap-step">
+                <b>Step 2: Data Analysis (EDA)</b><br>
+                Learn Pandas and NumPy to clean and analyze data. Learn visualization with Matplotlib/Seaborn.
+            </div>
+            <div class="roadmap-step">
+                <b>Step 3: Classical ML Algorithms</b><br>
+                Learn Linear/Logistic Regression, Decision Trees, Random Forests, SVMs using Scikit-learn.
+            </div>
+            <div class="roadmap-step">
+                <b>Step 4: Model Evaluation</b><br>
+                Learn metrics like Accuracy, Precision, Recall, F1-Score, ROC-AUC.
+            </div>
+            <div class="roadmap-step">
+                <b>Step 5: Deployment</b><br>
+                Learn to serve your model using Flask/FastAPI or Streamlit.
+            </div>
+        </div>
+
+        <!-- Section 4: Resources -->
+        <div class="card" style="margin-top: 20px;">
+            <h3>Resources to Start</h3>
+            <p>
+                <a href="https://scikit-learn.org/stable/tutorial/index.html" target="_blank"
+                    style="color: var(--neon-blue);">Scikit-learn Documentation</a> •
+                <a href="https://www.kaggle.com/learn/intro-to-machine-learning" target="_blank"
+                    style="color: var(--neon-blue);">Kaggle ML Course</a> •
+                <a href="https://developers.google.com/machine-learning/crash-course" target="_blank"
+                    style="color: var(--neon-blue);">Google ML Crash Course</a> •
+                <a href="https://www.coursera.org/specializations/mathematics-machine-learning" target="_blank"
+                    style="color: var(--neon-blue);">Math for ML (Coursera)</a>
+            </p>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

@@ -8,7 +8,10 @@ const questions = [
             D: "Finding system loopholes",
             E: "Designing system architecture",
             F: "Working with devices",
-            G: "Designing decentralized systems"
+            G: "Designing decentralized systems",
+            H: "Creating interactive worlds",
+            I: "Predicting future trends",
+            J: "Mimicking human brain"
         }
     },
     {
@@ -20,7 +23,10 @@ const questions = [
             D: "Breaking security challenges",
             E: "Scalable infrastructure",
             F: "Smart gadgets",
-            G: "Crypto technologies"
+            G: "Crypto technologies",
+            H: "Video games/Simulations",
+            I: "Automated predictions",
+            J: "Generative AI (ChatGPT)"
         }
     },
     {
@@ -32,7 +38,10 @@ const questions = [
             D: "Test vulnerabilities",
             E: "Setup servers",
             F: "Build electronics project",
-            G: "Explore crypto tools"
+            G: "Explore crypto tools",
+            H: "Design a game level",
+            I: "Study algorithms",
+            J: "Read AI research papers"
         }
     },
     {
@@ -44,7 +53,10 @@ const questions = [
             D: "Security systems",
             E: "Infrastructure",
             F: "Smart devices",
-            G: "Blockchain apps"
+            G: "Blockchain apps",
+            H: "Game mechanics",
+            I: "Statistical models",
+            J: "Neural networks"
         }
     },
     {
@@ -56,7 +68,10 @@ const questions = [
             D: "Risk analysis",
             E: "Networking",
             F: "Sensors",
-            G: "Cryptography"
+            G: "Cryptography",
+            H: "Physics/Geometry",
+            I: "Probability",
+            J: "Calculus/Tensors"
         }
     },
     {
@@ -68,7 +83,10 @@ const questions = [
             D: "Securing system",
             E: "Scaling servers",
             F: "Automating real-world system",
-            G: "Deploying smart contract"
+            G: "Deploying smart contract",
+            H: "Player engagement",
+            I: "High prediction accuracy",
+            J: "AI fooling a human"
         }
     },
     {
@@ -80,7 +98,10 @@ const questions = [
             D: "Security flaws",
             E: "Deployment failures",
             F: "Hardware issues",
-            G: "Smart contracts"
+            G: "Smart contracts",
+            H: "Glitchy physics",
+            I: "Overfitting models",
+            J: "Vanishing gradients"
         }
     },
     {
@@ -92,7 +113,10 @@ const questions = [
             D: "System becomes secure",
             E: "Cloud handles load",
             F: "Device works automatically",
-            G: "DApp goes live"
+            G: "DApp goes live",
+            H: "Game is fun to play",
+            I: "Model predicts real events",
+            J: "AI generates art/text"
         }
     },
     {
@@ -104,7 +128,10 @@ const questions = [
             D: "Defensive",
             E: "Structural",
             F: "Experimental",
-            G: "Distributed"
+            G: "Distributed",
+            H: "Creative & Logical",
+            I: "Statistical",
+            J: "Abstract & Deep"
         }
     },
     {
@@ -116,7 +143,10 @@ const questions = [
             D: "Cyber threats",
             E: "Cloud tools",
             F: "Embedded systems",
-            G: "Consensus algorithms"
+            G: "Consensus algorithms",
+            H: "Game engines (Unity)",
+            I: "Data patterns",
+            J: "Cognitive science"
         }
     }
 ];
@@ -202,17 +232,20 @@ function showResults() {
     document.getElementById("resultSection").classList.remove("hidden");
 
     // Calculate Scores
-    let scores = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0 };
+    let scores = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0, I: 0, J: 0 };
     Object.values(userAnswers).forEach(val => scores[val]++);
 
     const domainMap = {
-        A: { name: "AI & ML", link: "domain_ai.html", color: "#3b82f6" },
+        A: { name: "AI General", link: "domain_ai.html", color: "#3b82f6" },
         B: { name: "Data Science", link: "domain_data.html", color: "#10b981" },
         C: { name: "Web/App Dev", link: "domain_web.html", color: "#f59e0b" },
         D: { name: "Cyber Security", link: "domain_security.html", color: "#ef4444" },
         E: { name: "Cloud & DevOps", link: "domain_cloud.html", color: "#8b5cf6" },
         F: { name: "IoT & Embedded", link: "domain_iot.html", color: "#ec4899" },
-        G: { name: "Blockchain", link: "domain_blockchain.html", color: "#6366f1" }
+        G: { name: "Blockchain", link: "domain_blockchain.html", color: "#6366f1" },
+        H: { name: "Game Dev", link: "domain_game.html", color: "#f97316" },
+        I: { name: "Machine Learning", link: "domain_ml.html", color: "#14b8a6" },
+        J: { name: "Deep Learning", link: "domain_dl.html", color: "#1e40af" }
     };
 
     // Prepare Chart Data
