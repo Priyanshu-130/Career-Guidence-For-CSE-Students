@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Science - Career Guidance</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+    <style>
+        .roadmap-step {
+            background: #1f2937;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #10b981;
+            border-radius: 4px;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: #111827;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            border: 1px solid #374151;
+        }
+
+        .highlight {
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div style="font-weight: bold; color: var(--neon-blue);">
+            <a href="home.html" style="color: inherit; text-decoration: none;">CSE PathFinder</a>
+        </div>
+        <div>
+            <a href="domains.html" class="btn" style="padding: 5px 15px; font-size: 0.8rem; border: none;">All
+                Domains</a>
+            <button class="btn-secondary" onclick="logout()"
+                style="padding: 5px 10px; font-size: 0.8rem;">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Data Science</h1>
+
+        <div class="card">
+            <h2 style="color: #10b981;">About the Domain</h2>
+            <p>Data Science combines statistics, data analysis, and machine learning to understand and analyze actual
+                phenomena with data. It involves cleaning, aggregating, and manipulating data to perform advanced data
+                analysis.</p>
+        </div>
+
+        <!-- Section 1: Stats & Career Scope -->
+        <h3 style="margin-top: 30px; border-bottom: 1px solid #374151; padding-bottom: 10px;">Career Insights</h3>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="highlight">6-9 Months</div>
+                <small>Learning Time</small>
+            </div>
+            <div class="stat-card">
+                <div class="highlight">Very High</div>
+                <small>Job Security</small>
+            </div>
+            <div class="stat-card">
+                <div class="highlight">~30% YoY</div>
+                <small>Hiring Growth</small>
+            </div>
+            <div class="stat-card">
+                <div class="highlight">Data-Driven</div>
+                <small>Future Scope</small>
+            </div>
+        </div>
+
+        <!-- Section 2: Info Grid -->
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; margin-top: 20px;">
+
+            <div class="card">
+                <h3 style="color: var(--neon-blue);">Prerequisites</h3>
+                <ul style="text-align: left; line-height: 1.8;">
+                    <li><b>Math:</b> Statistics (very important), Probability, Calculus.</li>
+                    <li><b>Programming:</b> Python, R, SQL.</li>
+                    <li><b>Visualization:</b> Tableau, PowerBI, Matplotlib, Seaborn.</li>
+                    <li><b>Key Tech:</b> Pandas, NumPy, Scikit-learn, Hadoop/Spark (Big Data).</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3 style="color: var(--neon-purple);">Top Companies</h3>
+                <ul style="text-align: left; line-height: 1.8;">
+                    <li>Meta (Facebook), Amazon, Google</li>
+                    <li>Netflix (Data Engineering)</li>
+                    <li>JPMorgan Chase, Goldman Sachs</li>
+                    <li>Fractal Analytics, Mu Sigma</li>
+                    <li>Flipkart, Uber</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3 style="color: #10b981;">Real-Life Applications</h3>
+                <ul style="text-align: left; line-height: 1.8;">
+                    <li><b>Business:</b> Customer churn prediction, sales forecasting.</li>
+                    <li><b>Finance:</b> Stock market analysis, credit risk modeling.</li>
+                    <li><b>Health:</b> Analyzing patient data for trends.</li>
+                    <li><b>Logistics:</b> Optimizing delivery routes (Uber/Zomato).</li>
+                    <li><b>Sports:</b> Player performance analysis (Moneyball).</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3 style="color: #f59e0b;">Top Job Hubs in India</h3>
+                <p>Major analytics hubs:</p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+                    <span class="btn" style="padding: 5px 10px; font-size: 0.9rem;">Bangalore</span>
+                    <span class="btn" style="padding: 5px 10px; font-size: 0.9rem;">Mumbai</span>
+                    <span class="btn" style="padding: 5px 10px; font-size: 0.9rem;">Gurgaon/Delhi</span>
+                    <span class="btn" style="padding: 5px 10px; font-size: 0.9rem;">Hyderabad</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="color: var(--neon-blue);">Global Opportunities</h3>
+                <p>High demand for Data Scientists in:</p>
+                <ul style="text-align: left; line-height: 1.8;">
+                    <li>🇺🇸 <b>USA:</b> New York (FinTech) & California (Tech).</li>
+                    <li>🇪🇺 <b>Europe:</b> Berlin, Amsterdam, and London for startups.</li>
+                    <li>🇦🇺 <b>Australia:</b> Increasing demand in Sydney & Melbourne.</li>
+                    <li>🇸🇬 <b>Singapore:</b> Asian hub for finance and tech analytics.</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Section 3: Roadmap -->
+        <h3 style="margin-top: 40px; border-bottom: 1px solid #374151; padding-bottom: 10px;">Learning Roadmap</h3>
+        <div class="card" style="text-align: left;">
+            <div class="roadmap-step">
+                <b>Step 1: Math & Stats</b><br>
+                Deep dive into Probability, Descriptive/Inferential Statistics.
+            </div>
+            <div class="roadmap-step">
+                <b>Step 2: Python & Databases</b><br>
+                Learn Python syntax and SQL for data querying (MySQL/PostgreSQL).
+            </div>
+            <div class="roadmap-step">
+                <b>Step 3: Data Analysis (EDA)</b><br>
+                Master Pandas for data cleaning and manipulation. Matplotlib/Seaborn for plotting.
+            </div>
+            <div class="roadmap-step">
+                <b>Step 4: Machine Learning Basics</b><br>
+                Learn core algorithms (Regression, Trees, Clustering) to make predictions.
+            </div>
+            <div class="roadmap-step">
+                <b>Step 5: Visualization & Storytelling</b><br>
+                Learn Tableau or PowerBI to create dashboards for stakeholders.
+            </div>
+        </div>
+
+        <!-- Section 4: Resources -->
+        <div class="card" style="margin-top: 20px;">
+            <h3>Resources to Start</h3>
+            <p>
+                <a href="https://www.coursera.org/professional-certificates/ibm-data-science" target="_blank"
+                    style="color: var(--neon-blue);">IBM Data Science (Coursera)</a> •
+                <a href="https://www.datacamp.com/" target="_blank" style="color: var(--neon-blue);">DataCamp
+                    (Interactive)</a> •
+                <a href="https://www.kaggle.com/learn" target="_blank" style="color: var(--neon-blue);">Kaggle Learn</a>
+                •
+                <a href="https://www.youtube.com/c/KrishNaik06" target="_blank" style="color: var(--neon-blue);">Krish
+                    Naik (YouTube)</a>
+            </p>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

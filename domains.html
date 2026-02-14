@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Domains - Career Guidance</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+</head>
+
+<body>
+
+    <nav>
+        <div style="font-weight: bold; color: var(--neon-blue);">
+            <a href="home.html" style="color: inherit; text-decoration: none;">CSE PathFinder</a>
+        </div>
+        <button class="btn-secondary" onclick="logout()" style="padding: 5px 10px; font-size: 0.8rem;">Logout</button>
+    </nav>
+
+    <div class="container">
+        <h1>Explore CSE Domains</h1>
+        <p style="text-align: center;">Click on a domain to view prerequisites, top companies, and roadmap.</p>
+
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 30px;">
+
+            <div class="card">
+                <h3 style="color: #3b82f6;">Artificial Intelligence (AI)</h3>
+                <p>Build intelligent agents, neural networks, and automation systems.</p>
+                <a href="domain_ai.html" class="btn">Explore AI</a>
+            </div>
+
+            <div class="card">
+                <h3 style="color: #10b981;">Data Science</h3>
+                <p>derive insights from chaotic data using statistics and programming.</p>
+                <a href="domain_data.html" class="btn">Explore Data Science</a>
+            </div>
+
+            <div class="card">
+                <h3 style="color: #f59e0b;">Web & App Development</h3>
+                <p>Build interactive websites and mobile applications.</p>
+                <a href="domain_web.html" class="btn">Explore Dev</a>
+            </div>
+
+            <div class="card">
+                <h3 style="color: #ef4444;">Cyber Security</h3>
+                <p>Protect systems from attacks and vulnerabilities.</p>
+                <a href="domain_security.html" class="btn">Explore Security</a>
+            </div>
+
+            <div class="card">
+                <h3 style="color: #8b5cf6;">Cloud Computing</h3>
+                <p>Architect scalable infrastructure on AWS, Azure, or Google Cloud.</p>
+                <a href="domain_cloud.html" class="btn">Explore Cloud</a>
+            </div>
+
+            <div class="card">
+                <h3 style="color: #ec4899;">IoT & Embedded Systems</h3>
+                <p>Connect physical devices to the digital world.</p>
+                <a href="domain_iot.html" class="btn">Explore IoT</a>
+            </div>
+
+            <div class="card">
+                <h3 style="color: #6366f1;">Blockchain</h3>
+                <p>Build decentralized apps and smart contracts.</p>
+                <a href="domain_blockchain.html" class="btn">Explore Web3</a>
+            </div>
+
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="home.html" class="btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Career Guidance</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <nav>
+        <div style="font-weight: bold; color: var(--neon-blue);">CSE PathFinder</div>
+        <button class="btn-secondary" onclick="logout()" style="padding: 5px 10px; font-size: 0.8rem;">Logout</button>
+    </nav>
+
+    <div class="container" style="text-align: center;">
+        <h1>Welcome Future Engineer</h1>
+        <p>Choose your path to get started</p>
+
+        <div style="display: flex; justify-content: center; gap: 40px; margin-top: 50px; flex-wrap: wrap;">
+
+            <!-- Path 1: Fresher -->
+            <div class="card" style="width: 300px;">
+                <h3 style="color: var(--neon-purple);">I am a Fresher</h3>
+                <p>I am new to Computer Science and don't know which domain suits me best.</p>
+                <br>
+                <a href="quiz.html" class="btn">Take the Quiz</a>
+            </div>
+
+            <!-- Path 2: Experienced / Explorer -->
+            <div class="card" style="width: 300px;">
+                <h3 style="color: var(--neon-blue);">I Know My Path</h3>
+                <p>I already have a domain in mind and want to explore prerequisites and companies.</p>
+                <br>
+                <a href="domains.html" class="btn">Explore Domains</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

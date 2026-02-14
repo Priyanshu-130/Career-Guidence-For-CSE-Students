@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Career Guidance</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+
+    <div class="card" style="width: 300px; text-align: center;">
+        <h2 style="color: var(--neon-blue);">CSE Career Guidance</h2>
+        <p>Login to continue</p>
+        <form onsubmit="login(event)">
+            <input type="text" id="username" placeholder="Enter your name" required>
+            <input type="password" placeholder="Password (any)" required>
+            <button type="submit" class="btn">Login</button>
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
