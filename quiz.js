@@ -303,5 +303,6 @@ function showResults() {
 
 // Initialize
 document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("totalQuestions").innerText = questions.length;
     loadQuestion(0);
 });
