@@ -152,7 +152,7 @@ const questions = [
 ];
 
 let currentQuestion = 0;
-let userAnswers = {}; // Store answers as { qIndex: "A" }
+let userAnswers = {};
 
 function loadQuestion(index) {
     const q = questions[index];
@@ -178,7 +178,7 @@ function loadQuestion(index) {
         </div>`;
     container.innerHTML = html;
 
-    // Update UI
+
     document.getElementById("currentQNum").innerText = index + 1;
     document.getElementById("progressFill").style.width = ((index + 1) / questions.length) * 100 + "%";
 
@@ -186,7 +186,7 @@ function loadQuestion(index) {
 
     if (index === questions.length - 1) {
         document.getElementById("nextBtn").innerText = "Finish";
-        document.getElementById("nextBtn").classList.add("btn-secondary"); // Change style for finish
+        document.getElementById("nextBtn").classList.add("btn-secondary");
     } else {
         document.getElementById("nextBtn").innerText = "Next";
         document.getElementById("nextBtn").classList.remove("btn-secondary");
@@ -194,19 +194,19 @@ function loadQuestion(index) {
 }
 
 function selectOption(label, qIndex, value) {
-    // Visually select
+
     document.querySelectorAll(".option-label").forEach(el => el.classList.remove("selected"));
     label.classList.add("selected");
 
-    // Check radio
+
     label.querySelector("input").checked = true;
 
-    // Save answer
+
     userAnswers[qIndex] = value;
 }
 
 function nextQuestion() {
-    // Check if answered
+
     if (!userAnswers[currentQuestion]) {
         alert("Please select an option.");
         return;
@@ -231,7 +231,7 @@ function showResults() {
     document.getElementById("quizSection").classList.add("hidden");
     document.getElementById("resultSection").classList.remove("hidden");
 
-    // Calculate Scores
+
     let scores = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, G: 0, H: 0, I: 0, J: 0 };
     Object.values(userAnswers).forEach(val => scores[val]++);
 
@@ -248,12 +248,12 @@ function showResults() {
         J: { name: "Deep Learning", link: "domain_dl.html", color: "#1e40af" }
     };
 
-    // Prepare Chart Data
+
     const labels = Object.keys(scores).map(key => domainMap[key].name);
     const data = Object.values(scores);
     const colors = Object.keys(scores).map(key => domainMap[key].color);
 
-    // Render Chart
+
     const ctx = document.getElementById('resultChart').getContext('2d');
     new Chart(ctx, {
         type: 'bar',
@@ -283,13 +283,13 @@ function showResults() {
         }
     });
 
-    // Generate ranked links
+
     const sortedKeys = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
     const linkContainer = document.getElementById("domainLinks");
     linkContainer.innerHTML = "";
 
     sortedKeys.forEach(key => {
-        if (scores[key] > 0) { // Only show relevant ones
+        if (scores[key] > 0) {
             const info = domainMap[key];
             linkContainer.innerHTML += `
                 <a href="${info.link}" class="card" style="padding: 15px; text-decoration: none; color: white; display:flex; justify-content:space-between; align-items:center; border-left: 5px solid ${info.color}">
@@ -300,8 +300,6 @@ function showResults() {
         }
     });
 }
-
-// Initialize
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("totalQuestions").innerText = questions.length;
     loadQuestion(0);
