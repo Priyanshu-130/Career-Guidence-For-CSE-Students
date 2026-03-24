@@ -1,74 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Career Quiz - Find Your Path</title>
+    <title>Choose Your Path - Career Quiz</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        .question-card {
-            background: #1f2937;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            border-left: 5px solid var(--neon-blue);
-            animation: fadeIn 0.5s;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .option-label {
-            background: #374151;
-            padding: 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: block;
-            border: 1px solid transparent;
-        }
-
-        .option-label:hover {
-            background: #4b5563;
-        }
-
-        .option-label.selected {
-            background: #1e3a8a;
-            border-color: var(--neon-blue);
-        }
-
-        input[type="radio"] {
-            display: none;
-            display: none;
-        }
-
-        #chartContainer {
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-    </style>
 </head>
-
 <body>
 
     <nav>
@@ -78,53 +16,48 @@
         <button class="btn-secondary" onclick="logout()" style="padding: 5px 10px; font-size: 0.8rem;">Logout</button>
     </nav>
 
-    <div class="container">
-        <h1>Discover Your Ideal Domain</h1>
-
-
-        <div id="quizSection">
-            <p style="text-align: center; margin-bottom: 20px;">Question <span id="currentQNum">1</span> of <span
-                    id="totalQuestions"></span></p>
-            <div id="progressBar"
-                style="width: 100%; height: 5px; background: #374151; margin-bottom: 30px; border-radius: 5px;">
-                <div id="progressFill"
-                    style="width: 0%; height: 100%; background: var(--neon-blue); border-radius: 5px; transition: width 0.3s;">
+    <div class="container" style="text-align: center; max-width: 1000px;">
+        <h1>Choose Your Engineering Path</h1>
+        <p style="font-size: 1.2rem; margin-bottom: 40px;">Before taking the diagnostic quiz, you must decide whether you want to build the <b style="color: var(--neon-blue);">Brain</b> or the <b style="color: var(--neon-purple);">Body</b> of technology.</p>
+        
+        <div style="display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; margin-bottom: 50px;">
+            
+            <div class="card" style="flex: 1; min-width: 320px; max-width: 450px; text-align: left; border-top: 5px solid var(--neon-blue); display: flex; flex-direction: column;">
+                <h2 style="color: var(--neon-blue); margin-top: 0; font-size: 1.8rem;">💻 Software Domain</h2>
+                <div style="flex-grow: 1;">
+                    <p style="margin-bottom: 15px;"><strong style="color: white;">What is it?</strong><br>
+                    Software engineers write the code, logic, and algorithms that instruct computers what to do. They build the unseen intelligence behind screens.</p>
+                    
+                    <p style="margin-bottom: 15px;"><strong style="color: white;">What you will build:</strong><br>
+                    Mobile apps, 3D video games, Artificial Intelligence models, massive databases, cloud server architectures, and cyber-security defense networks.</p>
+                    
+                    <p style="margin-bottom: 25px;"><strong style="color: white;">Choose this if:</strong><br>
+                    You love solving mental logic puzzles, writing elegant code, analyzing data on a screen, and teaching machines how to think without touching physical tools.</p>
                 </div>
+                <a href="quiz_software.html" class="btn" style="display: block; text-align: center; font-size: 1.1rem; padding: 15px;">Take Software Path Quiz</a>
             </div>
 
-            <div id="questionContainer">
-
+            <div class="card" style="flex: 1; min-width: 320px; max-width: 450px; text-align: left; border-top: 5px solid var(--neon-purple); display: flex; flex-direction: column;">
+                <h2 style="color: var(--neon-purple); margin-top: 0; font-size: 1.8rem;">⚙️ Hardware Domain</h2>
+                <div style="flex-grow: 1;">
+                    <p style="margin-bottom: 15px;"><strong style="color: white;">What is it?</strong><br>
+                    Hardware engineers design, physically build, and test the microchips, electrical circuits, and mechanical systems that actually power technology.</p>
+                    
+                    <p style="margin-bottom: 15px;"><strong style="color: white;">What you will build:</strong><br>
+                    Robots, micro-controllers, smart home sensors, advanced computer processors, automated drones, and global networking infrastructure.</p>
+                    
+                    <p style="margin-bottom: 25px;"><strong style="color: white;">Choose this if:</strong><br>
+                    You love working with your hands, building physical machines, measuring electricity, and deeply understanding how computer components interact physically.</p>
+                </div>
+                <a href="quiz_hardware_main.html" class="btn" style="display: block; text-align: center; font-size: 1.1rem; padding: 15px; background: var(--neon-purple); border-color: var(--neon-purple);">Take Hardware Path Quiz</a>
             </div>
 
-            <div style="text-align: center; margin-top: 30px; display: flex; justify-content: space-between;">
-                <button id="prevBtn" class="btn-secondary" onclick="prevQuestion()" disabled>Previous</button>
-                <button id="nextBtn" class="btn" onclick="nextQuestion()">Next</button>
-            </div>
         </div>
 
-
-        <div id="resultSection" class="hidden" style="text-align: center;">
-            <h2 style="color: var(--neon-blue);">Analysis Complete!</h2>
-            <p>Here is your domain compatibility profile:</p>
-
-            <div class="card" id="chartContainer">
-                <canvas id="resultChart"></canvas>
-            </div>
-
-            <h3>Your Top Matches</h3>
-            <p>Click on any domain to explore it:</p>
-            <div id="domainLinks"
-                style="display: flex; flex-direction: column; gap: 10px; max-width: 500px; margin: 0 auto;">
-
-            </div>
-
-            <br><br>
-            <a href="quiz.html" class="btn-secondary">Retake Quiz</a>
+        <div style="text-align: center;">
+            <a href="home.html" class="btn-secondary">Back to Dashboard</a>
         </div>
-
     </div>
 
-    <script src="quiz.js"></script>
 </body>
-
 </html>
