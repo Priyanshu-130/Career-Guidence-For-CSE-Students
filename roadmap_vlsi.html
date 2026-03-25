@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VLSI & Architecture - Comprehensive Roadmap</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .roadmap-container { width: 90%; max-width: 900px; margin: 0 auto; padding: 20px; }
+        .step-card { background: rgba(0, 243, 255, 0.05); border: 1px solid var(--border-color); border-left: 4px solid var(--neon-blue); padding: 20px; margin-bottom: 20px; border-radius: 8px; transition: transform 0.2s; }
+        .step-card:hover { transform: scale(1.02); border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0,243,255,0.2); }
+        .step-title { color: var(--neon-blue); margin-top: 0; font-size: 1.3rem; }
+        .step-desc { color: #c9d1d9; font-size: 1.05rem; line-height: 1.6; margin-bottom: 0; }
+        .resource-card { background: rgba(188, 19, 254, 0.05); border: 1px solid var(--border-color); border-left: 4px solid var(--neon-purple); padding: 15px; border-radius: 6px; }
+        .resource-card:hover { border-color: var(--neon-purple); box-shadow: 0 0 10px rgba(188,19,254,0.2); }
+        .resource-title { color: var(--neon-purple); font-weight: bold; font-size: 1.15rem; text-decoration: none; display:block; margin-bottom:5px; }
+        .resource-title:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div style="font-weight: bold; color: var(--neon-blue);">
+            <a href="home.html" style="color: inherit; text-decoration: none;">CSE Path Finder</a>
+        </div>
+        <div>
+            <a href="domain_vlsi.html" class="btn-secondary" style="padding: 5px 10px; font-size: 0.8rem; text-decoration: none; border-radius: 5px;">Back to Domain Explorer</a>
+        </div>
+    </nav>
+
+    <div class="roadmap-container">
+        <h1 style="text-shadow: 0 0 15px var(--neon-purple);">VLSI & Computer Architecture <br><span style="color: var(--neon-purple); font-size: 1.5rem; text-shadow:none;">Learning Roadmap & Resources</span></h1>
+        
+        <p style="text-align: center; max-width: 700px; margin: 0 auto 40px; color: #9ca3af; font-size: 1.1rem;">
+            Follow this detailed step-by-step technical roadmap to build your expertise. We have designed 6 critical phases for you, alongside the highest quality learning materials available.
+        </p>
+
+        <div style="margin-bottom: 50px;">
+            <h2 style="color: var(--neon-blue); text-align: left; border-bottom: 2px solid var(--border-color); padding-bottom: 10px;">🛣️ Step-by-Step Learning Path</h2>
+            <div style="margin-top: 30px;">
+                <div class="step-card">
+                    <h4 class="step-title">Step 1: Digital Logic Design</h4>
+                    <p class="step-desc">Master Boolean algebra, combinational circuits (multiplexers, adders), and sequential circuits (flip-flops, state machines).</p>
+                </div>
+                <div class="step-card">
+                    <h4 class="step-title">Step 2: Hardware Description Languages (HDL)</h4>
+                    <p class="step-desc">Learn Verilog or VHDL. Understand how to describe hardware behavior and structure via code using tools like ModelSim.</p>
+                </div>
+                <div class="step-card">
+                    <h4 class="step-title">Step 3: Computer Architecture</h4>
+                    <p class="step-desc">Study instruction set architectures (RISC-V/ARM), pipelining, cache memory hierarchies, and multi-core processing basics.</p>
+                </div>
+                <div class="step-card">
+                    <h4 class="step-title">Step 4: FPGA Prototyping</h4>
+                    <p class="step-desc">Move code to physical hardware. Learn to synthesize and implement your HDL designs on Xilinx/Altera FPGA development boards.</p>
+                </div>
+                <div class="step-card">
+                    <h4 class="step-title">Step 5: ASIC Design Flow</h4>
+                    <p class="step-desc">Understand Custom IC workflow: RTL compilation, Logic Synthesis, Static Timing Analysis (STA), and equivalence checking.</p>
+                </div>
+                <div class="step-card">
+                    <h4 class="step-title">Step 6: Physical Design & Verification</h4>
+                    <p class="step-desc">Dive into Floorplanning, Placement & Routing, Layout (using Cadence/Synopsys), and functional verification methodologies like UVM.</p>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h2 style="color: var(--neon-purple); text-align: left; border-bottom: 2px solid var(--border-color); padding-bottom: 10px;">📚 Essential Learning Resources</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 30px;">
+                <div class="resource-card">
+                    <a class="resource-title" href="https://nptel.ac.in/" target="_blank">NPTEL VLSI Lectures ↗</a>
+                    <p style="margin: 0; color: #9ca3af;">Outstanding in-depth university lectures on IC design methodologies.</p>
+                </div>
+                <div class="resource-card">
+                    <a class="resource-title" href="https://riscv.org/" target="_blank">RISC-V Documentation ↗</a>
+                    <p style="margin: 0; color: #9ca3af;">Study the open-source instruction set revolutionizing modern architecture.</p>
+                </div>
+                <div class="resource-card">
+                    <a class="resource-title" href="https://www.xilinx.com/support.html" target="_blank">Intel/Xilinx FPGA Tutorials ↗</a>
+                    <p style="margin: 0; color: #9ca3af;">Official documentation and labs for hardware FPGA prototyping.</p>
+                </div>
+                <div class="resource-card">
+                    <a class="resource-title" href="http://www.asic-world.com/" target="_blank">ASIC World ↗</a>
+                    <p style="margin: 0; color: #9ca3af;">A great reference for high-level Verilog and SystemVerilog code samples.</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+            <a href="domain_vlsi.html" class="btn">Back to VLSI Overview</a>
+        </div>
+    </div>
+</body>
+</html>
