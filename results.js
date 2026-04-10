@@ -59,19 +59,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const comparisonData = {
-        "Artificial Intelligence": { type: "Software", focus: "Simulating human intelligence", difficulty: "Hard", workStyle: "Logical & Mathematical", skills: "Mathematics, Algorithms, Logic", tools: "Python, TensorFlow, PyTorch", projects: "Chatbot, Pathfinding AI", roles: "AI Engineer, Research Scientist", scope: "Extremely High" },
-        "Machine Learning": { type: "Software", focus: "Building systems that learn from data", difficulty: "Hard", workStyle: "Logical & Data-centric", skills: "Statistics, Data Modeling", tools: "Scikit-Learn, Keras", projects: "Price Predictor, Recommendation System", roles: "ML Engineer, Data Scientist", scope: "Very High" },
-        "Deep Learning": { type: "Software", focus: "Neural nets & complex pattern recognition", difficulty: "Hard", workStyle: "Logical & Analytical", skills: "Advanced Math, Neural Nets", tools: "PyTorch, CUDA", projects: "Image Optimizer, Voice Recognition", roles: "Research Engineer, DL Spec", scope: "High" },
-        "Data Science": { type: "Software", focus: "Extracting insights from complex datasets", difficulty: "Medium", workStyle: "Analytical & Business-oriented", skills: "SQL, Python, Data Viz", tools: "Pandas, Tableau, Jupyter", projects: "Sales Dashboard, Clustering", roles: "Data Scientist, Data Analyst", scope: "Very High" },
-        "Web / App Development": { type: "Software", focus: "Building interactive digital platforms", difficulty: "Medium", workStyle: "Creative & Hands-on", skills: "UI/UX, Frontend/Backend Logic", tools: "React, Node.js, Flutter", projects: "E-Commerce Site, Task Tracker App", roles: "Full-Stack Dev, Mobile Dev", scope: "High & Stable" },
-        "Game Development": { type: "Software", focus: "Creating interactive entertainment", difficulty: "Medium", workStyle: "Creative & System-based", skills: "C++, C#, 3D Math, Physics", tools: "Unity, Unreal Engine", projects: "2D Platformer, Multiplayer Arena", roles: "Game Programmer, Tech Artist", scope: "High" },
-        "Cyber Security": { type: "Software", focus: "Protecting systems & networks from threats", difficulty: "Hard", workStyle: "System-based & Analytical", skills: "Networking, Cryptography", tools: "Wireshark, Kali Linux", projects: "Vulnerability Scanner, Keylogger", roles: "Security Analyst, Pen Tester", scope: "Very High" },
-        "Blockchain": { type: "Software", focus: "Decentralized ledgers & smart contracts", difficulty: "Hard", workStyle: "Logical & System-based", skills: "Cryptography, Decentralized Arch", tools: "Solidity, Web3.js, Ethereum", projects: "Crypto Token, DApp Voting", roles: "Blockchain Dev, Smart Contract Eng", scope: "High" },
-        "Cloud Computing": { type: "Software", focus: "Deploying & scaling infrastructure online", difficulty: "Medium", workStyle: "System-based & Logical", skills: "Server Management, CI/CD", tools: "AWS, Azure, Docker, Kubernetes", projects: "Serverless API, Scalable Web Hosting", roles: "Cloud Engineer, DevOps Spec", scope: "Very High" },
-        "IoT & Embedded Systems": { type: "Hardware", focus: "Connecting physical devices to the internet", difficulty: "Medium", workStyle: "Hands-on & System-based", skills: "C/C++, Microcontrollers", tools: "Arduino, Raspberry Pi", projects: "Smart Sensor, Weather Station", roles: "IoT Developer, Embedded Eng", scope: "High" },
-        "Robotics & Automation": { type: "Hardware", focus: "Designing building autonomous robots", difficulty: "Hard", workStyle: "Hands-on & Logical", skills: "Control Systems, Kinematics", tools: "ROS, Sensors, Actuators", projects: "Line Follower, Robotic Arm", roles: "Robotics Engineer, Automation Spec", scope: "High" },
-        "VLSI & Computer Architecture": { type: "Hardware", focus: "Designing integrated circuits & microchips", difficulty: "Hard", workStyle: "Logical & System-based", skills: "Digital Logic, FPGA, HDL", tools: "Verilog, Cadence, VHDL", projects: "ALU Design, Custom Processor", roles: "VLSI Design Eng, Verification Eng", scope: "High" },
-        "Networking & Communication Systems": { type: "Hardware", focus: "Building and managing data networks", difficulty: "Medium", workStyle: "System-based & Hands-on", skills: "Routing, Protocols, Net Security", tools: "Cisco Tracer, Wireshark", projects: "Topology Design, VPN Server", roles: "Network Eng, Telecom Eng", scope: "Stable & Essential" }
+        "Artificial Intelligence": { type: "Software", focus: "Simulating human intelligence", difficulty: "Hard", workStyle: "Logical & Mathematical", skills: "Mathematics, Algorithms, Logic", tools: "Python, TensorFlow, PyTorch", projects: "Chatbot, Pathfinding AI", roles: "AI Engineer, Research Scientist", scope: "Extremely High", prerequisite: "Strong logic & linear algebra", benefits: "High salaries, futuristic impact" },
+        "Machine Learning": { type: "Software", focus: "Building systems that learn from data", difficulty: "Hard", workStyle: "Logical & Data-centric", skills: "Statistics, Data Modeling", tools: "Scikit-Learn, Keras", projects: "Price Predictor, Recommendation System", roles: "ML Engineer, Data Scientist", scope: "Very High", prerequisite: "Statistics & Python coding", benefits: "Huge industry demand, insights" },
+        "Deep Learning": { type: "Software", focus: "Neural nets & complex pattern recognition", difficulty: "Hard", workStyle: "Logical & Analytical", skills: "Advanced Math, Neural Nets", tools: "PyTorch, CUDA", projects: "Image Optimizer, Voice Recognition", roles: "Research Engineer, DL Spec", scope: "High", prerequisite: "Advanced calculus & ML basics", benefits: "Cutting edge of AI breakthroughs" },
+        "Data Science": { type: "Software", focus: "Extracting insights from complex datasets", difficulty: "Medium", workStyle: "Analytical & Business-oriented", skills: "SQL, Python, Data Viz", tools: "Pandas, Tableau, Jupyter", projects: "Sales Dashboard, Clustering", roles: "Data Scientist, Data Analyst", scope: "Very High", prerequisite: "Basic business acumen & stats", benefits: "Versatile across all industries" },
+        "Web / App Development": { type: "Software", focus: "Building interactive digital platforms", difficulty: "Medium", workStyle: "Creative & Hands-on", skills: "UI/UX, Frontend/Backend Logic", tools: "React, Node.js, Flutter", projects: "E-Commerce Site, Task Tracker App", roles: "Full-Stack Dev, Mobile Dev", scope: "High & Stable", prerequisite: "Basic programming & design", benefits: "Fastest way to start freelancing" },
+        "Game Development": { type: "Software", focus: "Creating interactive entertainment", difficulty: "Medium", workStyle: "Creative & System-based", skills: "C++, C#, 3D Math, Physics", tools: "Unity, Unreal Engine", projects: "2D Platformer, Multiplayer Arena", roles: "Game Programmer, Tech Artist", scope: "High", prerequisite: "Passion for mechanics & 3D math", benefits: "High creative satisfaction" },
+        "Cyber Security": { type: "Software", focus: "Protecting systems & networks from threats", difficulty: "Hard", workStyle: "System-based & Analytical", skills: "Networking, Cryptography", tools: "Wireshark, Kali Linux", projects: "Vulnerability Scanner, Keylogger", roles: "Security Analyst, Pen Tester", scope: "Very High", prerequisite: "Curiosity for systems & networking", benefits: "High job security, low availability" },
+        "Blockchain": { type: "Software", focus: "Decentralized ledgers & smart contracts", difficulty: "Hard", workStyle: "Logical & System-based", skills: "Cryptography, Decentralized Arch", tools: "Solidity, Web3.js, Ethereum", projects: "Crypto Token, DApp Voting", roles: "Blockchain Dev, Smart Contract Eng", scope: "High", prerequisite: "Understanding of cryptography", benefits: "High pay for niche expertise" },
+        "Cloud Computing": { type: "Software", focus: "Deploying & scaling infrastructure online", difficulty: "Medium", workStyle: "System-based & Logical", skills: "Server Management, CI/CD", tools: "AWS, Azure, Docker, Kubernetes", projects: "Serverless API, Scalable Web Hosting", roles: "Cloud Engineer, DevOps Spec", scope: "Very High", prerequisite: "OS & networking fundamentals", benefits: "Core backbone of modern tech" },
+        "IoT & Embedded Systems": { type: "Hardware", focus: "Connecting physical devices to the internet", difficulty: "Medium", workStyle: "Hands-on & System-based", skills: "C/C++, Microcontrollers", tools: "Arduino, Raspberry Pi", projects: "Smart Sensor, Weather Station", roles: "IoT Developer, Embedded Eng", scope: "High", prerequisite: "Basic electronics and C", benefits: "Bridging physical and digital" },
+        "Robotics & Automation": { type: "Hardware", focus: "Designing building autonomous robots", difficulty: "Hard", workStyle: "Hands-on & Logical", skills: "Control Systems, Kinematics", tools: "ROS, Sensors, Actuators", projects: "Line Follower, Robotic Arm", roles: "Robotics Engineer, Automation Spec", scope: "High", prerequisite: "Solid physics and math", benefits: "Building autonomous systems" },
+        "VLSI & Computer Architecture": { type: "Hardware", focus: "Designing integrated circuits & microchips", difficulty: "Hard", workStyle: "Logical & System-based", skills: "Digital Logic, FPGA, HDL", tools: "Verilog, Cadence, VHDL", projects: "ALU Design, Custom Processor", roles: "VLSI Design Eng, Verification Eng", scope: "High", prerequisite: "Digital electronics & logic", benefits: "Essential for global hardware" },
+        "Networking & Communication Systems": { type: "Hardware", focus: "Building and managing data networks", difficulty: "Medium", workStyle: "System-based & Hands-on", skills: "Routing, Protocols, Net Security", tools: "Cisco Tracer, Wireshark", projects: "Topology Design, VPN Server", roles: "Network Eng, Telecom Eng", scope: "Stable & Essential", prerequisite: "Understanding data flow", benefits: "Underpins internet infrastructure" }
     };
 
     const sortedClusters = Object.keys(processScores).sort((a, b) => processScores[b] - processScores[a]);
@@ -97,6 +97,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const secondScore = processScores[sortedClusters[1]];
     
     const confidence = (topScore / totalScore) * 100;
+    const secondConfidence = (secondScore / totalScore) * 100;
+    const diff = confidence - secondConfidence;
 
     let primaryDomain = clusterMap[sortedClusters[0]].domains[0];
     let secondaryDomain = clusterMap[sortedClusters[1]].domains[0];
@@ -128,6 +130,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p>Compare the top options to decide.</p>
             </div>
         `;
+    } else if (diff <= 5 && totalScore > 0) {
+        // Close Match Condition
+        resultHTML = `
+            <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid #3b82f6; padding: 20px; border-radius: 8px; margin-bottom: 30px; text-align: center;">
+                <h3 style="color: #3b82f6; margin-top: 0;">It's a very close match!</h3>
+                <p>Your top two domains are within a 5% difference. Compare their prerequisites, difficulty, and benefits below to make your final choice.</p>
+            </div>
+        `;
     } else if (confidence >= 40) {
         // Single Domain UI (High Confidence)
         const dInfo = comparisonData[primaryDomain];
@@ -156,10 +166,10 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
     }
 
-    if (allEqual || topScore === secondScore || confidence < 40) {
+    if (allEqual || topScore === secondScore || diff <= 5 || confidence < 40) {
         // Render comparison table
-        const d1 = comparisonData[primaryDomain] || { type: "-", focus: "-", difficulty: "-", workStyle: "-", skills: "-", tools: "-", projects: "-", roles: "-", scope: "-" };
-        const d2 = comparisonData[secondaryDomain] || { type: "-", focus: "-", difficulty: "-", workStyle: "-", skills: "-", tools: "-", projects: "-", roles: "-", scope: "-" };
+        const d1 = comparisonData[primaryDomain] || { type: "-", focus: "-", difficulty: "-", workStyle: "-", skills: "-", tools: "-", projects: "-", roles: "-", scope: "-", prerequisite: "-", benefits: "-" };
+        const d2 = comparisonData[secondaryDomain] || { type: "-", focus: "-", difficulty: "-", workStyle: "-", skills: "-", tools: "-", projects: "-", roles: "-", scope: "-", prerequisite: "-", benefits: "-" };
         const link1 = domainMap[primaryDomain]?.link || "#";
         const link2 = domainMap[secondaryDomain]?.link || "#";
         const color1 = domainMap[primaryDomain]?.color || "#fff";
@@ -172,7 +182,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     <p style="color: var(--text-accent); margin-bottom: 20px; font-style: italic;">${d1.focus}</p>
                     <ul style="list-style: none; padding: 0; text-align: left; margin-bottom: 20px; color: #d1d5db;">
                         <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);"><strong>Type:</strong> ${d1.type}</li>
-                        <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);"><strong>Difficulty:</strong> ${d1.difficulty}</li>
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);"><strong>Prerequisite:</strong> <span style="color: #fff;">${d1.prerequisite}</span></li>
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);"><strong>Difficulty:</strong> <span style="color: #f87171;">${d1.difficulty}</span></li>
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);"><strong>Benefits:</strong> <span style="color: #10b981;">${d1.benefits}</span></li>
                         <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);"><strong>Work Style:</strong> ${d1.workStyle}</li>
                         <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);"><strong>Skills:</strong> ${d1.skills}</li>
                         <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);"><strong>Tools:</strong> ${d1.tools}</li>
@@ -189,7 +201,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     <p style="color: var(--text-accent); margin-bottom: 20px; font-style: italic;">${d2.focus}</p>
                     <ul style="list-style: none; padding: 0; text-align: left; margin-bottom: 20px; color: #d1d5db;">
                         <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);"><strong>Type:</strong> ${d2.type}</li>
-                        <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);"><strong>Difficulty:</strong> ${d2.difficulty}</li>
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);"><strong>Prerequisite:</strong> <span style="color: #fff;">${d2.prerequisite}</span></li>
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);"><strong>Difficulty:</strong> <span style="color: #f87171;">${d2.difficulty}</span></li>
+                        <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);"><strong>Benefits:</strong> <span style="color: #10b981;">${d2.benefits}</span></li>
                         <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);"><strong>Work Style:</strong> ${d2.workStyle}</li>
                         <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);"><strong>Skills:</strong> ${d2.skills}</li>
                         <li style="padding: 10px 0; border-bottom: 1px solid var(--border-color);"><strong>Tools:</strong> ${d2.tools}</li>
