@@ -194,3 +194,4 @@ function showFinalResults() {
 }
 
 document.addEventListener("DOMContentLoaded", () => { activeCategory = -1; switchTab(0); });
+

@@ -251,6 +251,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     primaryResultContainer.innerHTML = resultHTML;
 
+    // Send data to backend silently
+    const studentRaw = sessionStorage.getItem("cse_student");
+    if (studentRaw) {
+        try {
+            const studentData = JSON.parse(studentRaw);
+            fetch("http://127.0.0.1:5000/api/submit-result", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    student_email: studentData.email,
+                    quiz_type: track,
+                    recommended_domain: primaryDomain,
+                    confidence_score: confidence,
+                    all_scores: processScores
+                })
+            }).catch(err => console.error("Could not save to backend:", err));
+        } catch (e) {
+            console.error("Session parse error:", e);
+        }
+    }
+
     // Draw Chart
     const chartDatasets = categories.map(cat => ({
         label: cat + ` (${categoryWeights[cat]*100}%)`,

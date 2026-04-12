@@ -1,0 +1,489 @@
+[
+  {
+    "id": "ai",
+    "title": "AI, ML & Deep Learning",
+    "description": "Intelligent systems, machine learning models, neural networks, computer vision, and generative AI.",
+    "color": "#3b82f6",
+    "overview": "This domain focuses on building intelligent systems that learn from data. It spans supervised and unsupervised learning, deep neural networks, computer vision, and natural language processing — culminating in modern generative AI applications.",
+    "prerequisites": ["Python Basics", "Programming Fundamentals", "Statistics & Probability", "Linear Algebra", "Basic Calculus"],
+    "skills": ["AI Fundamentals", "Supervised Learning", "Unsupervised Learning", "Model Training", "Feature Engineering", "Neural Networks", "CNN & RNN", "NLP Basics", "Deep Learning"],
+    "tools": ["Python", "NumPy", "Pandas", "Matplotlib", "Scikit-learn", "TensorFlow", "PyTorch", "Jupyter Notebook"],
+    "projects": [
+      { "name": "Spam Detection", "desc": "Build a classifier to identify spam from ham email messages." },
+      { "name": "Performance Predictor", "desc": "Predict student academic performance from historical data." },
+      { "name": "Movie Recommender", "desc": "Collaborative and content-based movie recommendation engine." },
+      { "name": "Image Classification", "desc": "CNN that classifies images into multiple object categories." }
+    ],
+    "roles": ["AI Engineer", "Machine Learning Engineer", "Deep Learning Engineer", "Data Analyst", "Research Intern"],
+    "insights": { "timeToLearn": "6–12 months", "jobDemand": "Extremely High", "topCompanies": "Google, OpenAI, Microsoft, NVIDIA", "futureScope": "Limitless (AGI Evolution)" },
+    "miniQuiz": [
+      { "q": "Do you enjoy mathematical problem-solving and finding patterns in data?" },
+      { "q": "Are you comfortable with Python and basic statistics?" },
+      { "q": "Do you prefer research-oriented tasks over building final UI products?" },
+      { "q": "Are you fascinated by neural networks and generative models?" }
+    ],
+    "steps": [
+      { "title": "Core Programming", "desc": "Master Python — data structures, OOP, and basic algorithms. Build foundational scripting skills." },
+      { "title": "Applied Mathematics", "desc": "Deep-dive into Statistics, Probability, Linear Algebra, and Calculus. These form the backbone of all ML." },
+      { "title": "Machine Learning Algorithms", "desc": "Learn Supervised, Unsupervised, and Reinforcement Learning. Practice with Scikit-Learn." },
+      { "title": "Deep Learning & Neural Networks", "desc": "Understand ANNs, CNNs, and RNNs. Gain hands-on experience using TensorFlow or PyTorch." },
+      { "title": "Specialisation — NLP or CV", "desc": "Specialise in text processing (Transformers, LLMs) or image processing (YOLO, ResNets)." },
+      { "title": "Deployment & MLOps", "desc": "Wrap models into APIs using FastAPI, then deploy with Docker, AWS, or Hugging Face." }
+    ],
+    "curriculum": {
+      "year1": [
+        { "title": "Core Programming", "desc": "Mastering Python logic, data structures, and advanced OOP principles for robust AI development." },
+        { "title": "Applied Mathematics", "desc": "Statistical modeling, linear algebra, and calculus fundamentals required for algorithm design." }
+      ],
+      "year2": [
+        { "title": "Machine Learning Algorithms", "desc": "Deep dive into supervised and unsupervised learning using industry-standard libraries like Scikit-Learn." }
+      ],
+      "year3": [
+        { "title": "Deep Learning & Neural Networks", "desc": "Architecting neural networks (CNNs, RNNs) and implementing them using TensorFlow and PyTorch." },
+        { "title": "Specialisation — NLP or CV", "desc": "Advanced specialization in Large Language Models (Transformers) or Computer Vision systems." }
+      ],
+      "year4": [
+        { "title": "Deployment & MLOps", "desc": "Production-grade deployment using Docker, FastAPI, and specialized cloud AI platforms." }
+      ]
+    },
+    "resources": [
+      { "title": "Coursera: DeepLearning.AI", "link": "https://www.coursera.org/specializations/deep-learning", "desc": "Comprehensive deep learning foundation by Andrew Ng." },
+      { "title": "Kaggle", "link": "https://www.kaggle.com/", "desc": "Datasets, competitions, and community notebooks to practice real-world data science." },
+      { "title": "Hugging Face Course", "link": "https://huggingface.co/course", "desc": "State-of-the-art NLP and Transformers tutorial." },
+      { "title": "Fast.ai", "link": "https://www.fast.ai/", "desc": "Practical deep learning for coders with a 'top-down' approach." },
+      { "title": "Machine Learning Mastery", "link": "https://machinelearningmastery.com/", "desc": "Step-by-step tutorials for almost every ML problem." }
+    ]
+  },
+  {
+    "id": "data",
+    "title": "Data Science",
+    "description": "Data analysis, visualization, statistics, and predictive techniques to drive better decisions.",
+    "color": "#10b981",
+    "overview": "Data Science involves collecting, cleaning, and analysing large datasets to uncover actionable insights. Practitioners use statistical models, data visualisation tools, and predictive algorithms to support business strategy.",
+    "prerequisites": ["Python Basics", "Statistics", "Probability", "SQL Basics", "Spreadsheet Basics"],
+    "skills": ["Data Cleaning", "Exploratory Analysis", "Data Visualisation", "Statistical Analysis", "SQL Querying", "Dashboarding", "Predictive Analytics"],
+    "tools": ["Python", "Pandas", "NumPy", "Matplotlib", "Seaborn", "SQL", "Excel", "Power BI", "Tableau"],
+    "projects": [
+      { "name": "Sales Dashboard", "desc": "Interactive dashboard tracking revenue, trends, and KPIs." },
+      { "name": "Student Result Analysis", "desc": "Visualise patterns and performance distribution across a cohort." },
+      { "name": "Customer Segmentation", "desc": "K-means clustering to group customers by behavioural patterns." },
+      { "name": "Trend Analysis Dashboard", "desc": "Time-series visualisation for identifying business trends." }
+    ],
+    "roles": ["Data Analyst", "Business Analyst", "Data Scientist", "BI Developer", "Analytics Intern"],
+    "insights": { "timeToLearn": "6–9 months", "jobDemand": "Very High", "topCompanies": "Google, Deloitte, TCS, Accenture", "futureScope": "Automated analytics and personalised experiences" },
+    "miniQuiz": [
+      { "q": "Do you like finding stories hidden in numbers and charts?" },
+      { "q": "Is SQL or Excel something you enjoy working with?" },
+      { "q": "Would you rather analyze a problem than build a piece of hardware?" },
+      { "q": "Does the idea of predicting business trends excite you?" }
+    ],
+    "steps": [
+      { "title": "Programming & Databases", "desc": "Master Python or R. Deeply understand SQL for querying large datasets." },
+      { "title": "Data Wrangling & EDA", "desc": "Use Pandas and NumPy to clean messy data. Find patterns and anomalies." },
+      { "title": "Data Visualisation", "desc": "Communicate insights visually using Tableau, Power BI, or Python libraries." },
+      { "title": "Applied Statistics", "desc": "Learn A/B testing, hypothesis testing, and inferential statistics." },
+      { "title": "Predictive Modelling", "desc": "Apply ML models for forecasting, clustering, and classification." },
+      { "title": "Big Data Technologies", "desc": "Scale with Apache Spark, Hadoop, and cloud data warehouses like Snowflake." }
+    ],
+    "curriculum": {
+      "year1": [
+        { "title": "Programming & Databases", "desc": "Advanced SQL querying and Python-based data manipulation for analytical pipelines." },
+        { "title": "Data Wrangling & EDA", "desc": "Professional data cleaning techniques and exploratory analysis to find hidden patterns." }
+      ],
+      "year2": [
+        { "title": "Data Visualisation", "desc": "Mastering the art of storytelling through numbers via Power BI, Tableau, and D3.js." }
+      ],
+      "year3": [
+        { "title": "Applied Statistics", "desc": "Implementation of A/B testing, hypothesis testing, and inferential statistics in business scenarios." },
+        { "title": "Predictive Modelling", "desc": "Building forecasting systems and classification models for real-world impact." }
+      ],
+      "year4": [
+        { "title": "Big Data Technologies", "desc": "Scaling analytics using Apache Spark, Hadoop, and cloud-based data warehouses." }
+      ]
+    },
+    "resources": [
+      { "title": "DataCamp", "link": "https://www.datacamp.com/", "desc": "Interactive Python and SQL data science courses." },
+      { "title": "Google Data Analytics", "link": "https://grow.google/certificates/data-analytics/", "desc": "Industry-standard professional certification for analysts." },
+      { "title": "Towards Data Science", "link": "https://towardsdatascience.com/", "desc": "Leading publication for data science techniques and trends." },
+      { "title": "StatQuest", "link": "https://statquest.org/", "desc": "Breakdown of complex statistical concepts into simple visuals." }
+    ]
+  },
+  {
+    "id": "web",
+    "title": "Web, App & Game Development",
+    "description": "Websites, mobile applications, full-stack software systems, and interactive game experiences.",
+    "color": "#f59e0b",
+    "overview": "This domain spans the full stack of digital product development — from crafting pixel-perfect interfaces with HTML, CSS, and JavaScript, to building robust backend APIs, mobile applications, and interactive video games.",
+    "prerequisites": ["Programming Fundamentals", "HTML & CSS", "JavaScript Basics", "OOP Concepts", "Database Basics"],
+    "skills": ["Frontend Development", "Backend Development", "RESTful APIs", "Database Design", "Mobile App Basics", "Game Design Basics", "UI/UX Fundamentals"],
+    "tools": ["HTML", "CSS", "JavaScript", "React", "Node.js", "Express.js", "MongoDB", "MySQL", "Flutter", "Unity", "Git"],
+    "projects": [
+      { "name": "Portfolio Website", "desc": "A personal site showcasing projects, skills, and contact info." },
+      { "name": "To-Do Application", "desc": "Full-stack CRUD app with persistent storage and user auth." },
+      { "name": "Chat Application", "desc": "Real-time messaging app using WebSockets." },
+      { "name": "Mobile Calculator", "desc": "Cross-platform calculator built with Flutter." }
+    ],
+    "roles": ["Frontend Developer", "Backend Developer", "Full Stack Developer", "Mobile App Developer", "Game Developer"],
+    "insights": { "timeToLearn": "4–8 months", "jobDemand": "Evergreen", "topCompanies": "Google, Microsoft, Ubisoft, Electronic Arts", "futureScope": "Web3, XR interfaces, and immersive game worlds" },
+    "miniQuiz": [
+      { "q": "Do you love seeing your code turn into something visual immediately?" },
+      { "q": "Are you interested in how mobile apps and websites are built?" },
+      { "q": "Do you enjoy the challenge of making things look good AND work well?" },
+      { "q": "Does the idea of building your own video game sound fun?" }
+    ],
+    "steps": [
+      { "title": "Web Foundations", "desc": "Master HTML, CSS and core JavaScript (DOM, events, ES6+)." },
+      { "title": "Frontend Frameworks", "desc": "Learn React.js for component-driven UI and state management." },
+      { "title": "Backend & Databases", "desc": "Build REST APIs using Node.js/Express. Learn MySQL and MongoDB." },
+      { "title": "Full Stack Integration", "desc": "Connect frontend and backend, implement auth, and deploy apps." },
+      { "title": "Mobile Development", "desc": "Learn React Native or Flutter for iOS and Android publication." },
+      { "title": "Game Development", "desc": "Create games using Unity (C#) or web-based game libraries." }
+    ],
+    "curriculum": {
+      "year1": [
+        { "title": "Web Foundations", "desc": "Deep dive into semantic HTML, modern CSS (Flex/Grid), and advanced ES6+ JavaScript." },
+        { "title": "Frontend Frameworks", "desc": "Component architecture, state management, and high-performance rendering in React.js." }
+      ],
+      "year2": [
+        { "title": "Backend & Databases", "desc": "Building secure, scalable RESTful and GraphQL APIs using Node.js and specialized DBs." }
+      ],
+      "year3": [
+        { "title": "Full Stack Integration", "desc": "End-to-end product development including authentication, Real-time sync, and deployment." },
+        { "title": "Mobile Development", "desc": "Crafting native-like experiences for iOS and Android using Flutter or React Native." }
+      ],
+      "year4": [
+        { "title": "Game Development", "desc": "Building interactive 2D/3D web-based and standalone game engines." }
+      ]
+    },
+    "resources": [
+      { "title": "MDN Web Docs", "link": "https://developer.mozilla.org/", "desc": "The ultimate resource for web technologies and documentation." },
+      { "title": "FreeCodeCamp", "link": "https://www.freecodecamp.org/", "desc": "Global community for learning full stack development hands-on." },
+      { "title": "frontendmasters", "link": "https://frontendmasters.com/", "desc": "In-depth courses from world-class industry engineers." },
+      { "title": "roadmap.sh", "link": "https://roadmap.sh/", "desc": "Visual career pathways for every modern web specialisation." }
+    ]
+  },
+  {
+    "id": "security",
+    "title": "Cyber Security & Blockchain",
+    "description": "System security, ethical hacking, cryptography, and decentralized application development.",
+    "color": "#ef4444",
+    "overview": "This domain covers protecting computing systems, networks, and data from attacks. It also spans the development of decentralised systems using blockchain — from smart contracts to on-chain apps.",
+    "prerequisites": ["Computer Networks", "Operating Systems", "Linux Basics", "Programming Basics", "Cryptography Basics"],
+    "skills": ["Network Security", "Web Security", "Ethical Hacking", "Vulnerability Assessment", "Cryptography", "Blockchain Basics", "Smart Contracts", "Decentralised Apps"],
+    "tools": ["Kali Linux", "Wireshark", "Nmap", "Burp Suite", "Metasploit", "OpenSSL", "Solidity", "Remix IDE"],
+    "projects": [
+      { "name": "Password strength checker", "desc": "Evaluate password entropy and resistance to attack vectors." },
+      { "name": "Vulnerability Scanner", "desc": "Detect open ports and outdated services on a target host." },
+      { "name": "Phishing Detector", "desc": "ML-based classifier that identifies malicious links." },
+      { "name": "Simple Smart Contract", "desc": "Deploy a basic ERC-20 token on a test blockchain network." }
+    ],
+    "roles": ["Security Analyst", "Ethical Hacker", "Pentester", "SOC Analyst", "Blockchain Developer"],
+    "insights": { "timeToLearn": "6–12 months", "jobDemand": "Critical", "topCompanies": "Cisco, Palo Alto, IBM, Binance", "futureScope": "AI-driven threat detection and Zero Trust" },
+    "miniQuiz": [
+      { "q": "Do you think about how to break systems to make them stronger?" },
+      { "q": "Are you interested in cryptography and private data?" },
+      { "q": "Do you enjoy the 'cat and mouse' game of finding exploits?" },
+      { "q": "Does the idea of decentralized web (Blockchain) intrigue you?" }
+    ],
+    "steps": [
+      { "title": "IT & Networking Foundations", "desc": "Master TCP/IP, DNS, OSI model, and Linux internals." },
+      { "title": "Security Fundamentals", "desc": "Learn CIA triad, auth mechanisms, and CompTIA Security+ syllabus." },
+      { "title": "Offensive Security", "desc": "Study OWASP Top 10 and practice on TryHackMe or HackTheBox." },
+      { "title": "Defensive Security", "desc": "Understand SIEM (Splunk), digital forensics, and incident response." },
+      { "title": "Malware Analysis", "desc": "Learn assembly basics and reverse-engineer binaries with Ghidra." },
+      { "title": "Cloud Security & Advanced", "desc": "Branch into Cloud audits, DevSecOps, and OSCP certification." }
+    ],
+    "curriculum": {
+      "year1": [
+        { "title": "IT & Networking Foundations", "desc": "Comprehensive understanding of the OSI model, TCP/IP, and Linux kernel internals." },
+        { "title": "Security Fundamentals", "desc": "Introduction to cryptography, CIA triad, and baseline security protocols." }
+      ],
+      "year2": [
+        { "title": "Offensive Security", "desc": "Techniques for ethical hacking, penetration testing, and vulnerability research." }
+      ],
+      "year3": [
+        { "title": "Defensive Security", "desc": "Incident response, SOC operations, and building resilient security architectures." },
+        { "title": "Malware Analysis", "desc": "Reverse engineering binaries and analyzing malicious software behavior." }
+      ],
+      "year4": [
+        { "title": "Cloud Security & Advanced", "desc": "Securing distributed systems and deep dive into Blockchain infrastructure." }
+      ]
+    },
+    "resources": [
+      { "title": "TryHackMe", "link": "https://tryhackme.com/", "desc": "Gamified labs for learning real-world cybersecurity." },
+      { "title": "Krebs on Security", "link": "https://krebsonsecurity.com/", "desc": "In-depth investigative journalism on global cybercrime." },
+      { "title": "OWASP Hot 10", "link": "https://owasp.org/www-project-top-ten/", "desc": "Standard awareness document for web application security." },
+      { "title": "CryptoZombies", "link": "https://cryptozombies.io/", "desc": "Interactive tutorial for building blockchain smart contracts." }
+    ]
+  },
+  {
+    "id": "cloud",
+    "title": "Cloud Computing",
+    "description": "Scalable virtualization, serverless architecture, containerization, and cloud deployment strategies.",
+    "color": "#f59e0b",
+    "overview": "Cloud Computing delivers on-demand computing services over the internet. Practitioners design and manage scalable infrastructure using virtualisation, containers, and pipelines across AWS, Azure, and GCP.",
+    "prerequisites": ["OS Fundamentals", "Linux Command Line", "Basic Networking", "Bash / Python Scripting", "Web Architecture"],
+    "skills": ["Virtualisation", "Containerisation", "Serverless Architecture", "Microservices", "IaC", "CI/CD Pipelines", "Load Balancing", "High Availability"],
+    "tools": ["AWS", "Azure", "GCP", "Docker", "Kubernetes", "Terraform", "Linux", "Jenkins", "GitHub Actions"],
+    "projects": [
+      { "name": "Static Website (AWS)", "desc": "Host a highly available site using S3 and CloudFront." },
+      { "name": "Serverless API", "desc": "REST API using AWS Lambda and API Gateway." },
+      { "name": "Dockerised Web App", "desc": "Containerise and deploy using Docker and K8s." },
+      { "name": "Terraform Infrastructure", "desc": "Automate cloud resource provisioning with scripts." }
+    ],
+    "roles": ["Cloud Engineer", "DevOps Engineer", "Cloud Architect", "SRE", "Cloud Security Engineer"],
+    "insights": { "timeToLearn": "4–8 months", "jobDemand": "Extremely High", "topCompanies": "AWS, Microsoft, Google, IBM", "futureScope": "Edge computing and multi-cloud strategies" },
+    "miniQuiz": [
+      { "q": "Are you interested in how websites handle millions of users?" },
+      { "q": "Do you enjoy automating tasks with scripts?" },
+      { "q": "Does managing virtual servers and containers sound cool?" },
+      { "q": "Are you more interested in infrastructure than frontend pixels?" }
+    ],
+    "steps": [
+      { "title": "Linux & Scripting", "desc": "Master CLI, file systems, and automation in Bash/Python." },
+      { "title": "Networking Essentials", "desc": "Understand DNS, firewalls, subnetting, VPNs, and load balancers." },
+      { "title": "Core Cloud Services", "desc": "Learn EC2, S3, RDS, and IAM on AWS, Azure, or GCP." },
+      { "title": "Containers & K8s", "desc": "Package apps with Docker and orchestrate with Kubernetes." },
+      { "title": "IaC & CI/CD", "desc": "Provision with Terraform and automate with GitHub Actions." },
+      { "title": "SRE & Cloud Security", "desc": "Apply SRE principles and implement secure IAM policies." }
+    ],
+    "curriculum": {
+      "year1": [
+        { "title": "Linux & Scripting", "desc": "CLI mastery and automation scripts in Bash and Python for infrastructure orchestration." },
+        { "title": "Networking Essentials", "desc": "Configuring VPCs, subnets, firewalls, and load balancers in hybrid environments." }
+      ],
+      "year2": [
+        { "title": "Core Cloud Services", "desc": "Hands-on implementation of compute, storage, and database services on AWS, Azure, and GCP." }
+      ],
+      "year3": [
+        { "title": "Containers & K8s", "desc": "Package-level virtualization with Docker and massive-scale orchestration with Kubernetes." },
+        { "title": "IaC & CI/CD", "desc": "Infrastructure as Code using Terraform and automated delivery pipelines with GitHub Actions." }
+      ],
+      "year4": [
+        { "title": "SRE & Cloud Security", "desc": "Building high-availability systems with robust IAM policies and observability." }
+      ]
+    },
+    "resources": [
+      { "title": "AWS Training", "link": "https://explore.skillbuilder.aws/", "desc": "Free digital training paths directly from Amazon Web Services." },
+      { "title": "Microsoft Learn", "link": "https://learn.microsoft.com/en-us/training/azure/", "desc": "Official learning paths for Azure cloud architecture." },
+      { "title": "Google Cloud Training", "link": "https://www.cloudskillsboost.google/", "desc": "Hands-on labs and tutorials for Google Cloud Platform." },
+      { "title": "Kubernetes Docs", "link": "https://kubernetes.io/docs/home/", "desc": "The definitive technical guide for container orchestration." }
+    ]
+  },
+  {
+    "id": "iot",
+    "title": "IoT & Embedded Systems",
+    "description": "Smart devices, microcontrollers, sensors, and the integration of hardware with software.",
+    "color": "#ec4899",
+    "overview": "This domain focuses on programming microcontrollers to interact with the physical world through sensors and wireless communication — forming the foundation of smart homes and industry.",
+    "prerequisites": ["C Programming Basics", "C++ Basics", "Basic Electronics", "Programming Fundamentals", "Logic Building"],
+    "skills": ["Microcontrollers", "Embedded Programming", "Sensors & Actuators", "Serial Communication", "IoT Architecture", "Firmware", "Real-Time Systems"],
+    "tools": ["Arduino", "ESP32", "Raspberry Pi", "C/C++", "Python", "MQTT", "Firebase", "Proteus"],
+    "projects": [
+      { "name": "Smart Light Control", "desc": "Remotely control lights via a mobile app or voice." },
+      { "name": "Temperature Monitor", "desc": "Real-time tracking with data logging." },
+      { "name": "Smart Irrigation", "desc": "Automate plant watering using moisture sensors." },
+      { "name": "IoT Attendance", "desc": "RFID-based tracker logging to cloud database." }
+    ],
+    "roles": ["Embedded Engineer", "IoT Developer", "Firmware Developer", "HW Integration Engineer"],
+    "insights": { "timeToLearn": "6–12 months", "jobDemand": "High", "topCompanies": "Intel, Bosch, Qualcomm, Siemens", "futureScope": "Industry 4.0 and smart infrastructure" },
+    "miniQuiz": [
+      { "q": "Do you enjoy working with microcontrollers and sensors?" },
+      { "q": "Are you interested in building smart devices (homes, wearables)?" },
+      { "q": "Does writing low-level C code for hardware excite you?" },
+      { "q": "Do you prefer physical building over pure software simulation?" }
+    ],
+    "steps": [
+      { "title": "Electronics Fundamentals", "desc": "Learn Ohm's law, circuits, digital logic, and breadboarding." },
+      { "title": "Embedded C/C++", "desc": "Understand pointers, interrupts, and register manipulation." },
+      { "title": "Arduino & ESP32", "desc": "Interface sensors and motors via UART, I2C, and SPI." },
+      { "title": "Raspberry Pi", "desc": "Run Linux, write Python hardware scripts, and build smart apps." },
+      { "title": "Wireless Protocols", "desc": "Implement MQTT, WiFi, Bluetooth, BLE and LoRa." },
+      { "title": "Cloud & Platforms", "desc": "Connect to Firebase or AWS IoT and build monitoring dashboards." }
+    ],
+    "curriculum": {
+      "year1": [
+        { "title": "Electronics Fundamentals", "desc": "Digital logic, circuit design, and breadboarding sensors for hardware interaction." },
+        { "title": "Embedded C/C++", "desc": "Low-level programming, interrupt handling, and register-level control of processors." }
+      ],
+      "year2": [
+        { "title": "Arduino & ESP32", "desc": "Rapid prototyping and wireless connectivity implementations using modern MCUs." }
+      ],
+      "year3": [
+        { "title": "Raspberry Pi", "desc": "Linux-based edge computing, Python hardware control, and multimedia processing." },
+        { "title": "Wireless Protocols", "desc": "Mastering MQTT, LoRa, BLE, and Zigbee for distributed IoT networks." }
+      ],
+      "year4": [
+        { "title": "Cloud & Platforms", "desc": "Integrating hardware with platforms like AWS IoT Core and Firebase for data logging." }
+      ]
+    },
+    "resources": [
+      { "title": "Arduino Docs", "link": "https://docs.arduino.cc/", "desc": "Project-based guides and documentation for the Arduino ecosystem." },
+      { "title": "Hackster.io", "link": "https://www.hackster.io/", "desc": "The largest community for hardware hackers and IoT projects." },
+      { "title": "Electronic Hub", "link": "https://www.electronicshub.org/", "desc": "Step-by-step electronics tutorials and circuit designs." },
+      { "title": "Adafruit Learning", "link": "https://learn.adafruit.com/", "desc": "High-quality guides for sensors, displays, and wearables." }
+    ]
+  },
+  {
+    "id": "robotics",
+    "title": "Robotics & Automation",
+    "description": "Robot design, automation systems, machine control, and intelligent physical systems.",
+    "color": "#8b5cf6",
+    "overview": "Robotics focuses on designing autonomous systems that can sense, plan, and act in physical environments — from wheeled robots to industrial automation arms.",
+    "prerequisites": ["Programming Basics", "Basic Electronics", "Mathematics", "Logical Thinking", "Mechanics Basics"],
+    "skills": ["Robotics Fundamentals", "Motors & Actuators", "Sensor Integration", "Automation Logic", "Control Systems", "Robot Movement", "Path Planning"],
+    "tools": ["Arduino", "Raspberry Pi", "Python", "C/C++", "ROS", "Motor Drivers", "Servo Motors", "Simulation Tools"],
+    "projects": [
+      { "name": "Line-Following Robot", "desc": "IR sensor-based robot that autonomously follows a path." },
+      { "name": "Obstacle-Avoiding Robot", "desc": "Ultrasonic sensor-based bot that navigates around obstacles." },
+      { "name": "Robotic Arm Prototype", "desc": "Servo-controlled arm capable of picking and placing objects." },
+      { "name": "Home Automation", "desc": "Control home appliances through voice or mobile." }
+    ],
+    "roles": ["Robotics Engineer", "Automation Engineer", "Control Systems Engineer", "Mechatronics Engineer"],
+    "insights": { "timeToLearn": "6–12 months", "jobDemand": "High", "topCompanies": "ABB, Siemens, Tesla, Boston Dynamics", "futureScope": "Industrial automation and autonomous systems" },
+    "miniQuiz": [
+      { "q": "Are you fascinated by autonomous machines and robots?" },
+      { "q": "Do you enjoy combining mechanical parts with software logic?" },
+      { "q": "Is the idea of building a robotic arm or self-driving car exciting?" },
+      { "q": "Do you have a strong background/interest in physics and math?" }
+    ],
+    "steps": [
+      { "title": "Programming & Logic", "desc": "Build C++ and Python skills. Learn embedded data structures." },
+      { "title": "Mechanical Basics", "desc": "Understand motors (DC, Servo, Stepper) and robot frames." },
+      { "title": "Microcontrollers", "desc": "Use Arduino/Pi to control actuators and coordinate sensors." },
+      { "title": "Control Theory", "desc": "Study PID controllers and feedback loops for smooth movement." },
+      { "title": "ROS Foundations", "desc": "Learn Robot Operating System for sensor fusion and navigation." },
+      { "title": "AI & Computer Vision", "desc": "Integrate OpenCV, YOLO, and RL for autonomous behavior." }
+    ],
+    "curriculum": {
+      "year1": [
+        { "title": "Programming & Logic", "desc": "Mastering Python and C++ logic for complex movement and sensor fusion algorithms." },
+        { "title": "Mechanical Basics", "desc": "Kinematics, actuator selection, and chassis design for various robot forms." }
+      ],
+      "year2": [
+        { "title": "Microcontrollers", "desc": "Coordinating multiple sensors and motors using high-performance control boards." }
+      ],
+      "year3": [
+        { "title": "Control Theory", "desc": "Implementation of PID loops and feedback systems for precise robot positioning." },
+        { "title": "ROS Foundations", "desc": "Learning the Robot Operating System for industrial-grade automation development." }
+      ],
+      "year4": [
+        { "title": "AI & Computer Vision", "desc": "Integrating autonomous navigation and object recognition for self-aware systems." }
+      ]
+    },
+    "resources": [
+      { "title": "ROS Tutorials", "link": "https://docs.ros.org/", "desc": "Official learning path for the world's leading robotics framework." },
+      { "title": "Clearpath Robotics", "link": "https://clearpathrobotics.com/blog/", "desc": "Real-world industrial robotics case studies and tutorials." },
+      { "title": "Robohub", "link": "https://robohub.org/", "desc": "Latest research and news from the global robotics community." },
+      { "title": "ETH Zurich Robotics", "link": "https://asl.ethz.ch/", "desc": "Cutting-edge robotics research and open-source projects." }
+    ]
+  },
+  {
+    "id": "vlsi",
+    "title": "VLSI & Computer Architecture",
+    "description": "Chip design, circuit layout, processor architecture, and the fundamentals of hardware.",
+    "color": "#f97316",
+    "overview": "This domain covers the design and verification of digital circuits and CPUs — from logic gates to complete pipelines using HDL and FPGA platforms.",
+    "prerequisites": ["Number Systems", "Boolean Algebra", "Digital Logic Basics", "Computer Organisation", "Problem-Solving"],
+    "skills": ["Logic Gates", "Combinational Circuits", "Sequential Circuits", "Registers & Counters", "Processor Basics", "Memory Organisation", "Pipelining", "HDL Design"],
+    "tools": ["Verilog", "VHDL", "Logisim", "Vivado", "ModelSim", "Cadence", "Synopsys"],
+    "projects": [
+      { "name": "ALU Design", "desc": "Arithmetic Logic Unit in Verilog performing basic operations." },
+      { "name": "Traffic Light Controller", "desc": "Sequential circuit modelling a traffic signal." },
+      { "name": "Simple CPU Simulation", "desc": "Fetch-decode-execute cycle implemented in HDL." },
+      { "name": "Digital Counter", "desc": "4-bit synchronous counter with enable controls." }
+    ],
+    "roles": ["VLSI Engineer", "Hardware Design Engineer", "Verification Engineer", "Architecture Intern"],
+    "insights": { "timeToLearn": "8–14 months", "jobDemand": "High", "topCompanies": "Intel, NVIDIA, AMD, Qualcomm, TSMC", "futureScope": "AI chips and next-gen edge processors" },
+    "miniQuiz": [
+      { "q": "Do you enjoy logic puzzles and digital circuit design?" },
+      { "q": "Are you interested in how CPUs and microchips work inside?" },
+      { "q": "Does writing hardware description languages (Verilog) sound fun?" },
+      { "q": "Do you prefer low-level hardware design over high-level app building?" }
+    ],
+    "steps": [
+      { "title": "Digital Logic", "desc": "Master number systems, Boolean algebra, and K-maps." },
+      { "title": "Circuit Design", "desc": "Design adders, muxes, and flip-flops using Logisim." },
+      { "title": "HDL (Verilog/VHDL)", "desc": "Write RTL and testbenches for digital circuit simulation." },
+      { "title": "FPGA Implementation", "desc": "Synthesise HDL designs onto Xilinx/Intel hardware." },
+      { "title": "Computer Architecture", "desc": "Study RISC-V/ARM, pipelining, and memory hierarchies." },
+      { "title": "Physical Design", "desc": "Learn cell libraries, place-and-route, and verification." }
+    ],
+    "curriculum": {
+      "year1": [
+        { "title": "Digital Logic", "desc": "Mastering Boolean algebra and number systems for foundational hardware design." },
+        { "title": "Circuit Design", "desc": "Designing combinational and sequential circuits using simulation tools like Logisim." }
+      ],
+      "year2": [
+        { "title": "HDL (Verilog/VHDL)", "desc": "Writing synthesizable hardware description code for processor-level operations." }
+      ],
+      "year3": [
+        { "title": "FPGA Implementation", "desc": "Mapping designs onto physical hardware using Xilinx Vivado or Intel Quartus." },
+        { "title": "Computer Architecture", "desc": "Deep dive into RISC-V/ARM architectures, pipelining, and memory hierarchy." }
+      ],
+      "year4": [
+        { "title": "Physical Design", "desc": "ASIC flow including placement, routing, and timing closure for chip fabrication." }
+      ]
+    },
+    "resources": [
+      { "title": "All About Circuits", "link": "https://www.allaboutcircuits.com/", "desc": "Massive collection of hardware theory and circuit designs." },
+      { "title": "VLSI System Design", "link": "https://www.vlsisystemdesign.com/", "desc": "Specialized courses for ASIC and FPGA professional paths." },
+      { "title": "SemiWiki", "link": "https://semiwiki.com/", "desc": "The semiconductor wiki for industry trends and expert insights." },
+      { "title": "ASIC World", "link": "https://www.asic-world.com/", "desc": "Comprehensive tutorials for Verilog, VHDL, and SystemVerilog." }
+    ]
+  },
+  {
+    "id": "networking",
+    "title": "Networking & Communication Systems",
+    "description": "Network design, communication protocols, routing, switching, and digital connectivity.",
+    "color": "#059669",
+    "overview": "Networking covers the management of communication systems — from understanding the OSI model to configuring routers and secure enterprise infrastructures.",
+    "prerequisites": ["Computer Basics", "OS Basics", "Internet Fundamentals", "Logical Thinking", "Command Line Basics"],
+    "skills": ["OSI Model", "TCP/IP", "IP Addressing", "Subnetting", "Routing", "Switching", "Wireless Communication", "Troubleshooting"],
+    "tools": ["Cisco Packet Tracer", "Wireshark", "Linux", "GNS3", "Router Config"],
+    "projects": [
+      { "name": "Office Network Design", "desc": "Design and simulate a small office LAN." },
+      { "name": "Subnetting System", "desc": "Tool that generates and validates subnet problems." },
+      { "name": "Packet Analysis Lab", "desc": "Capture and analyse live traffic using Wireshark." },
+      { "name": "Secure Network Layout", "desc": "Design with firewall rules and VLAN segmentation." }
+    ],
+    "roles": ["Network Engineer", "System Admin", "Infrastructure Engineer", "Security Associate"],
+    "insights": { "timeToLearn": "4–8 months", "jobDemand": "High", "topCompanies": "Cisco, Juniper, IBM, Airtel, TCS", "futureScope": "5G and secure cloud connectivity" },
+    "miniQuiz": [
+      { "q": "Are you interested in how data flows across the globe?" },
+      { "q": "Do you enjoy troubleshooting complex technical systems?" },
+      { "q": "Is the idea of configuring routers and managing VLANs cool?" },
+      { "q": "Are you more interested in connections than code-building?" }
+    ],
+    "steps": [
+      { "title": "Fundamentals", "desc": "Understand TCP/IP, DNS, OSI model, and CIDR subnetting." },
+      { "title": "Routing & Switching", "desc": "Configure Cisco IOS for OSPF, VLANs, and spanning tree." },
+      { "title": "Network Security", "desc": "Implement ACLs, firewall rules, NAT, and VPN tunnels." },
+      { "title": "Wireless & Mobile", "desc": "Configure 802.11 and understand 4G/5G generations." },
+      { "title": "Troubleshooting", "desc": "Master Wireshark, ping, traceroute, and diagnostic tools." },
+      { "title": "Cloud & SDN", "desc": "Explore OpenFlow and virtual clouds on AWS/Azure." }
+    ],
+    "curriculum": {
+      "year1": [
+        { "title": "Fundamentals", "desc": "Mastering the OSI model, IP addressing, and CIDRM subnetting basics." },
+        { "title": "Routing & Switching", "desc": "Configuring enterprise-grade Cisco IOS devices for robust connectivity." }
+      ],
+      "year2": [
+        { "title": "Network Security", "desc": "Implementation of firewalls, VPNs, and Access Control Lists to protect data flow." }
+      ],
+      "year3": [
+        { "title": "Wireless & Mobile", "desc": "Advanced configuration of 802.11 standards and modern 5G architectures." },
+        { "title": "Troubleshooting", "desc": "Using Wireshark and diagnostic tools to resolve complex network bottlenecks." }
+      ],
+      "year4": [
+        { "title": "Cloud & SDN", "desc": "Software Defined Networking and virtual infrastructure management on AWS/Azure." }
+      ]
+    },
+    "resources": [
+      { "title": "Cisco Networking Academy", "link": "https://www.netacad.com/", "desc": "World-class networking courses and simulator tools." },
+      { "title": "Network World", "link": "https://www.networkworld.com/", "desc": "Strategic networking information for IT professionals." },
+      { "title": "Wireshark University", "link": "https://www.wireshark.org/training/", "desc": "Mastering packet analysis with the world's leading tool." },
+      { "title": "Brocade Learning", "link": "https://www.broadcom.com/training", "desc": "Specialized training for storage and enterprise networking." }
+    ]
+  }
+]

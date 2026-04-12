@@ -3,16 +3,15 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0;url=login.html">
-    <script src="script.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
+    <script src="script.js"></script>
 </head>
 
 <body>
     <script>
-
-        const user = localStorage.getItem("cse_user");
-        if (user) {
+        const student = sessionStorage.getItem("cse_student");
+        if (student) {
             window.location.href = "home.html";
         } else {
             window.location.href = "login.html";
