@@ -236,6 +236,33 @@ h1, h2, h3, h4, h5, h6 {
   color: #fff;
 }
 
+/* ─── Forms ─── */
+.form-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: var(--transition);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.form-input::placeholder {
+  color: var(--color-text-3);
+  opacity: 0.6;
+}
+
 /* ─── Animations ─── */
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(20px); }

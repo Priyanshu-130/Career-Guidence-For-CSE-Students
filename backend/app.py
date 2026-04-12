@@ -47,7 +47,14 @@ def hash_password(password):
 
 @app.route('/')
 def serve_index():
-    return send_from_directory(FRONTEND_DIR, 'login.html')
+    # If the React dist folder exists, serve index.html
+    if os.path.exists(os.path.join(FRONTEND_DIR, 'index.html')):
+        return send_from_directory(FRONTEND_DIR, 'index.html')
+    return "Backend is running. Frontend build (dist/) not found.", 200
+
+@app.route('/api/health')
+def health_check():
+    return jsonify({"status": "ok", "message": "Backend server is reachable"}), 200
 
 @app.route('/<path:filename>')
 def serve_frontend(filename):
@@ -174,6 +181,6 @@ if __name__ == '__main__':
     init_db()
     print("=" * 50)
     print("  CSE PathFinder Backend Server")
-    print("  Open in browser: http://127.0.0.1:5000")
+    print("  Local URL: http://127.0.0.1:5000")
     print("=" * 50)
-    app.run(port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
