@@ -15,7 +15,54 @@ const iconMap = {
   networking: <Wifi size={24} />
 };
 
+const DomainCard = ({ domain }) => (
+  <Link 
+    to={`/domain/${domain.id}`} 
+    className="glass-card" 
+    style={{ 
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden',
+      minHeight: '340px'
+    }}
+  >
+    <div style={{ padding: '2.5rem', position: 'relative' }}>
+      <div style={{ 
+        width: '56px', height: '56px', borderRadius: '16px', 
+        background: `${domain.color}15`, color: domain.color,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        marginBottom: '2rem', border: `1px solid ${domain.color}33`
+      }}>
+        {iconMap[domain.id] || <BookOpen size={24} />}
+      </div>
+      <h2 style={{ fontSize: '1.75rem', marginBottom: '1rem' }}>{domain.title}</h2>
+      <p style={{ color: 'var(--color-text-3)', fontSize: '0.9375rem', lineHeight: 1.7 }}>
+        {domain.description}
+      </p>
+    </div>
+    
+    <div style={{ 
+      marginTop: 'auto', padding: '1.5rem 2.5rem', 
+      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+      borderTop: '1px solid var(--color-border)'
+    }}>
+       <span style={{ fontSize: '0.8125rem', fontWeight: 800, color: domain.color, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+         Analyze Path
+       </span>
+       <div style={{ 
+         width: '32px', height: '32px', borderRadius: '50%', 
+         background: 'rgba(255,255,255,0.03)', color: domain.color, 
+         display: 'flex', alignItems: 'center', justifyContent: 'center',
+         border: '1px solid var(--color-border-gl)'
+       }}><ArrowRight size={16} /></div>
+    </div>
+  </Link>
+);
+
 export default function DomainsList() {
+  const softwareDomains = domains.filter(d => d.category === 'software');
+  const hardwareDomains = domains.filter(d => d.category === 'hardware');
+
   return (
     <div className="page-wrapper content-container animate-in">
       <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
@@ -25,51 +72,18 @@ export default function DomainsList() {
         </p>
       </div>
 
-      <div className="domains-grid">
-        {domains.map(domain => (
-          <Link 
-            to={`/domain/${domain.id}`} 
-            className="glass-card" 
-            key={domain.id} 
-            style={{ 
-              display: 'flex',
-              flexDirection: 'column',
-              overflow: 'hidden',
-              minHeight: '340px'
-            }}
-          >
-            <div style={{ padding: '2.5rem', position: 'relative' }}>
-              <div style={{ 
-                width: '56px', height: '56px', borderRadius: '16px', 
-                background: `${domain.color}15`, color: domain.color,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                marginBottom: '2rem', border: `1px solid ${domain.color}33`
-              }}>
-                {iconMap[domain.id] || <BookOpen size={24} />}
-              </div>
-              <h2 style={{ fontSize: '1.75rem', marginBottom: '1rem' }}>{domain.title}</h2>
-              <p style={{ color: 'var(--color-text-3)', fontSize: '0.9375rem', lineHeight: 1.7 }}>
-                {domain.description}
-              </p>
-            </div>
-            
-            <div style={{ 
-              marginTop: 'auto', padding: '1.5rem 2.5rem', 
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              borderTop: '1px solid var(--color-border)'
-            }}>
-               <span style={{ fontSize: '0.8125rem', fontWeight: 800, color: domain.color, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                 Analyze Path
-               </span>
-               <div style={{ 
-                 width: '32px', height: '32px', borderRadius: '50%', 
-                 background: 'rgba(255,255,255,0.03)', color: domain.color, 
-                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                 border: '1px solid var(--color-border-gl)'
-               }}><ArrowRight size={16} /></div>
-            </div>
-          </Link>
-        ))}
+      <div style={{ marginBottom: '4rem' }}>
+        <h2 style={{ fontSize: '2rem', marginBottom: '2rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '1rem' }}>Software Engineering Tracks</h2>
+        <div className="domains-grid">
+          {softwareDomains.map(domain => <DomainCard key={domain.id} domain={domain} />)}
+        </div>
+      </div>
+
+      <div>
+        <h2 style={{ fontSize: '2rem', marginBottom: '2rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '1rem' }}>Hardware Engineering Tracks</h2>
+        <div className="domains-grid">
+          {hardwareDomains.map(domain => <DomainCard key={domain.id} domain={domain} />)}
+        </div>
       </div>
     </div>
   );

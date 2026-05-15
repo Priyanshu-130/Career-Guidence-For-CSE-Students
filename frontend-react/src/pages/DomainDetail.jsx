@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import domainsData from '../data/domains.json';
-import { BookOpen, Wrench, Trophy, Briefcase, TrendingUp, ArrowRight, CheckCircle2, ChevronLeft, Target } from 'lucide-react';
+import { BookOpen, Wrench, Trophy, Briefcase, TrendingUp, ArrowRight, CheckCircle2, ChevronLeft, Target, Globe, MapPin, Building2 } from 'lucide-react';
 import MiniQuiz from '../components/MiniQuiz';
 
 export default function DomainDetail() {
@@ -92,6 +92,84 @@ export default function DomainDetail() {
             </div>
           </div>
 
+          {/* Career Opportunities & Scope Section */}
+          <div className="glass-card" style={{ padding: '3rem', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: domain.color }}></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+              <div style={{ width: '40px', height: '40px', background: `${domain.color}15`, color: domain.color, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <TrendingUp size={20} />
+              </div>
+              <h3 style={{ fontSize: '1.5rem' }}>Career Opportunities & Scope</h3>
+            </div>
+            
+            <div style={{ marginBottom: '2.5rem' }}>
+               <h4 style={{ fontSize: '1.125rem', marginBottom: '0.75rem', color: '#fff' }}>Future Scope</h4>
+               <p style={{ color: 'var(--color-text-2)', fontSize: '1.0625rem', lineHeight: 1.7 }}>
+                 {domain.careerDetails?.futureScopeDetail || domain.insights.futureScope}
+               </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2.5rem' }}>
+               <div style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
+                 <h4 style={{ fontSize: '1.125rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <MapPin size={18} color="var(--color-accent)" />
+                    Indian Job Hubs
+                 </h4>
+                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                   {domain.careerDetails?.locations.india.map(loc => (
+                     <li key={loc} style={{ color: 'var(--color-text-2)', fontSize: '0.9375rem' }}>• {loc}</li>
+                   ))}
+                 </ul>
+               </div>
+               
+               <div style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
+                 <h4 style={{ fontSize: '1.125rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Globe size={18} color="var(--color-purple)" />
+                    Global Hotspots
+                 </h4>
+                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                   {domain.careerDetails?.locations.global.map(loc => (
+                     <li key={loc} style={{ color: 'var(--color-text-2)', fontSize: '0.9375rem' }}>• {loc}</li>
+                   ))}
+                 </ul>
+               </div>
+            </div>
+
+            <div style={{ marginBottom: '2.5rem' }}>
+               <h4 style={{ fontSize: '1.125rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Building2 size={18} color="var(--color-warning)" />
+                  Top Hiring Companies
+               </h4>
+               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+                  {(domain.careerDetails?.companies || domain.insights.topCompanies.split(', ')).map(company => (
+                    <span key={company} style={{ 
+                      padding: '8px 16px', background: `${domain.color}15`, color: '#fff', 
+                      borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, border: `1px solid ${domain.color}33` 
+                    }}>
+                      {company}
+                    </span>
+                  ))}
+               </div>
+            </div>
+
+            <div>
+               <h4 style={{ fontSize: '1.125rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Briefcase size={18} color="var(--color-accent)" />
+                  Typical Job Roles
+               </h4>
+               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+                  {domain.roles.map(role => (
+                    <span key={role} style={{ 
+                      padding: '8px 16px', background: 'rgba(255,255,255,0.03)', color: 'var(--color-text-2)', 
+                      borderRadius: '8px', fontSize: '0.875rem', border: '1px solid var(--color-border-gl)' 
+                    }}>
+                      {role}
+                    </span>
+                  ))}
+               </div>
+            </div>
+          </div>
+
           {/* Mini Quiz Section */}
           <section id="aptitude-check">
             <div style={{ marginBottom: '2rem' }}>
@@ -108,20 +186,16 @@ export default function DomainDetail() {
           
           <div className="glass-card" style={{ padding: '2rem', borderTop: `4px solid ${domain.color}` }}>
              <h3 style={{ fontSize: '1.125rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-               <TrendingUp size={20} color={domain.color} /> Career Outlook
+               <Briefcase size={20} color={domain.color} /> Quick Facts
              </h3>
              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 <div>
-                  <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-text-3)', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Future Potential</div>
-                  <div style={{ fontWeight: 700, color: '#fff' }}>{domain.insights.futureScope}</div>
+                  <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-text-3)', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Job Demand</div>
+                  <div style={{ fontWeight: 700, color: '#fff' }}>{domain.insights.jobDemand}</div>
                 </div>
                 <div>
                   <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-text-3)', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Path Complexity</div>
                   <div style={{ fontWeight: 700, color: '#fff' }}>{domain.insights.timeToLearn}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-text-3)', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Top Companies</div>
-                  <div style={{ fontSize: '0.875rem', color: 'var(--color-text-2)', lineHeight: 1.5 }}>{domain.insights.topCompanies}</div>
                 </div>
              </div>
           </div>
