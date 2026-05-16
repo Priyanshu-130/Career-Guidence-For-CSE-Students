@@ -28,5 +28,22 @@ A full-stack web application that helps Computer Science & Engineering students 
 
 ---
 
-## 📁 Project Structure
+---
 
+Project Structure
+js/
+├── backend/
+│   ├── app.py            # Flask REST API
+│   ├── database.db       # SQLite database
+│   └── requirements.txt  # Python dependencies
+├── frontend-react/
+│   └── src/
+│       ├── pages/        # All page components
+│       ├── components/   # TopNav, Sidebar, MiniQuiz
+│       ├── context/      # AuthContext (global auth state)
+│       ├── data/         # domains.json, careerQuestions.js
+│       └── App.jsx       # Routes & layout
+└── start_project.bat     # One-click launcher (Windows)
+
+Author
+Priyanshu — B.Tech CSE Student
