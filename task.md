@@ -1,8 +1,6 @@
-- [x] Redesign `index.css` to add light SaaS variables, rounded card, and gradient values
-- [x] Modify `TopNav.jsx` and `Sidebar.jsx` to make text and panel backgrounds readable
-- [x] Modify `Login.jsx` to redesign its split hero section and text elements
-- [x] Modify `Results.jsx` to support light-themed chart config and text visibility
-- [x] Modify `QuizRunner.jsx` to fix unselected option label visibility and backgrounds
-- [x] Modify `DomainDetail.jsx` to fix project names, companies, and stats text colors
-- [x] Modify `Roadmap.jsx` to fix course titles and external resources text colors
-- [x] Verify that React project compiles and looks beautiful
+- [x] Rewrite `questions.js` with the new General track (30 questions) and split all tracks into 5 parts (6 questions each)
+- [x] Modify `QuizSelection.jsx` to add the General Track option card
+- [x] Modify `QuizRunner.jsx` to dynamically calculate the 5 stepper categories, support 7 options A-G, and map G to `security`
+- [x] Modify `Results.jsx` to display G (Blockchain) correctly and add custom inclination scoring text (Low/Moderate/Strong/Very Strong)
+- [x] Build and verify compilation of the React application
+- [x] Copy the built assets to `docs` and push to GitHub
