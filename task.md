@@ -1,0 +1,8 @@
+- [x] Redesign `index.css` to add light SaaS variables, rounded card, and gradient values
+- [x] Modify `TopNav.jsx` and `Sidebar.jsx` to make text and panel backgrounds readable
+- [x] Modify `Login.jsx` to redesign its split hero section and text elements
+- [x] Modify `Results.jsx` to support light-themed chart config and text visibility
+- [x] Modify `QuizRunner.jsx` to fix unselected option label visibility and backgrounds
+- [x] Modify `DomainDetail.jsx` to fix project names, companies, and stats text colors
+- [x] Modify `Roadmap.jsx` to fix course titles and external resources text colors
+- [x] Verify that React project compiles and looks beautiful

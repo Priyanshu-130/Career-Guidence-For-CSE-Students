@@ -48,11 +48,11 @@ export default function Results() {
       {
         label: 'Aptitude Alignment',
         data: chartValues,
-        backgroundColor: 'rgba(99, 102, 241, 0.6)',
-        borderColor: 'rgba(99, 102, 241, 0.8)',
+        backgroundColor: 'rgba(79, 70, 229, 0.65)',
+        borderColor: 'rgba(79, 70, 229, 0.9)',
         borderWidth: 1,
         borderRadius: 6,
-        hoverBackgroundColor: 'rgba(99, 102, 241, 0.9)',
+        hoverBackgroundColor: 'rgba(79, 70, 229, 0.85)',
       },
     ],
   };
@@ -64,8 +64,8 @@ export default function Results() {
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: '#1e293b',
-        titleFont: { family: 'Outfit', size: 14, weight: 'bold' },
+        backgroundColor: '#0F172A',
+        titleFont: { family: 'Plus Jakarta Sans', size: 14, weight: 'bold' },
         bodyFont: { family: 'Inter', size: 12 },
         padding: 12,
         cornerRadius: 8,
@@ -74,12 +74,12 @@ export default function Results() {
     scales: {
       x: { 
         beginAtZero: true, max: 4, 
-        grid: { color: 'rgba(255,255,255,0.05)' },
-        ticks: { color: '#94a3b8' }
+        grid: { color: 'rgba(15, 23, 42, 0.08)' },
+        ticks: { color: '#64748B' }
       },
       y: { 
         grid: { display: false },
-        ticks: { color: '#f8fafc', font: { family: 'Outfit', weight: '600' } }
+        ticks: { color: '#0F172A', font: { family: 'Plus Jakarta Sans', weight: '600' } }
       }
     },
   };
@@ -165,10 +165,10 @@ export default function Results() {
               {chartLabels.map((label, idx) => (
                 <div key={label}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
-                    <span style={{ fontWeight: 600, color: idx === primaryIdx ? '#fff' : 'var(--color-text-3)' }}>{label}</span>
+                    <span style={{ fontWeight: 600, color: idx === primaryIdx ? 'var(--color-text)' : 'var(--color-text-3)' }}>{label}</span>
                     <span style={{ fontWeight: 800, color: idx === primaryIdx ? 'var(--color-success)' : 'inherit' }}>{((chartValues[idx]/4)*100).toFixed(0)}%</span>
                   </div>
-                  <div style={{ height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
+                  <div style={{ height: '4px', background: 'rgba(15,23,42,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
                     <div style={{ 
                       height: '100%', 
                       width: `${(chartValues[idx]/4)*100}%`, 

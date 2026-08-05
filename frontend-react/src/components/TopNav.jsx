@@ -27,7 +27,7 @@ export default function TopNav() {
       height: 'var(--nav-h)', 
       display: 'flex', 
       alignItems: 'center', 
-      background: 'rgba(2, 6, 23, 0.4)',
+      background: 'var(--surface-glass)',
       backdropFilter: 'blur(12px)',
       borderBottom: '1px solid var(--color-border)',
       position: 'sticky',
@@ -39,7 +39,7 @@ export default function TopNav() {
           <React.Fragment key={bc.path}>
             {idx > 0 && <ChevronRight size={14} style={{ opacity: 0.3 }} />}
             {idx === breadcrumbs.length - 1 ? (
-              <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#fff' }}>{bc.name}</span>
+              <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--color-text)' }}>{bc.name}</span>
             ) : (
               <Link to={bc.path} style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)', fontWeight: 500, transition: 'var(--transition)' }}>{bc.name}</Link>
             )}
@@ -49,3 +49,4 @@ export default function TopNav() {
     </nav>
   );
 }
+

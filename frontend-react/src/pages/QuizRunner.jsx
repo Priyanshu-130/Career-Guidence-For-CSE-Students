@@ -159,17 +159,17 @@ export default function QuizRunner() {
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: '1.25rem',
-                border: answers[currentIdx] === key ? '1px solid var(--color-accent)' : '1px solid var(--color-border)',
-                background: answers[currentIdx] === key ? 'rgba(99, 102, 241, 0.1)' : 'rgba(255,255,255,0.015)',
-                color: answers[currentIdx] === key ? '#fff' : 'var(--color-text-2)',
+                border: answers[currentIdx] === key ? '1.5px solid var(--color-accent)' : '1px solid var(--color-border)',
+                background: answers[currentIdx] === key ? 'var(--color-accent-lt)' : '#F8FAFC',
+                color: answers[currentIdx] === key ? 'var(--color-accent)' : 'var(--color-text-2)',
                 transition: 'all 0.2s ease',
                 cursor: 'pointer'
               }}
             >
               <div style={{ 
                 minWidth: '32px', height: '32px', borderRadius: '10px', 
-                background: answers[currentIdx] === key ? 'var(--color-accent)' : 'rgba(255,255,255,0.05)',
-                color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.875rem', fontWeight: 800
+                background: answers[currentIdx] === key ? 'var(--color-accent)' : 'rgba(15, 23, 42, 0.05)',
+                color: answers[currentIdx] === key ? '#fff' : 'var(--color-text-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.875rem', fontWeight: 800
               }}>
                 {key}
               </div>

@@ -68,7 +68,7 @@ export default function Roadmap() {
                          <Terminal size={18} />
                       </div>
                       <div style={{ flexGrow: 1 }}>
-                        <div style={{ fontWeight: 700, color: '#fff', fontSize: '1rem', marginBottom: '0.25rem' }}>{course.title}</div>
+                        <div style={{ fontWeight: 700, color: 'var(--color-text)', fontSize: '1rem', marginBottom: '0.25rem' }}>{course.title}</div>
                         <p style={{ fontSize: '0.875rem', color: 'var(--color-text-3)', lineHeight: 1.5, margin: '0 0 0.75rem 0' }}>{course.desc}</p>
                         <div style={{ fontSize: '0.7rem', color: 'var(--color-success)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                           <CheckCircle2 size={12} /> Core Competency
@@ -98,7 +98,7 @@ export default function Roadmap() {
           {domain.resources.map((res, idx) => (
             <a key={idx} href={res.link} target="_blank" rel="noopener noreferrer" className="glass-card" style={{ padding: '2rem', textDecoration: 'none', display: 'block' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
-                <div style={{ fontWeight: 800, color: '#fff', fontSize: '1.125rem' }}>{res.title}</div>
+                <div style={{ fontWeight: 800, color: 'var(--color-text)', fontSize: '1.125rem' }}>{res.title}</div>
                 <ChevronRight size={18} color="var(--color-text-3)" />
               </div>
               <p style={{ fontSize: '0.875rem', color: 'var(--color-text-3)', lineHeight: 1.6, margin: 0 }}>{res.desc}</p>
