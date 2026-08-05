@@ -28,7 +28,15 @@ export default function Results() {
     }
   }, [navigate, resultsData]);
 
-  if (!resultsData) return null;
+  const getInclinationRating = (maxScore) => {
+    if (maxScore <= 3) return { text: "Low Inclination", color: "#EF4444", desc: "You have a low psychological preference for this field at the moment." };
+    if (maxScore <= 7) return { text: "Moderate Inclination", color: "#F59E0B", desc: "You show a moderate interest. This path is worth exploring but may not be your primary driver." };
+    if (maxScore <= 12) return { text: "Strong Inclination", color: "#4F46E5", desc: "You have a strong logical and interest-based alignment with this domain!" };
+    return { text: "Very Strong Domain Fit", color: "#10B981", desc: "Phenomenal! Your mindset and logical preferences represent a perfect fit for this field!" };
+  };
+
+  const rawScore = Math.round((resultsData.match_percentage / 100) * 30);
+  const rating = getInclinationRating(rawScore);
 
   const trackData = QUIZ_DATA[resultsData.track];
   const clusters = Object.values(trackData.clusters);
@@ -118,7 +126,7 @@ export default function Results() {
         <div className="page-label" style={{ marginBottom: '1.5rem' }}>Primary Recommended Domain</div>
         <h2 style={{ fontSize: '4rem', fontWeight: 900, marginBottom: '1.5rem' }}>{resultsData.top_domain}</h2>
         
-        <div style={{ marginBottom: '3rem' }}>
+        <div style={{ marginBottom: '3rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
           <div style={{ 
               fontSize: '1.75rem', fontWeight: 800, color: 'var(--color-success)', 
               background: 'rgba(16, 185, 129, 0.1)', padding: '0.75rem 2.5rem', 
@@ -126,6 +134,19 @@ export default function Results() {
           }}>
             {resultsData.match_percentage.toFixed(1)}% Alignment Score
           </div>
+          
+          <div style={{ 
+              fontSize: '1.15rem', fontWeight: 700, color: rating.color, 
+              background: `${rating.color}10`, padding: '0.5rem 2rem', 
+              borderRadius: '999px', border: `1px solid ${rating.color}25`,
+              display: 'inline-block' 
+          }}>
+            Inclination level: {rating.text}
+          </div>
+          
+          <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.9375rem', color: 'var(--color-text-3)', maxWidth: '500px', lineHeight: 1.5 }}>
+            {rating.desc}
+          </p>
         </div>
 
         <p style={{ fontSize: '1.25rem', color: 'var(--color-text-3)', maxWidth: '700px', margin: '0 auto 4rem', lineHeight: 1.8 }}>
