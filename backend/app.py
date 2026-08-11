@@ -39,6 +39,20 @@ def init_db():
             FOREIGN KEY (student_email) REFERENCES students(email)
         )
     ''')
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS student_progress (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_email TEXT NOT NULL,
+            domain_id TEXT NOT NULL,
+            semester_num INTEGER NOT NULL,
+            course_title TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'Not Started',
+            notes TEXT,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (student_email) REFERENCES students(email),
+            UNIQUE(student_email, domain_id, semester_num, course_title)
+        )
+    ''')
     conn.commit()
     conn.close()
 
@@ -174,6 +188,72 @@ def get_results(email):
             })
 
         return jsonify({"status": "success", "results": results})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/progress/<email>', methods=['GET'])
+def get_progress(email):
+    email = email.strip().lower()
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        c = conn.cursor()
+        c.execute(
+            'SELECT domain_id, semester_num, course_title, status, notes, updated_at FROM student_progress WHERE student_email = ?',
+            (email,)
+        )
+        rows = c.fetchall()
+        conn.close()
+
+        progress = []
+        for row in rows:
+            progress.append({
+                "domain_id": row[0],
+                "semester_num": row[1],
+                "course_title": row[2],
+                "status": row[3],
+                "notes": row[4] or "",
+                "updated_at": row[5]
+            })
+
+        return jsonify({"status": "success", "progress": progress})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/progress', methods=['POST'])
+def save_progress():
+    data = request.json
+    student_email = data.get('student_email', '').strip().lower()
+    domain_id = data.get('domain_id', '').strip()
+    semester_num = data.get('semester_num')
+    course_title = data.get('course_title', '').strip()
+    status = data.get('status', 'Not Started').strip()
+    notes = data.get('notes', '').strip()
+
+    if not student_email or not domain_id or semester_num is None or not course_title:
+        return jsonify({"status": "error", "message": "Missing required fields."}), 400
+
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        c = conn.cursor()
+        c.execute('''
+            SELECT id FROM student_progress 
+            WHERE student_email = ? AND domain_id = ? AND semester_num = ? AND course_title = ?
+        ''', (student_email, domain_id, int(semester_num), course_title))
+        row = c.fetchone()
+        if row:
+            c.execute('''
+                UPDATE student_progress SET status = ?, notes = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+            ''', (status, notes, row[0]))
+        else:
+            c.execute('''
+                INSERT INTO student_progress (student_email, domain_id, semester_num, course_title, status, notes)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (student_email, domain_id, int(semester_num), course_title, status, notes))
+        conn.commit()
+        conn.close()
+        print(f"[PROGRESS] Updated progress for {student_email}: {course_title} -> {status}")
+        return jsonify({"status": "success", "message": "Progress saved successfully!"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 

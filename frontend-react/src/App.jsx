@@ -14,6 +14,7 @@ import Results from './pages/Results';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import CareerFinder from './pages/CareerFinder';
+import Progress from './pages/Progress';
 
 function ProtectedLayout({ children }) {
   const { user } = useAuth();
@@ -45,6 +46,7 @@ function App() {
           <Route path="/quiz/:track" element={<ProtectedLayout><QuizRunner /></ProtectedLayout>} />
           <Route path="/results" element={<ProtectedLayout><Results /></ProtectedLayout>} />
           <Route path="/career-finder" element={<ProtectedLayout><CareerFinder /></ProtectedLayout>} />
+          <Route path="/progress" element={<ProtectedLayout><Progress /></ProtectedLayout>} />
 
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

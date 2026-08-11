@@ -8,7 +8,8 @@ import {
   PieChart, 
   LogOut, 
   User,
-  Map
+  Map,
+  CheckSquare
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -18,6 +19,7 @@ export default function Sidebar() {
     { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={22} /> },
     { name: 'Career Finder', path: '/career-finder', icon: <Target size={22} /> },
     { name: 'Explore Domains', path: '/domains', icon: <Compass size={22} /> },
+    { name: 'Track Progress', path: '/progress', icon: <CheckSquare size={22} /> },
     { name: 'My Analytics', path: '/results', icon: <PieChart size={22} /> },
   ];
 
@@ -29,12 +31,12 @@ export default function Sidebar() {
           minWidth: '40px', height: '40px', borderRadius: '12px', 
           background: 'linear-gradient(135deg, var(--color-accent), var(--color-purple))',
           display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff',
-          boxShadow: '0 8px 16px rgba(99, 102, 241, 0.4)'
+          boxShadow: '0 8px 16px rgba(79, 70, 229, 0.2)'
         }}>
           <Compass size={24} />
         </div>
         <div className="sidebar-text">
-          <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#fff', letterSpacing: '-0.05em', lineHeight: 1 }}>PATHFINDER</div>
+          <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--color-text)', letterSpacing: '-0.05em', lineHeight: 1 }}>PATHFINDER</div>
           <div style={{ fontSize: '0.625rem', fontWeight: 800, color: 'var(--color-accent)', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>Professional v2.1</div>
         </div>
       </div>
@@ -55,7 +57,7 @@ export default function Sidebar() {
       {/* Profile Summary Footer */}
       <div style={{ marginTop: 'auto', padding: '1rem 0.75rem' }}>
         <div style={{ 
-          background: 'rgba(255,255,255,0.02)', 
+          background: 'rgba(79, 70, 229, 0.04)', 
           borderRadius: 'var(--radius-lg)', 
           border: '1px solid var(--color-border)',
           padding: '1rem 0.75rem',
@@ -71,14 +73,17 @@ export default function Sidebar() {
               <User size={18} />
             </div>
             <div className="sidebar-text" style={{ overflow: 'hidden' }}>
-              <div style={{ fontSize: '0.875rem', fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.name}</div>
+              <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--color-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.name}</div>
               <div style={{ fontSize: '0.65rem', color: 'var(--color-text-3)' }}>{user?.year} • {user?.branch}</div>
             </div>
           </div>
           <button onClick={logout} className="sidebar-text logout-btn-side" style={{ 
             display: 'flex', alignItems: 'center', gap: '0.5rem', 
-            fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.4)',
-            transition: 'var(--transition)'
+            fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-3)',
+            transition: 'var(--transition)',
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer'
           }}>
             <LogOut size={14} /> <span>Sign Out</span>
           </button>
