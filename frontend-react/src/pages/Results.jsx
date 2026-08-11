@@ -86,7 +86,6 @@ export default function Results() {
       </div>
     );
   }
-
   const getInclinationRating = (maxScore) => {
     if (maxScore <= 3) return { text: "Low Inclination", color: "#EF4444", desc: "You have a low psychological preference for this field at the moment." };
     if (maxScore <= 7) return { text: "Moderate Inclination", color: "#F59E0B", desc: "You show a moderate interest. This path is worth exploring but may not be your primary driver." };

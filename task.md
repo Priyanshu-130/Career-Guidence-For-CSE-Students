@@ -1,0 +1,6 @@
+- [x] Rewrite `questions.js` with the new General track (30 questions) and split all tracks into 5 parts (6 questions each)
+- [x] Modify `QuizSelection.jsx` to add the General Track option card
+- [x] Modify `QuizRunner.jsx` to dynamically calculate the 5 stepper categories, support 7 options A-G, and map G to `security`
+- [x] Modify `Results.jsx` to display G (Blockchain) correctly and add custom inclination scoring text (Low/Moderate/Strong/Very Strong)
+- [x] Build and verify compilation of the React application
+- [x] Copy the built assets to `docs` and push to GitHub

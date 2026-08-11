@@ -13,7 +13,7 @@ export default function QuizSelection() {
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2.5rem', maxWidth: '1100px', margin: '0 auto' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2.5rem', maxWidth: '1200px', margin: '0 auto' }}>
         
         {/* Software Track */}
         <Link to="/quiz/software" className="glass-card" style={{ padding: '3.5rem 2.5rem', textAlign: 'left', transition: 'var(--transition)', textDecoration: 'none' }}>
@@ -26,7 +26,7 @@ export default function QuizSelection() {
           </div>
           <h2 style={{ fontSize: '2rem', marginBottom: '1.25rem' }}>Software Track</h2>
           
-          <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1.25rem', borderRadius: '12px', marginBottom: '2rem', border: '1px solid var(--color-border)' }}>
+          <div style={{ background: 'rgba(79, 70, 229, 0.03)', padding: '1.25rem', borderRadius: '12px', marginBottom: '2rem', border: '1px solid var(--color-border)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', color: 'var(--color-accent)', fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               <Brain size={14} /> The "Brain" of Computers
             </div>
@@ -55,7 +55,7 @@ export default function QuizSelection() {
           </div>
           <h2 style={{ fontSize: '2rem', marginBottom: '1.25rem' }}>Hardware Track</h2>
 
-          <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1.25rem', borderRadius: '12px', marginBottom: '2rem', border: '1px solid var(--color-border)' }}>
+          <div style={{ background: 'rgba(168, 85, 247, 0.03)', padding: '1.25rem', borderRadius: '12px', marginBottom: '2rem', border: '1px solid var(--color-border)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', color: 'var(--color-purple)', fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               <Shapes size={14} /> The "Body" of Computers
             </div>
@@ -70,6 +70,35 @@ export default function QuizSelection() {
 
           <div className="btn-primary" style={{ width: '100%', justifyContent: 'center', background: 'linear-gradient(135deg, var(--color-purple), #ec4899)' }}>
             Initialize Hardware Path <ArrowRight size={18} />
+          </div>
+        </Link>
+
+        {/* General Alignment Track */}
+        <Link to="/quiz/general" className="glass-card" style={{ padding: '3.5rem 2.5rem', textAlign: 'left', transition: 'var(--transition)', textDecoration: 'none' }}>
+          <div style={{ 
+            width: '64px', height: '64px', borderRadius: '18px', background: 'var(--color-accent-lt)', 
+            color: 'var(--color-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            marginBottom: '2rem', border: '1px solid var(--color-accent)'
+          }}>
+            <Shapes size={32} />
+          </div>
+          <h2 style={{ fontSize: '2rem', marginBottom: '1.25rem' }}>General Track</h2>
+
+          <div style={{ background: 'rgba(79, 70, 229, 0.03)', padding: '1.25rem', borderRadius: '12px', marginBottom: '2rem', border: '1px solid var(--color-border)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', color: 'var(--color-accent)', fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <Sparkles size={14} /> The Full Diagnostic
+            </div>
+            <p style={{ color: 'var(--color-text-2)', fontSize: '0.9375rem', lineHeight: 1.6, margin: 0 }}>
+              Evaluate alignment across all 7 major hardware and software domains simultaneously. Best for finding your overall profile.
+            </p>
+          </div>
+
+          <p style={{ color: 'var(--color-text-3)', fontSize: '0.875rem', marginBottom: '2.5rem', lineHeight: 1.6 }}>
+            Includes: AI, Data Science, Web Development, Cybersecurity, Cloud, IoT, and Blockchain.
+          </p>
+
+          <div className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+            Initialize General Path <ArrowRight size={18} />
           </div>
         </Link>
 

@@ -22,8 +22,9 @@ export default function QuizRunner() {
   const progress = ((currentIdx + 1) / questions.length) * 100;
 
   // Calculate current section
-  const sectionIdx = Math.floor(currentIdx / 10);
-  const sections = ["Orientation", "Interests", "Aptitude"];
+  const sections = data.sections || ["Orientation", "Interests", "Aptitude", "Thinking Style", "Applied Scenarios"];
+  const questionsPerSection = questions.length / sections.length;
+  const sectionIdx = Math.min(sections.length - 1, Math.floor(currentIdx / questionsPerSection));
   const currentSection = sections[sectionIdx];
 
   const handleSelect = (optionKey) => {
@@ -44,7 +45,9 @@ export default function QuizRunner() {
     Object.keys(data.clusters).forEach(key => scores[key] = 0);
     
     Object.entries(answers).forEach(([qIdx, optionKey]) => {
-      scores[optionKey] += 1;
+      if (scores[optionKey] !== undefined) {
+        scores[optionKey] += 1;
+      }
     });
 
     let maxVal = -1;
@@ -58,15 +61,16 @@ export default function QuizRunner() {
 
     const processScores = {};
     Object.entries(scores).forEach(([key, val]) => {
-       processScores[data.clusters[key].name] = val / (questions.length / Object.keys(data.clusters).length) * 4;
+       processScores[data.clusters[key].name] = (val / questions.length) * 4;
     });
 
     const resultsData = {
       track: track,
       top_domain: data.clusters[topCluster].name,
       domain_id: data.clusters[topCluster].id,
-      match_percentage: (maxVal / (questions.length / Object.keys(data.clusters).length)) * 100, 
-      scores: processScores
+      match_percentage: (maxVal / questions.length) * 100, 
+      scores: processScores,
+      raw_scores: scores
     };
 
     const studentRaw = sessionStorage.getItem("cse_student");
@@ -103,22 +107,22 @@ export default function QuizRunner() {
       {/* Top Header Stepper */}
       <div style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid var(--color-border)', padding: '1rem 0' }}>
          <div className="content-container" style={{ display: 'flex', justifyContent: 'center' }}>
-            <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-               {sections.map((sec, idx) => (
-                 <div key={sec} style={{ 
-                   display: 'flex', alignItems: 'center', gap: '0.75rem', 
-                   opacity: sectionIdx === idx ? 1 : 0.35, 
-                   color: sectionIdx === idx ? 'var(--color-accent)' : 'var(--color-text-3)',
-                   transition: 'var(--transition)'
-                 }}>
+             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+                {sections.map((sec, idx) => (
+                  <div key={sec} style={{ 
+                    display: 'flex', alignItems: 'center', gap: '0.5rem', 
+                    opacity: sectionIdx === idx ? 1 : 0.35, 
+                    color: sectionIdx === idx ? 'var(--color-accent)' : 'var(--color-text-3)',
+                    transition: 'var(--transition)'
+                  }}>
                     <div style={{ 
-                      width: '24px', height: '24px', borderRadius: '50%', border: '1px solid currentColor',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 800
+                      width: '20px', height: '20px', borderRadius: '50%', border: '1px solid currentColor',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 800
                     }}>
                       {idx + 1}
                     </div>
-                    <span style={{ fontWeight: 700, fontSize: '0.8125rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{sec}</span>
-                 </div>
+                    <span style={{ fontWeight: 700, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{sec}</span>
+                  </div>
                ))}
             </div>
          </div>
@@ -159,17 +163,17 @@ export default function QuizRunner() {
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: '1.25rem',
-                border: answers[currentIdx] === key ? '1px solid var(--color-accent)' : '1px solid var(--color-border)',
-                background: answers[currentIdx] === key ? 'rgba(99, 102, 241, 0.1)' : 'rgba(255,255,255,0.015)',
-                color: answers[currentIdx] === key ? '#fff' : 'var(--color-text-2)',
+                border: answers[currentIdx] === key ? '1.5px solid var(--color-accent)' : '1px solid var(--color-border)',
+                background: answers[currentIdx] === key ? 'var(--color-accent-lt)' : '#F8FAFC',
+                color: answers[currentIdx] === key ? 'var(--color-accent)' : 'var(--color-text-2)',
                 transition: 'all 0.2s ease',
                 cursor: 'pointer'
               }}
             >
               <div style={{ 
                 minWidth: '32px', height: '32px', borderRadius: '10px', 
-                background: answers[currentIdx] === key ? 'var(--color-accent)' : 'rgba(255,255,255,0.05)',
-                color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.875rem', fontWeight: 800
+                background: answers[currentIdx] === key ? 'var(--color-accent)' : 'rgba(15, 23, 42, 0.05)',
+                color: answers[currentIdx] === key ? '#fff' : 'var(--color-text-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.875rem', fontWeight: 800
               }}>
                 {key}
               </div>

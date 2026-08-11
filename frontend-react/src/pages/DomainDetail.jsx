@@ -84,7 +84,7 @@ export default function DomainDetail() {
                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                  {domain.projects.slice(0, 3).map(proj => (
                    <div key={proj.name}>
-                     <div style={{ fontWeight: 700, fontSize: '0.9375rem', color: '#fff' }}>{proj.name}</div>
+                     <div style={{ fontWeight: 700, fontSize: '0.9375rem', color: 'var(--color-text)' }}>{proj.name}</div>
                      <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)' }}>{proj.desc}</div>
                    </div>
                  ))}
@@ -103,7 +103,7 @@ export default function DomainDetail() {
             </div>
             
             <div style={{ marginBottom: '2.5rem' }}>
-               <h4 style={{ fontSize: '1.125rem', marginBottom: '0.75rem', color: '#fff' }}>Future Scope</h4>
+               <h4 style={{ fontSize: '1.125rem', marginBottom: '0.75rem', color: 'var(--color-text)' }}>Future Scope</h4>
                <p style={{ color: 'var(--color-text-2)', fontSize: '1.0625rem', lineHeight: 1.7 }}>
                  {domain.careerDetails?.futureScopeDetail || domain.insights.futureScope}
                </p>
@@ -143,7 +143,7 @@ export default function DomainDetail() {
                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
                   {(domain.careerDetails?.companies || domain.insights.topCompanies.split(', ')).map(company => (
                     <span key={company} style={{ 
-                      padding: '8px 16px', background: `${domain.color}15`, color: '#fff', 
+                      padding: '8px 16px', background: `${domain.color}15`, color: domain.color, 
                       borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, border: `1px solid ${domain.color}33` 
                     }}>
                       {company}
@@ -191,11 +191,11 @@ export default function DomainDetail() {
              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 <div>
                   <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-text-3)', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Job Demand</div>
-                  <div style={{ fontWeight: 700, color: '#fff' }}>{domain.insights.jobDemand}</div>
+                  <div style={{ fontWeight: 700, color: 'var(--color-text)' }}>{domain.insights.jobDemand}</div>
                 </div>
                 <div>
                   <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-text-3)', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Path Complexity</div>
-                  <div style={{ fontWeight: 700, color: '#fff' }}>{domain.insights.timeToLearn}</div>
+                  <div style={{ fontWeight: 700, color: 'var(--color-text)' }}>{domain.insights.timeToLearn}</div>
                 </div>
              </div>
           </div>
