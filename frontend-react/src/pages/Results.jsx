@@ -39,6 +39,7 @@ export default function Results() {
         return;
       }
 
+
       setLoading(true);
       try {
         const resp = await fetch(`${apiBase}/api/results/${user.email}`);
