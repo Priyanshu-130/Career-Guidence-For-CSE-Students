@@ -8,9 +8,14 @@ from flask_cors import CORS
 FRONTEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'frontend-react', 'dist'))
 
 app = Flask(__name__, static_folder=FRONTEND_DIR, static_url_path='')
-CORS(app)
 
-DB_FILE = os.path.join(os.path.dirname(__file__), 'database.db')
+cors_origins = os.environ.get('CORS_ORIGINS', '*')
+if cors_origins != '*':
+    cors_origins = [origin.strip() for origin in cors_origins.split(',') if origin.strip()]
+
+CORS(app, resources={r"/api/*": {"origins": cors_origins}})
+
+DB_FILE = os.environ.get('DB_PATH', os.path.join(os.path.dirname(__file__), 'database.db'))
 
 def init_db():
     conn = sqlite3.connect(DB_FILE)
@@ -257,10 +262,14 @@ def save_progress():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+# Initialize DB schema on module load for WSGI servers
+init_db()
+
 if __name__ == '__main__':
-    init_db()
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
     print("=" * 50)
     print("  CSE PathFinder Backend Server")
-    print("  Local URL: http://127.0.0.1:5000")
+    print(f"  Listening on host 0.0.0.0, port {port} (debug={debug})")
     print("=" * 50)
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=debug)

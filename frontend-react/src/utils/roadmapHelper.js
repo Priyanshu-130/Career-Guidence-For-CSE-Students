@@ -3,11 +3,17 @@
  */
 
 export const getApiBaseUrl = () => {
-  // If we are developing locally on Vite (typically port 5173 or similar),
-  // we request the backend on port 5000. If we are running in production
-  // (Flask serving the static files), we can use relative paths.
-  const isLocalDev = window.location.port && window.location.port !== '5000';
-  return isLocalDev ? 'http://127.0.0.1:5000' : '';
+  // 1. Explicit production backend URL via environment variable
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL.replace(/\/$/, '');
+  }
+  // 2. Local development fallback
+  const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  if (isLocalDev) {
+    return 'http://127.0.0.1:5000';
+  }
+  // 3. Same-origin or relative path fallback
+  return '';
 };
 
 // Subtopics mapping for all 9 CSE domains across all 8 semesters

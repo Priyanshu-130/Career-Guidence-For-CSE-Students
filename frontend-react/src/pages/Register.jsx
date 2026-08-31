@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Mail, Lock, School, Calendar, BookOpen, Loader2, ArrowRight, Compass, CheckCircle } from 'lucide-react';
+import { getApiBaseUrl } from '../utils/roadmapHelper';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -20,7 +21,7 @@ export default function Register() {
     setError('');
 
     try {
-      const resp = await fetch('/api/register', {
+      const resp = await fetch(`${getApiBaseUrl()}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

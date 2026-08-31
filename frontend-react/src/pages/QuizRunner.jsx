@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { QUIZ_DATA } from '../data/questions';
 import { ChevronRight, ChevronLeft, ArrowRight, Loader2, Sparkles, AlertCircle, Info } from 'lucide-react';
+import { getApiBaseUrl } from '../utils/roadmapHelper';
 
 export default function QuizRunner() {
   const { track } = useParams();
@@ -78,7 +79,7 @@ export default function QuizRunner() {
       try {
         const student = JSON.parse(studentRaw);
         if (!student.isGuest) {
-          await fetch("http://127.0.0.1:5000/api/submit-result", {
+          await fetch(`${getApiBaseUrl()}/api/submit-result`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
