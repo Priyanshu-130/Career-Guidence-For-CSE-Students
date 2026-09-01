@@ -68,17 +68,17 @@ export default function Register() {
             <Compass size={32} />
           </div>
           
-          <h1 style={{ fontSize: '4.5rem', fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 1, marginBottom: '2rem' }}>
+          <h1 style={{ fontSize: '4.5rem', fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 1, marginBottom: '2rem', color: '#ffffff' }}>
             Build Your <span className="text-gradient">Legacy.</span>
           </h1>
           
-          <p style={{ fontSize: '1.25rem', color: 'var(--color-text-3)', maxWidth: '500px', lineHeight: 1.7, marginBottom: '4rem' }}>
+          <p style={{ fontSize: '1.25rem', color: 'rgba(255, 255, 255, 0.7)', maxWidth: '500px', lineHeight: 1.7, marginBottom: '4rem' }}>
             Join thousands of engineering students discovering their true specialized potential through our advanced curriculum mapping.
           </p>
 
           <div style={{ display: 'grid', gap: '1.5rem' }}>
             {['Personalized Roadmaps', 'Domain Competency Checks', 'Cross-Device Persistence'].map(feat => (
-              <div key={feat} style={{ display: 'flex', gap: '1rem', alignItems: 'center', color: 'var(--color-text-2)' }}>
+              <div key={feat} style={{ display: 'flex', gap: '1rem', alignItems: 'center', color: 'rgba(255, 255, 255, 0.9)' }}>
                 <CheckCircle size={20} color="var(--color-success)" />
                 <span style={{ fontWeight: 600 }}>{feat}</span>
               </div>
@@ -86,7 +86,7 @@ export default function Register() {
           </div>
         </div>
 
-        <div style={{ position: 'absolute', bottom: '3rem', left: '6rem', color: 'var(--color-text-3)', fontSize: '0.8125rem', fontWeight: 600 }}>
+        <div style={{ position: 'absolute', bottom: '3rem', left: '6rem', color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.8125rem', fontWeight: 600 }}>
           ESTABLISHED 2026 • CSE PATHFINDER
         </div>
       </div>
