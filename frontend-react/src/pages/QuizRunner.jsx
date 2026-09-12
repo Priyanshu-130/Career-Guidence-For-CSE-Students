@@ -32,7 +32,7 @@ export default function QuizRunner() {
   const currentQ = questions[currentIdx] || { q: '', options: {} };
   const progress = Math.round(((currentIdx + 1) / questions.length) * 100);
 
-  const sections = data.sections || ["Orientation", "Interests", "Aptitude", "Thinking Style", "Applied Scenarios"];
+  const sections = data.sections || ['Orientation', 'Interests', 'Aptitude', 'Thinking Style', 'Applied Scenarios'];
   const questionsPerSection = questions.length / sections.length;
   const sectionIdx = Math.min(sections.length - 1, Math.floor(currentIdx / questionsPerSection));
   const currentSection = sections[sectionIdx];
@@ -42,8 +42,22 @@ export default function QuizRunner() {
     setAnswers(prev => ({ ...prev, [currentIdx]: key }));
   };
 
+  const handleSkip = () => {
+    setAnswers(prev => {
+      const copy = { ...prev };
+      delete copy[currentIdx];
+      return copy;
+    });
+    setSelectedOption(null);
+
+    if (currentIdx < questions.length - 1) {
+      setCurrentIdx(prev => prev + 1);
+    } else {
+      handleSubmit();
+    }
+  };
+
   const handleNext = () => {
-    if (!selectedOption) return;
     if (currentIdx < questions.length - 1) {
       setCurrentIdx(prev => prev + 1);
     } else {
@@ -53,18 +67,25 @@ export default function QuizRunner() {
 
   const handleSubmit = async () => {
     setLoading(true);
-    const finalAnswers = { ...answers, [currentIdx]: selectedOption };
+    const finalAnswers = { ...answers };
+    if (selectedOption) {
+      finalAnswers[currentIdx] = selectedOption;
+    }
 
     const scores = {};
     if (data.clusters) {
       Object.keys(data.clusters).forEach(key => scores[key] = 0);
     }
     
+    let answeredCount = 0;
     Object.entries(finalAnswers).forEach(([qIdx, optionKey]) => {
-      if (scores[optionKey] !== undefined) {
+      if (optionKey && scores[optionKey] !== undefined) {
         scores[optionKey] += 1;
+        answeredCount += 1;
       }
     });
+
+    const totalCount = Math.max(1, answeredCount > 0 ? answeredCount : questions.length);
 
     let maxVal = -1;
     let topCluster = Object.keys(data.clusters || {})[0] || 'A';
@@ -79,7 +100,7 @@ export default function QuizRunner() {
     if (data.clusters) {
       Object.entries(scores).forEach(([key, val]) => {
          const name = data.clusters[key]?.name || key;
-         processScores[name] = Math.round((val / questions.length) * 100);
+         processScores[name] = Math.min(100, Math.round((val / totalCount) * 100));
       });
     }
 
@@ -89,16 +110,17 @@ export default function QuizRunner() {
       track: track,
       top_domain: topClusterObj.name,
       domain_id: topClusterObj.id,
-      match_percentage: Math.round((maxVal / questions.length) * 100),
+      match_percentage: Math.min(100, Math.round((maxVal / totalCount) * 100)),
       scores: processScores,
       raw_scores: scores
     };
 
     if (user && !user.isGuest) {
       try {
-        await fetch(`${getApiBaseUrl()}/api/submit-result`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        const apiUrl = getApiBaseUrl() + "/api/submit-result";
+        await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             student_email: user.email,
             quiz_type: track,
@@ -109,11 +131,11 @@ export default function QuizRunner() {
           })
         });
       } catch (err) {
-        console.error("Error submitting result to server:", err);
+        console.error('Error submitting result to server:', err);
       }
     }
 
-    sessionStorage.setItem("quiz_results", JSON.stringify(resultsData));
+    sessionStorage.setItem('quiz_results', JSON.stringify(resultsData));
     navigate('/results');
   };
 
@@ -176,7 +198,7 @@ export default function QuizRunner() {
             {currentQ.q}
           </h2>
           <p className="text-xs text-on-surface-variant mt-2">
-            Select the option that best reflects your preference.
+            Select an option below or click 'Skip Question' to continue.
           </p>
         </div>
 
@@ -218,27 +240,41 @@ export default function QuizRunner() {
         </div>
 
         {/* Footer Navigation Buttons */}
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          
           <button
             type="button"
             onClick={() => setCurrentIdx(prev => Math.max(0, prev - 1))}
             disabled={currentIdx === 0}
-            className="px-6 py-3 rounded-xl border border-outline-variant/30 font-semibold text-sm text-on-surface hover:bg-surface-container disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            className="px-5 py-3 rounded-xl border border-outline-variant/30 font-semibold text-sm text-on-surface hover:bg-surface-container disabled:opacity-30 disabled:pointer-events-none transition-colors"
           >
             Previous
           </button>
 
-          <button
-            type="button"
-            onClick={handleNext}
-            disabled={!selectedOption || loading}
-            className="px-8 py-3 rounded-xl bg-primary text-on-primary font-semibold text-sm hover:bg-primary-container shadow-md disabled:opacity-40 disabled:pointer-events-none transition-all flex items-center gap-2"
-          >
-            <span>{isLastQuestion ? (loading ? 'Analyzing...' : 'Complete & View Results') : 'Next Question'}</span>
-            <span className="material-symbols-outlined text-[18px]">
-              {isLastQuestion ? 'analytics' : 'arrow_forward'}
-            </span>
-          </button>
+          <div className="flex items-center gap-3">
+            {/* Skip Question Button */}
+            <button
+              type="button"
+              onClick={handleSkip}
+              className="px-5 py-3 rounded-xl border border-outline-variant/40 font-semibold text-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all flex items-center gap-1.5"
+            >
+              <span>Skip Question</span>
+              <span className="material-symbols-outlined text-[16px]">skip_next</span>
+            </button>
+
+            {/* Next / Submit Button */}
+            <button
+              type="button"
+              onClick={handleNext}
+              className="px-7 py-3 rounded-xl bg-primary text-on-primary font-semibold text-sm hover:bg-primary-container shadow-md transition-all flex items-center gap-2"
+            >
+              <span>{isLastQuestion ? (loading ? 'Analyzing...' : 'Complete & View Results') : 'Next Question'}</span>
+              <span className="material-symbols-outlined text-[18px]">
+                {isLastQuestion ? 'analytics' : 'arrow_forward'}
+              </span>
+            </button>
+          </div>
+
         </div>
 
       </main>

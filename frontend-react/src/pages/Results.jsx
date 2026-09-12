@@ -30,15 +30,13 @@ export default function Results() {
 
   useEffect(() => {
     const loadHistoricResult = async () => {
-      if (resultsData) return; // already loaded in session
-      
-      if (!user) return; // Wait for user info to load
+      if (resultsData) return;
+      if (!user) return;
       
       if (user.isGuest) {
         navigate('/quiz');
         return;
       }
-
 
       setLoading(true);
       try {
@@ -47,25 +45,29 @@ export default function Results() {
         if (data.status === 'success' && data.results.length > 0) {
           const latest = data.results[0];
           
-          // Match recommended_domain to get domain_id
           const matchedDom = domainsData.find(
             d => d.title.toLowerCase().includes(latest.recommended_domain.toLowerCase()) || 
                  latest.recommended_domain.toLowerCase().includes(d.title.toLowerCase())
           );
 
+          // Standardize scores to 0-100 percentage range
+          const rawScores = latest.all_scores || {};
+          const cleanScores = {};
+          Object.entries(rawScores).forEach(([k, v]) => {
+             cleanScores[k] = v > 100 ? Math.min(100, Math.round(v / 10)) : Math.min(100, Math.round(v));
+          });
+
           const reconstructed = {
             track: latest.quiz_type,
             top_domain: latest.recommended_domain,
             domain_id: matchedDom ? matchedDom.id : 'ai',
-            match_percentage: latest.confidence_score,
-            scores: latest.all_scores
+            match_percentage: Math.min(100, Math.round(latest.confidence_score)),
+            scores: cleanScores
           };
 
-          // Save to sessionStorage so it stays available
           sessionStorage.setItem("quiz_results", JSON.stringify(reconstructed));
           setResultsData(reconstructed);
         } else {
-          // No history, redirect
           navigate('/quiz');
         }
       } catch (err) {
@@ -87,39 +89,45 @@ export default function Results() {
       </div>
     );
   }
-  const getInclinationRating = (maxScore) => {
-    if (maxScore <= 3) return { text: "Low Inclination", color: "#EF4444", desc: "You have a low psychological preference for this field at the moment." };
-    if (maxScore <= 7) return { text: "Moderate Inclination", color: "#F59E0B", desc: "You show a moderate interest. This path is worth exploring but may not be your primary driver." };
-    if (maxScore <= 12) return { text: "Strong Inclination", color: "#4F46E5", desc: "You have a strong logical and interest-based alignment with this domain!" };
-    return { text: "Very Strong Domain Fit", color: "#10B981", desc: "Phenomenal! Your mindset and logical preferences represent a perfect fit for this field!" };
+
+  const getInclinationRating = (percentage) => {
+    if (percentage <= 35) return { text: "Exploratory Fit", color: "#EF4444", desc: "You show foundational interest in this track with room to grow." };
+    if (percentage <= 65) return { text: "Moderate Inclination", color: "#F59E0B", desc: "You show balanced alignment. This path is recommended for further skill building." };
+    if (percentage <= 85) return { text: "Strong Inclination", color: "#4F46E5", desc: "You have a strong logical and interest-based alignment with this domain!" };
+    return { text: "Very Strong Domain Fit", color: "#10B981", desc: "Phenomenal! Your mindset and logical preferences represent a top-tier fit for this field!" };
   };
 
-  const rawScore = Math.round((resultsData.match_percentage / 100) * 30);
-  const rating = getInclinationRating(rawScore);
+  const matchPct = Math.min(100, Math.max(0, Math.round(resultsData.match_percentage || 50)));
+  const rating = getInclinationRating(matchPct);
 
-  const trackData = QUIZ_DATA[resultsData.track];
-  const clusters = Object.values(trackData.clusters);
+  const trackData = QUIZ_DATA[resultsData.track] || QUIZ_DATA['software'];
+  const clusters = Object.values(trackData.clusters || {});
   const chartLabels = clusters.map(c => c.name);
-  const chartValues = Object.values(resultsData.scores);
+  
+  // Normalize chart values strictly between 0 and 100
+  const chartValues = chartLabels.map(label => {
+    const val = resultsData.scores?.[label] || 0;
+    return val > 100 ? Math.min(100, Math.round(val / 10)) : Math.min(100, Math.round(val));
+  });
 
   const sortedIndices = [...Array(chartValues.length).keys()].sort((a, b) => chartValues[b] - chartValues[a]);
-  const primaryIdx = sortedIndices[0];
-  const secondaryIdx = sortedIndices[1];
+  const primaryIdx = sortedIndices[0] || 0;
+  const secondaryIdx = sortedIndices[1] || 0;
   
-  const scoreDiff = chartValues[primaryIdx] - chartValues[secondaryIdx];
-  const showComparison = scoreDiff <= 0.2; 
+  const scoreDiff = (chartValues[primaryIdx] || 0) - (chartValues[secondaryIdx] || 0);
+  const showComparison = scoreDiff <= 5 && chartValues[secondaryIdx] > 0; 
 
   const chartData = {
     labels: chartLabels,
     datasets: [
       {
-        label: 'Aptitude Alignment',
+        label: 'Aptitude Alignment (%)',
         data: chartValues,
-        backgroundColor: 'rgba(79, 70, 229, 0.65)',
-        borderColor: 'rgba(79, 70, 229, 0.9)',
-        borderWidth: 1,
-        borderRadius: 6,
-        hoverBackgroundColor: 'rgba(79, 70, 229, 0.85)',
+        backgroundColor: 'rgba(79, 70, 229, 0.75)',
+        borderColor: 'rgba(79, 70, 229, 1)',
+        borderWidth: 1.5,
+        borderRadius: 8,
+        hoverBackgroundColor: 'rgba(79, 70, 229, 0.95)',
       },
     ],
   };
@@ -128,6 +136,7 @@ export default function Results() {
     indexAxis: 'y',
     responsive: true,
     maintainAspectRatio: false,
+    devicePixelRatio: Math.max(2, window.devicePixelRatio || 2), // High-DPI crisp rendering
     plugins: {
       legend: { display: false },
       tooltip: {
@@ -136,17 +145,27 @@ export default function Results() {
         bodyFont: { family: 'Inter', size: 12 },
         padding: 12,
         cornerRadius: 8,
+        callbacks: {
+          label: (context) => ` ${context.raw}% Match`
+        }
       }
     },
     scales: {
       x: { 
-        beginAtZero: true, max: 4, 
-        grid: { color: 'rgba(15, 23, 42, 0.08)' },
-        ticks: { color: '#64748B' }
+        beginAtZero: true, 
+        max: 100, 
+        grid: { color: 'rgba(15, 23, 42, 0.06)' },
+        ticks: { 
+          color: '#64748B',
+          callback: (val) => `${val}%`
+        }
       },
       y: { 
         grid: { display: false },
-        ticks: { color: '#0F172A', font: { family: 'Plus Jakarta Sans', weight: '600' } }
+        ticks: { 
+          color: '#0F172A', 
+          font: { family: 'Plus Jakarta Sans', weight: '600', size: 12 } 
+        }
       }
     },
   };
@@ -158,7 +177,7 @@ export default function Results() {
         <div className="page-label" style={{ marginBottom: '1rem' }}><Sparkles size={14} style={{ marginRight: '6px' }} /> Diagnostic Complete</div>
         <h1 style={{ fontSize: '4rem' }}>Your Professional <span className="text-gradient">Trajectory.</span></h1>
         <p style={{ fontSize: '1.25rem', color: 'var(--color-text-3)', maxWidth: '600px', margin: '1rem auto 0' }}>
-          Based on our neuro-fuzzy analysis of your situational responses, we've identified the following career alignment.
+          Based on our situational analysis of your responses, we've identified the following career alignment.
         </p>
       </div>
 
@@ -172,18 +191,18 @@ export default function Results() {
             <AlertCircle size={24} />
           </div>
           <p style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: 'var(--color-text-2)' }}>
-            <strong>High Adaptability Detected:</strong> Your results for {chartLabels[primaryIdx]} and {chartLabels[secondaryIdx]} are nearly identical. Both paths are highly recommended.
+            <strong>High Adaptability Detected:</strong> Your alignment scores for {chartLabels[primaryIdx]} and {chartLabels[secondaryIdx]} are closely balanced. Both paths offer strong opportunities.
           </p>
         </div>
       )}
 
       {/* Primary Result Card */}
       <section className="glass-card" style={{ 
-        padding: '5rem 3rem', textAlign: 'center', marginBottom: '4rem',
+        padding: '4rem 2rem', textAlign: 'center', marginBottom: '4rem',
         background: 'radial-gradient(circle at top right, rgba(99, 102, 241, 0.1), transparent 40%), var(--color-card)'
       }}>
         <div className="page-label" style={{ marginBottom: '1.5rem' }}>Primary Recommended Domain</div>
-        <h2 style={{ fontSize: '4rem', fontWeight: 900, marginBottom: '1.5rem' }}>{resultsData.top_domain}</h2>
+        <h2 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '1.5rem', color: 'var(--color-text)' }}>{resultsData.top_domain}</h2>
         
         <div style={{ marginBottom: '3rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
           <div style={{ 
@@ -191,7 +210,7 @@ export default function Results() {
               background: 'rgba(16, 185, 129, 0.1)', padding: '0.75rem 2.5rem', 
               borderRadius: '999px', display: 'inline-block' 
           }}>
-            {resultsData.match_percentage.toFixed(1)}% Alignment Score
+            {matchPct}% Alignment Score
           </div>
           
           <div style={{ 
@@ -208,27 +227,27 @@ export default function Results() {
           </p>
         </div>
 
-        <p style={{ fontSize: '1.25rem', color: 'var(--color-text-3)', maxWidth: '700px', margin: '0 auto 4rem', lineHeight: 1.8 }}>
-          Your profile exhibits a unique combination of logical reasoning and technical orientation that perfectly matches the requirements for {resultsData.top_domain}.
+        <p style={{ fontSize: '1.15rem', color: 'var(--color-text-2)', maxWidth: '700px', margin: '0 auto 3rem', lineHeight: 1.8 }}>
+          Your profile exhibits a strong technical orientation and problem-solving preference that aligns with the requirements for {resultsData.top_domain}.
         </p>
 
-        <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
-          <Link to={`/domain/${resultsData.domain_id || resultsData.top_domain.toLowerCase().split(' ')[0]}`} className="btn-primary" style={{ padding: '1.25rem 3rem', fontSize: '1rem' }}>
+        <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Link to={`/domain/${resultsData.domain_id || resultsData.top_domain.toLowerCase().split(' ')[0]}`} className="btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1rem' }}>
              Explore Curriculum <ArrowRight size={20} />
           </Link>
-          <Link to={`/roadmap/${resultsData.domain_id || resultsData.top_domain.toLowerCase().split(' ')[0]}`} className="btn-ghost" style={{ padding: '1.25rem 3rem', fontSize: '1rem' }}>
+          <Link to={`/roadmap/${resultsData.domain_id || resultsData.top_domain.toLowerCase().split(' ')[0]}`} className="btn-ghost" style={{ padding: '1rem 2.5rem', fontSize: '1rem' }}>
              Detailed Roadmap
           </Link>
         </div>
       </section>
 
       {/* Data Visualization Section */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '3rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '2.5rem' }}>
         
         <div className="glass-card" style={{ padding: '2.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
             <Activity size={24} color="var(--color-accent)" />
-            <h3 style={{ fontSize: '1.5rem' }}>Competency Mapping</h3>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Competency Mapping</h3>
           </div>
           <div style={{ height: '350px', position: 'relative' }}>
             <Bar options={chartOptions} data={chartData} />
@@ -237,33 +256,37 @@ export default function Results() {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div className="glass-card" style={{ padding: '2rem' }}>
-            <h3 style={{ fontSize: '1.125rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <h3 style={{ fontSize: '1.125rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 700 }}>
               <TrendingUp size={20} color="var(--color-accent)" />
               Profile Insights
             </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {chartLabels.map((label, idx) => (
-                <div key={label}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
-                    <span style={{ fontWeight: 600, color: idx === primaryIdx ? 'var(--color-text)' : 'var(--color-text-3)' }}>{label}</span>
-                    <span style={{ fontWeight: 800, color: idx === primaryIdx ? 'var(--color-success)' : 'inherit' }}>{((chartValues[idx]/4)*100).toFixed(0)}%</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              {chartLabels.map((label, idx) => {
+                const valPct = chartValues[idx] || 0;
+                return (
+                  <div key={label}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.875rem' }}>
+                      <span style={{ fontWeight: 600, color: idx === primaryIdx ? 'var(--color-text)' : 'var(--color-text-3)' }}>{label}</span>
+                      <span style={{ fontWeight: 800, color: idx === primaryIdx ? 'var(--color-success)' : 'inherit' }}>{valPct}%</span>
+                    </div>
+                    <div style={{ height: '6px', background: 'rgba(15,23,42,0.06)', borderRadius: '3px', overflow: 'hidden' }}>
+                      <div style={{ 
+                        height: '100%', 
+                        width: `${valPct}%`, 
+                        background: idx === primaryIdx ? 'var(--color-accent)' : 'var(--color-border-gl)',
+                        borderRadius: '3px',
+                        transition: 'width 0.5s ease'
+                      }}></div>
+                    </div>
                   </div>
-                  <div style={{ height: '4px', background: 'rgba(15,23,42,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
-                    <div style={{ 
-                      height: '100%', 
-                      width: `${(chartValues[idx]/4)*100}%`, 
-                      background: idx === primaryIdx ? 'var(--color-accent)' : 'var(--color-border-gl)',
-                      borderRadius: '2px'
-                    }}></div>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
-          <div className="glass-card" style={{ padding: '2rem', display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
-             <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--color-success)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <ShieldCheck size={24} />
+          <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
+             <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--color-success)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <ShieldCheck size={22} />
              </div>
              <div>
                <div style={{ fontSize: '0.9375rem', fontWeight: 700 }}>Verified Analysis</div>
@@ -274,9 +297,9 @@ export default function Results() {
 
       </div>
 
-      <div style={{ textAlign: 'center', marginTop: '6rem' }}>
-        <p style={{ color: 'var(--color-text-3)', fontSize: '0.9375rem', marginBottom: '2rem' }}>Not satisfied with this track?</p>
-        <Link to="/quiz" className="btn-ghost" style={{ padding: '1rem 2rem' }}>Retake Diagnostic in Another Dimension</Link>
+      <div style={{ textAlign: 'center', marginTop: '5rem' }}>
+        <p style={{ color: 'var(--color-text-3)', fontSize: '0.9375rem', marginBottom: '1.5rem' }}>Not satisfied with this track?</p>
+        <Link to="/quiz" className="btn-ghost" style={{ padding: '0.875rem 2rem' }}>Retake Diagnostic in Another Dimension</Link>
       </div>
 
     </div>
