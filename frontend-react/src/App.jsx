@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import TopNav from './components/TopNav';
 import Sidebar from './components/Sidebar';
@@ -18,7 +18,7 @@ import Progress from './pages/Progress';
 
 function ProtectedLayout({ children }) {
   const { user } = useAuth();
-  if (!user) return <Navigate to="/login" />;
+  if (!user) return <Navigate to="/login" replace />;
   return (
     <div className="app-container">
       <Sidebar />
@@ -33,7 +33,7 @@ function ProtectedLayout({ children }) {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -48,11 +48,12 @@ function App() {
           <Route path="/career-finder" element={<ProtectedLayout><CareerFinder /></ProtectedLayout>} />
           <Route path="/progress" element={<ProtectedLayout><Progress /></ProtectedLayout>} />
 
-          <Route path="*" element={<Navigate to="/" />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </AuthProvider>
   );
 }
 
 export default App;
+
