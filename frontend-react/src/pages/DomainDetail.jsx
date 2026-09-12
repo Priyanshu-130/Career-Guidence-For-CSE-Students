@@ -170,6 +170,45 @@ export default function DomainDetail() {
             </div>
           </div>
 
+          {/* Academic & Industry Verification Section */}
+          <div className="glass-card" style={{ padding: '2.5rem', position: 'relative', overflow: 'hidden', background: 'radial-gradient(circle at top left, rgba(79, 70, 229, 0.08), transparent 70%), var(--color-card)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+              <div style={{ width: '40px', height: '40px', background: 'rgba(79, 70, 229, 0.15)', color: 'var(--color-accent)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Globe size={20} />
+              </div>
+              <div>
+                <h3 style={{ fontSize: '1.375rem', margin: 0 }}>Academic & Industry Verification</h3>
+                <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)', margin: 0 }}>Curriculum & roadmap frameworks grounded in verified global standards.</p>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+              <a href="https://csed.acm.org/final-report/" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', padding: '1rem 1.25rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                <span style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-accent)', textTransform: 'uppercase' }}>Curriculum Standard</span>
+                <span style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'var(--color-text)' }}>ACM/IEEE CS2023 Guidelines ↗</span>
+                <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)' }}>1st to 4th-year student competencies</span>
+              </a>
+
+              <a href="https://roadmap.sh/" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', padding: '1rem 1.25rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                <span style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-purple)', textTransform: 'uppercase' }}>Learning Roadmap</span>
+                <span style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'var(--color-text)' }}>roadmap.sh Developer Pathways ↗</span>
+                <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)' }}>Visual milestone sequences</span>
+              </a>
+
+              <a href="https://www.weforum.org/publications/the-future-of-jobs-report-2025/" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', padding: '1rem 1.25rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                <span style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-success)', textTransform: 'uppercase' }}>Global Market Demand</span>
+                <span style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'var(--color-text)' }}>WEF Future of Jobs 2025 ↗</span>
+                <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)' }}>Top growing tech skills & roles</span>
+              </a>
+
+              <a href="https://onetinterestprofiler.org/p/riasec" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', padding: '1rem 1.25rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                <span style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-warning)', textTransform: 'uppercase' }}>Diagnostic Model</span>
+                <span style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'var(--color-text)' }}>O*NET Interest Profiler (RIASEC) ↗</span>
+                <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)' }}>U.S. Dept. of Labor activity matching</span>
+              </a>
+            </div>
+          </div>
+
           {/* Mini Quiz Section */}
           <section id="aptitude-check">
             <div style={{ marginBottom: '2rem' }}>
@@ -178,6 +217,7 @@ export default function DomainDetail() {
             </div>
             <MiniQuiz questions={domain.miniQuiz} domainName={domain.title} />
           </section>
+
 
         </div>
 
