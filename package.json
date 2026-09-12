@@ -1,0 +1,8 @@
+{
+  "name": "career-guidance-cse-students",
+  "private": true,
+  "scripts": {
+    "dev": "cd frontend-react && npm run dev",
+    "build": "cd frontend-react && npm run build"
+  }
+}
