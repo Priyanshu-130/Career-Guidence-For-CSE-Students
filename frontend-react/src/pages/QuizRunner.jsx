@@ -238,7 +238,6 @@ export default function QuizRunner() {
                   <span className="material-symbols-outlined text-[13px] text-secondary">alt_route</span>
                   {currentQ.category || 'Engineering Trait Evaluation'}
                 </span>
-                <span className="font-label-code-sm text-label-code-sm text-on-surface-variant font-semibold">WEIGHT: 1.8x</span>
               </div>
               <p className="font-headline-md text-headline-md text-on-surface font-semibold pt-space-xs leading-relaxed">
                 {currentQ.q}
@@ -315,48 +314,12 @@ export default function QuizRunner() {
                       {text}
                     </p>
 
-                    {/* Domain Signal Pills */}
-                    <div className="mt-space-xs pt-space-xs pl-12 flex flex-wrap items-center gap-space-xs">
-                      <span className={`font-label-code-sm text-label-code-sm uppercase tracking-wide opacity-75 ${
-                        isChecked ? 'text-on-primary' : 'text-on-surface-variant'
-                      }`}>
-                        Points toward:
-                      </span>
-                      {meta.signals.map((sig) => (
-                        <span 
-                          key={sig} 
-                          className={`font-label-code-sm text-label-code-sm px-space-xs py-0.5 rounded font-medium shadow-sm ${
-                            isChecked 
-                              ? 'bg-surface-container-lowest text-on-surface' 
-                              : 'bg-surface-container text-on-surface-variant'
-                          }`}
-                        >
-                          {sig}
-                        </span>
-                      ))}
-                    </div>
                   </div>
                 </label>
               );
             })}
           </form>
 
-          {/* Interactive Diagnostic Companion Note / Micro Feedback */}
-          <section className="mb-space-xl p-space-md rounded-xl bg-surface-container-low flex items-start gap-space-md shadow-sm border border-outline-variant/30">
-            <div className="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed flex-shrink-0 mt-0.5">
-              <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
-            </div>
-            <div className="flex flex-col gap-0.5">
-              <span className="font-label-code-sm text-label-code-sm text-secondary font-semibold uppercase tracking-wider">
-                AI Engine Observation
-              </span>
-              <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
-                {selectedOption 
-                  ? `Option selected (${selectedOption}) calibrates your affinity profile towards ${OPTION_META[selectedOption]?.signals[0] || 'core engineering'} with high confidence scoring.`
-                  : `Your choices across previous modules demonstrate a strong pattern. Select an option above to refine your final domain match calculation.`}
-              </p>
-            </div>
-          </section>
 
           {/* Navigation Action Footer */}
           <footer className="flex flex-col gap-space-md pt-space-xs mb-space-lg">
