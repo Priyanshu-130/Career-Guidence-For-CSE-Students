@@ -77,7 +77,7 @@ export default function Results() {
     };
 
     loadHistoricResult();
-  }, [user, navigate, resultsData, apiBase]);
+  }, [user, navigate, resultsData]);
 
   if (loading || !resultsData) {
     return (
