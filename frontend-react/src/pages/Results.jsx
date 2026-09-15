@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { QUIZ_DATA } from '../data/questions';
 import { useAuth } from '../context/AuthContext';
 import domainsData from '../data/domains.json';
-import { getApiBaseUrl } from '../utils/roadmapHelper';
+import { getQuizResults } from '../services/apiService';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -26,7 +26,6 @@ export default function Results() {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
-  const apiBase = getApiBaseUrl();
 
   useEffect(() => {
     const loadHistoricResult = async () => {
@@ -40,8 +39,7 @@ export default function Results() {
 
       setLoading(true);
       try {
-        const resp = await fetch(`${apiBase}/api/results/${user.email}`);
-        const data = await resp.json();
+        const data = await getQuizResults(user.email);
         if (data.status === 'success' && data.results.length > 0) {
           const latest = data.results[0];
           

@@ -18,7 +18,8 @@ import {
   ChevronRight
 } from 'lucide-react';
 import domainsData from '../data/domains.json';
-import { getSemesterCurriculum, getApiBaseUrl, getSemesterSubtopics } from '../utils/roadmapHelper';
+import { getSemesterCurriculum, getSemesterSubtopics } from '../utils/roadmapHelper';
+import { getProgress, saveProgress, getQuizResults } from '../services/apiService';
 
 export default function Progress() {
   const { user } = useAuth();
@@ -33,8 +34,6 @@ export default function Progress() {
   const [editNotes, setEditNotes] = useState('');
   const [saveStatus, setSaveStatus] = useState({}); // { semesterNum: 'idle' | 'saving' | 'success' | 'error' }
 
-  const apiBase = getApiBaseUrl();
-
   // Load recommended domain and progress on mount
   useEffect(() => {
     const fetchData = async () => {
@@ -47,17 +46,13 @@ export default function Progress() {
         
         // 1. Get recommended domain
         if (user.isGuest) {
-          // Default guest to the first domain in list ('ai')
           domainRec = 'ai';
           setRecommendedDomainId('ai');
           setSelectedDomainId('ai');
         } else {
-          const resResp = await fetch(`${apiBase}/api/results/${user.email}`);
-          const resData = await resResp.json();
+          const resData = await getQuizResults(user.email);
           if (resData.status === 'success' && resData.results.length > 0) {
-            // Find recommended domain mapping matching title
             const recTitle = resData.results[0].recommended_domain;
-            // Match title with domain ID in domainsData
             const matchedDom = domainsData.find(
               d => d.title.toLowerCase().includes(recTitle.toLowerCase()) || 
                    recTitle.toLowerCase().includes(d.title.toLowerCase())
@@ -67,12 +62,10 @@ export default function Progress() {
               setRecommendedDomainId(matchedDom.id);
               setSelectedDomainId(matchedDom.id);
             } else {
-              // Default to 'ai'
               domainRec = 'ai';
               setSelectedDomainId('ai');
             }
           } else {
-            // No quiz results, default to 'ai'
             domainRec = 'ai';
             setSelectedDomainId('ai');
           }
@@ -83,8 +76,7 @@ export default function Progress() {
           const guestSaved = localStorage.getItem(`pathfinder_guest_progress_${domainRec}`);
           setProgressData(guestSaved ? JSON.parse(guestSaved) : []);
         } else {
-          const progResp = await fetch(`${apiBase}/api/progress/${user.email}`);
-          const progData = await progResp.json();
+          const progData = await getProgress(user.email);
           if (progData.status === 'success') {
             setProgressData(progData.progress || []);
           } else {
@@ -93,8 +85,7 @@ export default function Progress() {
         }
       } catch (err) {
         console.error("Fetch progress error", err);
-        setError("Unable to synchronize progress details. Serving local offline fallback.");
-        // Local storage fallback for network error
+        setError("Unable to synchronize progress details. Serving local fallback.");
         const localSaved = localStorage.getItem(`pathfinder_progress_fallback_${user.email}`);
         if (localSaved) {
           setProgressData(JSON.parse(localSaved));
@@ -118,8 +109,7 @@ export default function Progress() {
         const guestSaved = localStorage.getItem(`pathfinder_guest_progress_${domainId}`);
         setProgressData(guestSaved ? JSON.parse(guestSaved) : []);
       } else {
-        const progResp = await fetch(`${apiBase}/api/progress/${user.email}`);
-        const progData = await progResp.json();
+        const progData = await getProgress(user.email);
         if (progData.status === 'success') {
           setProgressData(progData.progress || []);
         }
@@ -199,24 +189,17 @@ export default function Progress() {
     } else {
       setSaveStatus(prev => ({ ...prev, [semNum]: 'saving' }));
       try {
-        // Save to backend database
-        const resp = await fetch(`${apiBase}/api/progress`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            student_email: user.email,
-            domain_id: selectedDomainId,
-            semester_num: semNum,
-            course_title: courseTitle,
-            status: updatedStatus,
-            notes: updatedNotes
-          })
+        const data = await saveProgress({
+          student_email: user.email,
+          domain_id: selectedDomainId,
+          semester_num: semNum,
+          course_title: courseTitle,
+          status: updatedStatus,
+          notes: updatedNotes
         });
 
-        const data = await resp.json();
         if (data.status === 'success') {
           setSaveStatus(prev => ({ ...prev, [semNum]: 'success' }));
-          // Backup fallback in local storage
           localStorage.setItem(`pathfinder_progress_fallback_${user.email}`, JSON.stringify(updatedData));
           setTimeout(() => {
             setSaveStatus(prev => ({ ...prev, [semNum]: 'idle' }));

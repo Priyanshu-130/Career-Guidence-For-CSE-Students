@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Mail, Lock, School, Calendar, BookOpen, Loader2, ArrowRight, Compass, CheckCircle } from 'lucide-react';
-import { getApiBaseUrl } from '../utils/roadmapHelper';
+import { registerUser } from '../services/apiService';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -21,20 +21,14 @@ export default function Register() {
     setError('');
 
     try {
-      const resp = await fetch(`${getApiBaseUrl()}/api/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await resp.json();
-      if (resp.ok) {
+      const res = await registerUser(formData);
+      if (res.status === 'success') {
         navigate('/login');
       } else {
-        setError(data.message || 'Registration failed');
+        setError(res.message || 'Registration failed');
       }
     } catch (err) {
-      setError('Connection failed. Backend may be offline.');
+      setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }

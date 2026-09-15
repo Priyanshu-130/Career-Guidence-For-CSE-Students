@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { QUIZ_DATA } from '../data/questions';
-import { getApiBaseUrl } from '../utils/roadmapHelper';
 import { useAuth } from '../context/AuthContext';
+import { submitQuizResult } from '../services/apiService';
 
 // Inter-domain cross-affinity correlation factors for natural graph variation
 const CORRELATION_MATRIX = {
@@ -141,21 +141,16 @@ export default function QuizRunner() {
 
     if (user && !user.isGuest) {
       try {
-        const apiUrl = getApiBaseUrl() + "/api/submit-result";
-        await fetch(apiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            student_email: user.email,
-            quiz_type: track,
-            recommended_domain: resultsData.top_domain,
-            domain_id: resultsData.domain_id,
-            confidence_score: resultsData.match_percentage,
-            all_scores: resultsData.scores
-          })
+        await submitQuizResult({
+          student_email: user.email,
+          quiz_type: track,
+          recommended_domain: resultsData.top_domain,
+          domain_id: resultsData.domain_id,
+          confidence_score: resultsData.match_percentage,
+          all_scores: resultsData.scores
         });
       } catch (err) {
-        console.error('Error submitting result to server:', err);
+        console.error('Error submitting result:', err);
       }
     }
 

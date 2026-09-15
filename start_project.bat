@@ -1,55 +1,21 @@
 @echo off
-TITLE CSE PathFinder - ALL-IN-ONE STARTER
+TITLE CSE PathFinder - Java Backend Starter
 cls
 
 echo ==================================================
-echo    CSE PATHFINDER - AUTOMATED STARTUP
+echo    CSE PATHFINDER - JAVA BACKEND STARTER
 echo ==================================================
 echo.
 
-:: 1. Find Python
-echo [1/4] Detecting Python...
-set PYTHON_CMD=python
-python --version >nul 2>&1
-if %errorlevel% neq 0 (
-    set PYTHON_CMD=py
-    py --version >nul 2>&1
-    if %errorlevel% neq 0 (
-        set PYTHON_CMD=python3
-        python3 --version >nul 2>&1
-        if %errorlevel% neq 0 (
-            echo [ERROR] Python not found! Please install it from python.org.
-            pause
-            exit /b
-        )
-    )
-)
-echo Found: %PYTHON_CMD%
+set JAVA_CMD="C:\Users\priya\.antigravity-ide\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin\java.exe"
+
+echo [1/2] Starting Java Backend Server (Port 5000)...
+start "CSE Java Backend Server" cmd /c "%JAVA_CMD% -cp backend-java/bin;backend-java/lib/sqlite-jdbc-standalone.jar com.csepathfinder.App"
+echo Java Backend started on http://127.0.0.1:5000
 echo.
 
-:: 2. Install/Check Dependencies
-echo [2/4] Verifying Backend dependencies...
-%PYTHON_CMD% -m pip install flask flask-cors --quiet
-echo Dependencies are ready.
-echo.
-
-:: 3. Start Backend in a NEW window
-echo [3/4] Starting Backend (Port 5000)...
-start "CSE Backend Server" cmd /c "%PYTHON_CMD% backend/app.py"
-echo Backend started in a separate window.
-echo.
-
-:: 4. Start Frontend in this window
-echo [4/4] Starting Frontend (Port 5173)...
-echo.
-echo ==================================================
-echo    THE FRONTEND IS STARTING. 
-echo    Keep this window open to see Vite logs.
-echo ==================================================
-echo.
-
+echo [2/2] Starting React Frontend...
 cd frontend-react
-:: Use npm.cmd explicitly to bypass the PowerShell script block issue
 call npm.cmd run dev
 
 pause

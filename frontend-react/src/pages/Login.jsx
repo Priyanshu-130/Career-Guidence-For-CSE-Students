@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Mail, Lock, Loader2, ArrowRight, Compass, ShieldCheck, Zap, UserCheck } from 'lucide-react';
+import { loginUser } from '../services/apiService';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -17,21 +18,15 @@ export default function Login() {
     setError('');
 
     try {
-      const resp = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await resp.json();
-      if (resp.ok && data.status === 'success') {
-        login(data.student);
+      const res = await loginUser({ email, password });
+      if (res.status === 'success') {
+        login(res.student);
         navigate('/');
       } else {
-        setError(data.message || 'Invalid email or password.');
+        setError(res.message || 'Invalid email or password.');
       }
     } catch (err) {
-      setError('Connection failed. Backend server may be offline.');
+      setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }

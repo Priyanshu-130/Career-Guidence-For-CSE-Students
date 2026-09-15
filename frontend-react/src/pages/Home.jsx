@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Compass, BookOpen, Clock, Activity, FileText, ChevronRight, User, Loader2, Target, Sparkles, Trophy, Zap, MousePointer2 } from 'lucide-react';
-import { getApiBaseUrl } from '../utils/roadmapHelper';
+import { getQuizResults } from '../services/apiService';
 
 export default function Home() {
   const { user } = useAuth();
@@ -18,8 +18,7 @@ export default function Home() {
 
   useEffect(() => {
     if (user?.email && !user.isGuest) {
-      fetch(`${getApiBaseUrl()}/api/results/${user.email}`)
-        .then(res => res.json())
+      getQuizResults(user.email)
         .then(data => {
           if (data.status === 'success') {
             setHistory(data.results);
