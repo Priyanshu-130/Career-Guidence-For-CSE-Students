@@ -263,24 +263,13 @@ export default function Results() {
               <TrendingUp size={20} color="var(--color-accent)" />
               Profile Insights
             </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {chartLabels.map((label, idx) => {
                 const valPct = chartValues[idx] || 0;
                 return (
-                  <div key={label}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.875rem' }}>
-                      <span style={{ fontWeight: 600, color: idx === primaryIdx ? 'var(--color-text)' : 'var(--color-text-3)' }}>{label}</span>
-                      <span style={{ fontWeight: 800, color: idx === primaryIdx ? 'var(--color-success)' : 'inherit' }}>{valPct}%</span>
-                    </div>
-                    <div style={{ height: '6px', background: 'rgba(15,23,42,0.06)', borderRadius: '3px', overflow: 'hidden' }}>
-                      <div style={{ 
-                        height: '100%', 
-                        width: `${valPct}%`, 
-                        background: idx === primaryIdx ? 'var(--color-accent)' : 'var(--color-border-gl)',
-                        borderRadius: '3px',
-                        transition: 'width 0.5s ease'
-                      }}></div>
-                    </div>
+                  <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0', borderBottom: idx !== chartLabels.length - 1 ? '1px solid rgba(15,23,42,0.06)' : 'none' }}>
+                    <span style={{ fontWeight: 600, fontSize: '0.875rem', color: idx === primaryIdx ? 'var(--color-text)' : 'var(--color-text-3)' }}>{label}</span>
+                    <span style={{ fontWeight: 800, fontSize: '0.875rem', color: idx === primaryIdx ? 'var(--color-success)' : 'inherit' }}>{valPct}%</span>
                   </div>
                 );
               })}

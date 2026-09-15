@@ -159,7 +159,6 @@ export default function QuizRunner() {
   };
 
   const isLastQuestion = currentIdx === questions.length - 1;
-  const estMins = Math.ceil((questions.length - currentIdx) * 0.4);
 
   return (
     <div className="min-h-screen bg-background text-on-surface flex flex-col pb-16">
@@ -205,7 +204,6 @@ export default function QuizRunner() {
           <span className="uppercase tracking-wider font-semibold text-primary">
             {currentSection} ({sectionIdx + 1}/{sections.length})
           </span>
-          <span>~{estMins} min{estMins > 1 ? 's' : ''} remaining</span>
         </div>
 
         {/* Question Card */}
