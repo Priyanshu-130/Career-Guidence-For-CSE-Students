@@ -18,10 +18,24 @@ import { Activity, Compass, AlertCircle, ArrowRight, Sparkles, TrendingUp, Shiel
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+const DEFAULT_DEMO_RESULT = {
+  track: 'software',
+  top_domain: 'Artificial Intelligence',
+  domain_id: 'ai',
+  match_percentage: 85,
+  scores: {
+    'Artificial Intelligence': 85,
+    'Data Science & Analytics': 72,
+    'Web, App & Game Dev': 68,
+    'Cybersecurity': 60,
+    'Cloud & DevOps': 65
+  }
+};
+
 export default function Results() {
   const [resultsData, setResultsData] = useState(() => {
     const raw = sessionStorage.getItem("quiz_results");
-    return raw ? JSON.parse(raw) : null;
+    return raw ? JSON.parse(raw) : DEFAULT_DEMO_RESULT;
   });
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
@@ -29,13 +43,7 @@ export default function Results() {
 
   useEffect(() => {
     const loadHistoricResult = async () => {
-      if (resultsData) return;
-      if (!user) return;
-      
-      if (user.isGuest) {
-        navigate('/quiz');
-        return;
-      }
+      if (!user || user.isGuest) return;
 
       setLoading(true);
       try {
@@ -56,28 +64,25 @@ export default function Results() {
           });
 
           const reconstructed = {
-            track: latest.quiz_type,
-            top_domain: latest.recommended_domain,
+            track: latest.quiz_type || 'software',
+            top_domain: latest.recommended_domain || 'Artificial Intelligence',
             domain_id: matchedDom ? matchedDom.id : 'ai',
-            match_percentage: Math.min(100, Math.round(latest.confidence_score)),
-            scores: cleanScores
+            match_percentage: Math.min(100, Math.round(latest.confidence_score || 85)),
+            scores: Object.keys(cleanScores).length > 0 ? cleanScores : DEFAULT_DEMO_RESULT.scores
           };
 
           sessionStorage.setItem("quiz_results", JSON.stringify(reconstructed));
           setResultsData(reconstructed);
-        } else {
-          navigate('/quiz');
         }
       } catch (err) {
         console.error("Failed to load historic results", err);
-        navigate('/quiz');
       } finally {
         setLoading(false);
       }
     };
 
     loadHistoricResult();
-  }, [user, navigate, resultsData]);
+  }, [user]);
 
   if (loading || !resultsData) {
     return (
