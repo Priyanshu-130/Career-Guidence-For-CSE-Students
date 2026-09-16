@@ -4,9 +4,9 @@
     "title": "AI, ML & Deep Learning",
     "description": "Intelligent systems, machine learning models, neural networks, computer vision, and generative Agentic AI.",
     "color": "#3b82f6",
-    "overview": "This domain focuses on building intelligent systems that learn, reason, and act autonomously. Spanning foundational statistical learning, deep neural networks, computer vision, and Transformer architectures — AI is highlighted by the World Economic Forum (WEF) as the single largest catalyst of global workforce transformation, powering next-generation Agentic AI and enterprise intelligence.",
+    "overview": "This domain focuses on building intelligent systems that learn, reason, and act autonomously. Spanning foundational statistical learning, deep neural networks, computer vision, and Transformer architectures — AI is highlighted by the global workforce studies as the single largest catalyst of global workforce transformation, powering next-generation Agentic AI and enterprise intelligence.",
     "wefInsight": {
-      "rank": "Top WEF Growth Track",
+      "rank": "Top Growth Track",
       "stat": "+38% Net Role Expansion",
       "focus": "Agentic AI, LLMs & GenAI Watermarking"
     },
@@ -65,7 +65,7 @@
     ],
     "insights": {
       "timeToLearn": "6–12 months",
-      "jobDemand": "Extremely High (WEF Top 3)",
+      "jobDemand": "Extremely High (Top 3 Global)",
       "topCompanies": "Google DeepMind, OpenAI, Microsoft, NVIDIA, Meta, Anthropic",
       "futureScope": "Agentic AI, AGI Evolution & Multimodal Models"
     },
@@ -165,14 +165,14 @@
         "desc": "Practical deep learning for coders with a 'top-down' approach."
       },
       {
-        "title": "WEF Future of Jobs AI Report",
+        "title": "Global AI & Tech Report",
         "link": "https://www.weforum.org/publications/the-future-of-jobs-report-2025/",
         "desc": "Insights on global AI talent growth and workforce adoption."
       }
     ],
     "category": "software",
     "careerDetails": {
-      "futureScopeDetail": "According to the World Economic Forum (WEF) Future of Jobs Report, AI and Machine Learning Specialists are among the top 3 fastest-growing career roles globally, with over 86% of global enterprises planning rapid AI integration. Key future focus areas include Agentic Workflows, Generative Content Watermarking & Provenance (WEF 2025 Breakthrough), Multimodal Foundation Models, and Scalable MLOps.",
+      "futureScopeDetail": "According to the global workforce studies Future of Jobs Report, AI and Machine Learning Specialists are among the top 3 fastest-growing career roles globally, with over 86% of global enterprises planning rapid AI integration. Key future focus areas include Agentic Workflows, Generative Content Watermarking & Provenance (Global Industry 2025 Breakthrough), Multimodal Foundation Models, and Scalable MLOps.",
       "locations": {
         "india": [
           "Karnataka (Bengaluru)",
@@ -203,7 +203,7 @@
     "title": "Data Science & Big Data",
     "description": "Data analysis, visualization, statistics, predictive techniques, and Privacy-Enhancing Technologies.",
     "color": "#10b981",
-    "overview": "Data Science involves collecting, engineering, and extracting actionable intelligence from massive, unstructured datasets. Recognized by the World Economic Forum (WEF) Future of Jobs Report as the #1 fastest-growing specialization globally, data specialists drive strategic decision-making using statistical modeling, predictive analytics, and Privacy-Enhancing Technologies (PETs).",
+    "overview": "Data Science involves collecting, engineering, and extracting actionable intelligence from massive, unstructured datasets. Recognized by the global workforce studies Future of Jobs Report as the #1 fastest-growing specialization globally, data specialists drive strategic decision-making using statistical modeling, predictive analytics, and Privacy-Enhancing Technologies (PETs).",
     "wefInsight": {
       "rank": "#1 Fastest Growing Role Globally",
       "stat": "86% Enterprise Adoption Rate",
@@ -254,7 +254,7 @@
       }
     ],
     "roles": [
-      "Big Data Specialist (WEF #1)",
+      "Big Data Specialist (Top Rank)",
       "Data Scientist",
       "Data Analyst",
       "Business Intelligence Engineer",
@@ -263,7 +263,7 @@
     ],
     "insights": {
       "timeToLearn": "6–9 months",
-      "jobDemand": "Extremely High (WEF #1 Growth)",
+      "jobDemand": "Extremely High (Top Ranked)",
       "topCompanies": "Amazon, Google, Deloitte, Fractal Analytics, Snowflake, Netflix",
       "futureScope": "Real-Time Big Data, Automated Analytics & PETs"
     },
@@ -365,7 +365,7 @@
     ],
     "category": "software",
     "careerDetails": {
-      "futureScopeDetail": "The WEF Future of Jobs Report ranks Big Data Specialists as the single fastest-growing job role worldwide. As organizations scale digital operations, demand is skyrocketing for professionals skilled in real-time data streaming (Apache Spark), cloud data warehousing (Snowflake/BigQuery), and Privacy-Enhancing Technologies (PETs) to ensure regulatory compliance and secure analytics.",
+      "futureScopeDetail": "Global industry reports ranks Big Data Specialists as the single fastest-growing job role worldwide. As organizations scale digital operations, demand is skyrocketing for professionals skilled in real-time data streaming (Apache Spark), cloud data warehousing (Snowflake/BigQuery), and Privacy-Enhancing Technologies (PETs) to ensure regulatory compliance and secure analytics.",
       "locations": {
         "india": [
           "Karnataka (Bengaluru)",
@@ -396,9 +396,9 @@
     "title": "Web, App & Game Development",
     "description": "Websites, mobile applications, full-stack software systems, FinTech apps, and spatial game experiences.",
     "color": "#f59e0b",
-    "overview": "This domain spans the full stack of digital product development — from crafting pixel-perfect interfaces with HTML, CSS, and JavaScript, to building robust backend APIs, mobile applications, and interactive video games. Highlighted by the WEF as key drivers for digital connectivity and FinTech growth, web and app developers build modern, high-performance web products.",
+    "overview": "This domain spans the full stack of digital product development — from crafting pixel-perfect interfaces with HTML, CSS, and JavaScript, to building robust backend APIs, mobile applications, and interactive video games. Highlighted by the Global Industry as key drivers for digital connectivity and FinTech growth, web and app developers build modern, high-performance web products.",
     "wefInsight": {
-      "rank": "Top WEF Creator Track",
+      "rank": "Top Digital Creator Track",
       "stat": "+25% Demand Growth",
       "focus": "FinTech, Spatial Apps & Edge UI"
     },
@@ -449,7 +449,7 @@
     ],
     "roles": [
       "Full Stack Engineer",
-      "Software & Applications Developer (WEF Top Role)",
+      "Software & Applications Developer (Top Industry Role)",
       "FinTech Software Engineer",
       "Frontend Developer",
       "Mobile App Developer (iOS/Android)",
@@ -457,7 +457,7 @@
     ],
     "insights": {
       "timeToLearn": "4–8 months",
-      "jobDemand": "Evergreen & High Demand (WEF Top 5)",
+      "jobDemand": "Evergreen & High Demand (Global Top 5)",
       "topCompanies": "Google, Microsoft, Stripe, Atlassian, Adobe, Ubisoft, EA",
       "futureScope": "Spatial Computing, WebAssembly & AI-Assisted UI"
     },
@@ -559,7 +559,7 @@
     ],
     "category": "software",
     "careerDetails": {
-      "futureScopeDetail": "The WEF highlights Software and Application Developers and FinTech Engineers as crucial drivers of digital access and commerce. Future scope centers on spatial computing applications (XR/AR), micro-frontend architectures, high-speed WebAssembly engines, and embedding intelligent AI agents directly into everyday user workflows.",
+      "futureScopeDetail": "Global technology surveys highlight Software and Application Developers and FinTech Engineers as crucial drivers of digital access and commerce. Future scope centers on spatial computing applications (XR/AR), micro-frontend architectures, high-speed WebAssembly engines, and embedding intelligent AI agents directly into everyday user workflows.",
       "locations": {
         "india": [
           "Karnataka (Bengaluru)",
@@ -590,9 +590,9 @@
     "title": "Cyber Security & Blockchain",
     "description": "System security, ethical hacking, cryptography, Zero Trust defense, and decentralized blockchain apps.",
     "color": "#ef4444",
-    "overview": "This domain covers protecting computing systems, enterprise networks, and cloud workloads from systemic attacks, while leveraging blockchain for tamper-proof decentralized applications. The World Economic Forum identifies cybersecurity and Security Management as top strategic imperatives as geopolitical and AI-driven cyber risks escalate worldwide.",
+    "overview": "This domain covers protecting computing systems, enterprise networks, and cloud workloads from systemic attacks, while leveraging blockchain for tamper-proof decentralized applications. The global industry benchmarks identifies cybersecurity and Security Management as top strategic imperatives as geopolitical and AI-driven cyber risks escalate worldwide.",
     "wefInsight": {
-      "rank": "Critical WEF Strategic Need",
+      "rank": "Critical Strategic Need",
       "stat": "92% Global Threat Surge",
       "focus": "Zero Trust, PETs & Quantum Security"
     },
@@ -642,7 +642,7 @@
       }
     ],
     "roles": [
-      "Security Management Specialist (WEF Fast-Growing)",
+      "Security Management Specialist (Fast-Growing)",
       "Cybersecurity Analyst",
       "Ethical Hacker / Penetration Tester",
       "SOC Incident Responder",
@@ -651,7 +651,7 @@
     ],
     "insights": {
       "timeToLearn": "6–12 months",
-      "jobDemand": "Critical (WEF Security Priority)",
+      "jobDemand": "Critical (Critical Priority)",
       "topCompanies": "Palo Alto Networks, CrowdStrike, Cisco, IBM Security, Cloudflare, Binance",
       "futureScope": "Zero Trust, Post-Quantum Cryptography & AI Cyber Defense"
     },
@@ -753,7 +753,7 @@
     ],
     "category": "software",
     "careerDetails": {
-      "futureScopeDetail": "Ranked by the WEF Global Risks & Future of Jobs Reports as an essential defensive line, Cybersecurity demand is propelled by systemic digital threats and strict data sovereignty laws. Key technological shifts include mandatory Zero Trust Network Architecture (ZTNA), Privacy-Enhancing Technologies (PETs), post-quantum cryptography, and AI-powered automated threat hunting.",
+      "futureScopeDetail": "Ranked by the global technology risk & workforce reports as an essential defensive line, Cybersecurity demand is propelled by systemic digital threats and strict data sovereignty laws. Key technological shifts include mandatory Zero Trust Network Architecture (ZTNA), Privacy-Enhancing Technologies (PETs), post-quantum cryptography, and AI-powered automated threat hunting.",
       "locations": {
         "india": [
           "Maharashtra (Pune/Mumbai)",
@@ -784,9 +784,9 @@
     "title": "Cloud Computing & DevOps",
     "description": "Scalable cloud infrastructure, containerization, serverless architectures, and automated GitOps pipelines.",
     "color": "#f59e0b",
-    "overview": "Cloud Computing delivers on-demand compute, storage, and database services over global networks. Highlighted by the WEF as the foundational backbone for AI and digital expansion, cloud engineers design scalable multi-cloud architectures, automated CI/CD pipelines, and edge compute nodes across AWS, Azure, and GCP.",
+    "overview": "Cloud Computing delivers on-demand compute, storage, and database services over global networks. Highlighted by the Global Industry as the foundational backbone for AI and digital expansion, cloud engineers design scalable multi-cloud architectures, automated CI/CD pipelines, and edge compute nodes across AWS, Azure, and GCP.",
     "wefInsight": {
-      "rank": "High-Demand WEF Infrastructure",
+      "rank": "High-Demand Infrastructure",
       "stat": "85% Multi-Cloud Migration",
       "focus": "Edge Cloud, Serverless MLOps & Sovereign Cloud"
     },
@@ -844,7 +844,7 @@
     ],
     "insights": {
       "timeToLearn": "4–8 months",
-      "jobDemand": "Extremely High (WEF Core Infra)",
+      "jobDemand": "Extremely High (Global Industry Core Infra)",
       "topCompanies": "Amazon Web Services, Microsoft Azure, Google Cloud, Oracle, Red Hat, IBM",
       "futureScope": "Edge Computing, Multi-Cloud Mesh & Sovereign Cloud Networks"
     },
@@ -946,7 +946,7 @@
     ],
     "category": "software",
     "careerDetails": {
-      "futureScopeDetail": "According to WEF market findings, cloud computing literacy and cloud infrastructure operations are top priority skills for global organizations. Future expansion relies heavily on Edge Computing for ultra-low latency AI inference, Serverless MLOps pipelines, Infrastructure as Code (IaC), and Sovereign Cloud networks compliant with regional data protection.",
+      "futureScopeDetail": "According to Global Industry market findings, cloud computing literacy and cloud infrastructure operations are top priority skills for global organizations. Future expansion relies heavily on Edge Computing for ultra-low latency AI inference, Serverless MLOps pipelines, Infrastructure as Code (IaC), and Sovereign Cloud networks compliant with regional data protection.",
       "locations": {
         "india": [
           "Karnataka (Bengaluru)",
@@ -977,9 +977,9 @@
     "title": "IoT & Embedded Systems",
     "description": "Smart hardware devices, microcontrollers, edge sensors, TinyML, and physical device connectivity.",
     "color": "#ec4899",
-    "overview": "This domain connects microcontrollers, sensors, and actuators to digital networks, bringing intelligence to physical environments. The WEF highlights IoT and Autonomous Sensing as key emerging drivers for Industry 4.0, smart cities, sustainable energy grids, and digital healthcare.",
+    "overview": "This domain connects microcontrollers, sensors, and actuators to digital networks, bringing intelligence to physical environments. Global technology surveys highlight IoT and Autonomous Sensing as key emerging drivers for Industry 4.0, smart cities, sustainable energy grids, and digital healthcare.",
     "wefInsight": {
-      "rank": "Key WEF Industry 4.0 Driver",
+      "rank": "Key Global Industry Industry 4.0 Driver",
       "stat": "50B+ Connected Devices",
       "focus": "Autonomous Sensing, Smart Grids & Edge AI"
     },
@@ -1036,7 +1036,7 @@
     ],
     "insights": {
       "timeToLearn": "6–12 months",
-      "jobDemand": "High Growth (WEF Industry 4.0)",
+      "jobDemand": "High Growth (Global Industry Industry 4.0)",
       "topCompanies": "Bosch, Siemens, Intel, Qualcomm, Texas Instruments, STMicroelectronics",
       "futureScope": "Autonomous Biochemical Sensing, Smart Energy Grids & TinyML"
     },
@@ -1138,7 +1138,7 @@
     ],
     "category": "hardware",
     "careerDetails": {
-      "futureScopeDetail": "The WEF Top 10 Emerging Technologies report highlights Autonomous Sensing and connected sensor networks as transformative across agriculture, environmental monitoring, and smart healthcare. With 5G and LPWAN expansion, low-power embedded edge AI (TinyML) will enable intelligent real-time processing directly on low-cost microchips.",
+      "futureScopeDetail": "The Global Industry Top 10 Emerging Technologies report highlights Autonomous Sensing and connected sensor networks as transformative across agriculture, environmental monitoring, and smart healthcare. With 5G and LPWAN expansion, low-power embedded edge AI (TinyML) will enable intelligent real-time processing directly on low-cost microchips.",
       "locations": {
         "india": [
           "Karnataka (Bengaluru)",
@@ -1169,9 +1169,9 @@
     "title": "Robotics & Autonomous Systems",
     "description": "Robot design, control theory, autonomous mobility, computer vision, and physical AI systems.",
     "color": "#8b5cf6",
-    "overview": "Robotics integrates mechanical design, control theory, and artificial intelligence to create autonomous physical systems. The World Economic Forum identifies robotics and autonomous vehicle specialists among the fastest-growing technological fields as industrial automation and green transport accelerate worldwide.",
+    "overview": "Robotics integrates mechanical design, control theory, and artificial intelligence to create autonomous physical systems. The global industry benchmarks identifies robotics and autonomous vehicle specialists among the fastest-growing technological fields as industrial automation and green transport accelerate worldwide.",
     "wefInsight": {
-      "rank": "Fastest WEF Automation Sector",
+      "rank": "Fastest Global Industry Automation Sector",
       "stat": "58% Enterprise Adoption Rate",
       "focus": "EV/Autonomous Systems & Humanoid Tech"
     },
@@ -1220,7 +1220,7 @@
       }
     ],
     "roles": [
-      "Autonomous & EV Specialist (WEF Fast-Growing)",
+      "Autonomous & EV Specialist (Fast-Growing)",
       "Robotics Systems Engineer",
       "Control Systems Engineer",
       "Perception & Motion Planning Engineer",
@@ -1228,7 +1228,7 @@
     ],
     "insights": {
       "timeToLearn": "6–12 months",
-      "jobDemand": "High & Accelerating (WEF Top Trend)",
+      "jobDemand": "High & Accelerating (Global Industry Top Trend)",
       "topCompanies": "Boston Dynamics, ABB, Tesla, NVIDIA Robotics, KUKA, Intuitive Surgical",
       "futureScope": "Humanoid Assistive Robots, Swarm Intelligence & Autonomous Mobility"
     },
@@ -1330,7 +1330,7 @@
     ],
     "category": "hardware",
     "careerDetails": {
-      "futureScopeDetail": "WEF Future of Jobs data shows over 58% of surveyed global enterprises actively adopting robotics and physical automation. Growth is led by Autonomous and Electric Vehicle (EV) systems, warehouse logistics robotics, ROS2-based spatial navigation, and vision-language-action (VLA) models for humanoid robotics in unstructured workplaces.",
+      "futureScopeDetail": "Global Industry Future of Jobs data shows over 58% of surveyed global enterprises actively adopting robotics and physical automation. Growth is led by Autonomous and Electric Vehicle (EV) systems, warehouse logistics robotics, ROS2-based spatial navigation, and vision-language-action (VLA) models for humanoid robotics in unstructured workplaces.",
       "locations": {
         "india": [
           "Maharashtra (Pune)",
@@ -1363,7 +1363,7 @@
     "color": "#f97316",
     "overview": "This domain covers the design, verification, and fabrication of microchips, microprocessors, and custom silicon architectures. Highlighted by global economic forums as a critical strategic domain, chip design powers everything from smartphone processors to massive AI supercomputer accelerators.",
     "wefInsight": {
-      "rank": "Strategic WEF Silicon Pillar",
+      "rank": "Strategic Global Industry Silicon Pillar",
       "stat": "$1 Trillion Global Market",
       "focus": "Silicon Sovereignty, RISC-V & Custom AI Accelerators"
     },
@@ -1419,7 +1419,7 @@
     ],
     "insights": {
       "timeToLearn": "8–14 months",
-      "jobDemand": "Critical Strategic Need (WEF Semiconductor)",
+      "jobDemand": "Critical Strategic Need (Global Industry Semiconductor)",
       "topCompanies": "NVIDIA, Intel, AMD, Qualcomm, TSMC, Apple Silicon, Arm",
       "futureScope": "Custom AI Chips (NPUs), RISC-V Open Architecture & 3D Stacking"
     },
@@ -1521,7 +1521,7 @@
     ],
     "category": "hardware",
     "careerDetails": {
-      "futureScopeDetail": "Semiconductor supply chains and Silicon Sovereignty initiatives (e.g., India Semiconductor Mission, US CHIPS Act) are driving record investments. WEF trends point to exploding demand for specialized AI hardware accelerators (NPUs/TPUs), RISC-V open instruction architecture, Extreme Ultraviolet (EUV) lithography, and chiplet designs.",
+      "futureScopeDetail": "Semiconductor supply chains and Silicon Sovereignty initiatives (e.g., India Semiconductor Mission, US CHIPS Act) are driving record investments. Global Industry trends point to exploding demand for specialized AI hardware accelerators (NPUs/TPUs), RISC-V open instruction architecture, Extreme Ultraviolet (EUV) lithography, and chiplet designs.",
       "locations": {
         "india": [
           "Karnataka (Bengaluru)",
@@ -1553,9 +1553,9 @@
     "title": "Networking & Communication Systems",
     "description": "Network architecture, routing, protocols, 5G/6G, Integrated Sensing, and global connectivity systems.",
     "color": "#059669",
-    "overview": "Networking & Communication Systems manage the protocols, routing infrastructure, and optical/wireless networks connecting global information systems. WEF highlights Integrated Sensing and Communication as a top emerging tech trend transforming global digital ecosystems.",
+    "overview": "Networking & Communication Systems manage the protocols, routing infrastructure, and optical/wireless networks connecting global information systems. Global Industry highlights Integrated Sensing and Communication as a top emerging tech trend transforming global digital ecosystems.",
     "wefInsight": {
-      "rank": "WEF Global Connectivity Essential",
+      "rank": "Global Industry Global Connectivity Essential",
       "stat": "Integrated Sensing & 6G Rollout",
       "focus": "SDN, Integrated Sensing & Satellite Mesh"
     },
@@ -1611,7 +1611,7 @@
     ],
     "insights": {
       "timeToLearn": "4–8 months",
-      "jobDemand": "High & Essential (WEF Connectivity)",
+      "jobDemand": "High & Essential (Global Industry Connectivity)",
       "topCompanies": "Cisco, Juniper Networks, Ericsson, Nokia, Cloudflare, AT&T, Airtel",
       "futureScope": "Integrated Sensing & Communication, 6G Wireless & Satellite Networks"
     },
@@ -1713,7 +1713,7 @@
     ],
     "category": "hardware",
     "careerDetails": {
-      "futureScopeDetail": "The WEF Top Emerging Technologies report flags Integrated Sensing and Communication as a game-changer for 6G and next-generation connectivity. Combined with Software-Defined Networking (SDN) and Low-Earth-Orbit (LEO) satellite constellations, networking engineers are rebuilding global connectivity infrastructure.",
+      "futureScopeDetail": "The Global Industry Top Emerging Technologies report flags Integrated Sensing and Communication as a game-changer for 6G and next-generation connectivity. Combined with Software-Defined Networking (SDN) and Low-Earth-Orbit (LEO) satellite constellations, networking engineers are rebuilding global connectivity infrastructure.",
       "locations": {
         "india": [
           "Karnataka (Bengaluru)",

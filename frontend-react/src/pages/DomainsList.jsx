@@ -114,11 +114,11 @@ export default function DomainsList() {
           Explore Tech <span className="text-gradient">Domains.</span>
         </h1>
         <p style={{ fontSize: '1.25rem', color: 'var(--color-text-3)', maxWidth: '750px', margin: '1.5rem auto 0', lineHeight: 1.6 }}>
-          Our industry-aligned curriculum spans 9 specialized trajectories — updated according to the latest workforce insights and emerging technology benchmarks from the <strong>World Economic Forum (WEF)</strong>.
+          Our industry-aligned curriculum spans 9 specialized trajectories — updated according to the latest global workforce insights and emerging technology benchmarks.
         </p>
       </div>
 
-      {/* WEF Global Market Banner */}
+      {/* Global Market Banner */}
       <div className="glass-card" style={{ 
         padding: '2rem 2.5rem', 
         marginBottom: '4rem', 
@@ -141,7 +141,7 @@ export default function DomainsList() {
           </div>
           <div>
             <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.25rem' }}>
-              WEF Future of Jobs 2025/2026 Aligned
+              Global Future of Jobs Alignment
             </div>
             <div style={{ fontSize: '1.0625rem', fontWeight: 700, color: 'var(--color-text)', lineHeight: 1.4 }}>
               Tracking +170 Million new tech-driven roles & top emerging skill priorities across AI, Big Data, Security & Edge Infrastructure.

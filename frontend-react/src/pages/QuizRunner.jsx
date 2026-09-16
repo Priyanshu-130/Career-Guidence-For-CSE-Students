@@ -15,6 +15,38 @@ const CORRELATION_MATRIX = {
   'G': { 'A': 0.35, 'B': 0.38, 'C': 0.38, 'D': 0.72, 'E': 0.45, 'F': 0.32, 'G': 1.0 }
 };
 
+/**
+ * Normalizes an array of scores so that their sum equals exactly 100%
+ * using the Largest Remainder Method (Hamilton/Hare Method).
+ */
+function normalizeToHundred(rawValues) {
+  if (!rawValues || rawValues.length === 0) return [];
+  const sum = rawValues.reduce((a, b) => a + b, 0);
+  const n = rawValues.length;
+  
+  if (sum === 0) {
+    const base = Math.floor(100 / n);
+    const remainder = 100 - base * n;
+    return rawValues.map((_, i) => base + (i < remainder ? 1 : 0));
+  }
+
+  const exacts = rawValues.map(v => (v / sum) * 100);
+  const floors = exacts.map(v => Math.floor(v));
+  const remainders = exacts.map((v, i) => ({ index: i, rem: v - floors[i] }));
+  
+  let floorSum = floors.reduce((a, b) => a + b, 0);
+  let diff = 100 - floorSum;
+
+  remainders.sort((a, b) => b.rem - a.rem);
+
+  const result = [...floors];
+  for (let i = 0; i < diff; i++) {
+    result[remainders[i].index] += 1;
+  }
+
+  return result;
+}
+
 export default function QuizRunner() {
   const { track } = useParams();
   const navigate = useNavigate();
@@ -112,18 +144,29 @@ export default function QuizRunner() {
 
     if (data.clusters) {
       const keys = Object.keys(data.clusters);
+      const names = [];
+      const rawClusterScores = [];
+
       keys.forEach((key, idx) => {
         const name = data.clusters[key]?.name || key;
         const rawPct = (scores[key] / totalCount) * 100;
         
+        let calculatedScore = 0;
         if (key === topCluster) {
-          processScores[name] = Math.min(95, Math.max(75, Math.round(primaryRawPct > 40 ? primaryRawPct : 85)));
+          calculatedScore = Math.min(95, Math.max(75, Math.round(primaryRawPct > 40 ? primaryRawPct : 85)));
         } else {
           const corr = CORRELATION_MATRIX[topCluster]?.[key] || 0.40;
           const baseOffset = 18 + (idx * 7) % 14;
-          const calculatedScore = Math.round((rawPct * 0.4) + (primaryRawPct * corr * 0.45) + baseOffset);
-          processScores[name] = Math.min(80, Math.max(18, calculatedScore));
+          calculatedScore = Math.min(80, Math.max(18, Math.round((rawPct * 0.4) + (primaryRawPct * corr * 0.45) + baseOffset)));
         }
+
+        names.push(name);
+        rawClusterScores.push(calculatedScore);
+      });
+
+      const normalizedScores = normalizeToHundred(rawClusterScores);
+      names.forEach((name, idx) => {
+        processScores[name] = normalizedScores[idx];
       });
     }
 

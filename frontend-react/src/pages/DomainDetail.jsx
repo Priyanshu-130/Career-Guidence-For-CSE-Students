@@ -38,7 +38,7 @@ export default function DomainDetail() {
               borderRadius: '999px', fontSize: '0.75rem', fontWeight: 800,
               border: '1px solid rgba(16, 185, 129, 0.3)', display: 'inline-flex', alignItems: 'center', gap: '6px'
             }}>
-              <Sparkles size={13} /> WEF Benchmark: {domain.wefInsight.rank}
+              <Sparkles size={13} /> Benchmark: {domain.wefInsight.rank}
             </span>
           )}
 
@@ -189,14 +189,14 @@ export default function DomainDetail() {
                   <Award size={20} />
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '1.375rem', margin: 0 }}>WEF Global Market Intelligence</h3>
-                  <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)', margin: 0 }}>World Economic Forum Future of Jobs & Emerging Tech Alignment.</p>
+                  <h3 style={{ fontSize: '1.375rem', margin: 0 }}>Global Market Intelligence</h3>
+                  <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)', margin: 0 }}>Global Future of Jobs & Emerging Tech Alignment.</p>
                 </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
                 <div style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
-                  <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#10b981', textTransform: 'uppercase', marginBottom: '0.25rem' }}>WEF Growth Rank</div>
+                  <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#10b981', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Growth Rank</div>
                   <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-text)' }}>{domain.wefInsight.rank}</div>
                 </div>
 
@@ -240,7 +240,7 @@ export default function DomainDetail() {
 
               <a href="https://www.weforum.org/publications/the-future-of-jobs-report-2025/" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', padding: '1rem 1.25rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                 <span style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-success)', textTransform: 'uppercase' }}>Global Market Demand</span>
-                <span style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'var(--color-text)' }}>WEF Future of Jobs 2025/2026 ↗</span>
+                <span style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'var(--color-text)' }}>Global Future of Jobs Report ↗</span>
                 <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)' }}>Top growing tech skills & 170M new roles</span>
               </a>
 
@@ -281,7 +281,7 @@ export default function DomainDetail() {
                 </div>
                 {domain.wefInsight && (
                   <div>
-                    <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#10b981', textTransform: 'uppercase', marginBottom: '0.25rem' }}>WEF Rank</div>
+                    <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#10b981', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Growth Rank</div>
                     <div style={{ fontWeight: 700, color: 'var(--color-text)', fontSize: '0.9375rem' }}>{domain.wefInsight.rank}</div>
                   </div>
                 )}

@@ -18,6 +18,38 @@ import { Activity, Compass, AlertCircle, ArrowRight, Sparkles, TrendingUp, Shiel
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+/**
+ * Normalizes an array of scores so that their sum equals exactly 100%
+ * using the Largest Remainder Method (Hamilton/Hare Method).
+ */
+function normalizeToHundred(rawValues) {
+  if (!rawValues || rawValues.length === 0) return [];
+  const sum = rawValues.reduce((a, b) => a + b, 0);
+  const n = rawValues.length;
+  
+  if (sum === 0) {
+    const base = Math.floor(100 / n);
+    const remainder = 100 - base * n;
+    return rawValues.map((_, i) => base + (i < remainder ? 1 : 0));
+  }
+
+  const exacts = rawValues.map(v => (v / sum) * 100);
+  const floors = exacts.map(v => Math.floor(v));
+  const remainders = exacts.map((v, i) => ({ index: i, rem: v - floors[i] }));
+  
+  let floorSum = floors.reduce((a, b) => a + b, 0);
+  let diff = 100 - floorSum;
+
+  remainders.sort((a, b) => b.rem - a.rem);
+
+  const result = [...floors];
+  for (let i = 0; i < diff; i++) {
+    result[remainders[i].index] += 1;
+  }
+
+  return result;
+}
+
 const DEFAULT_DEMO_RESULT = {
   track: 'software',
   top_domain: 'Artificial Intelligence',
@@ -107,11 +139,13 @@ export default function Results() {
   const clusters = Object.values(trackData.clusters || {});
   const chartLabels = clusters.map(c => c.name);
   
-  // Normalize chart values strictly between 0 and 100
-  const chartValues = chartLabels.map(label => {
+  // Normalize chart values strictly so they total 100%
+  const rawChartValues = chartLabels.map(label => {
     const val = resultsData.scores?.[label] || 0;
-    return val > 100 ? Math.min(100, Math.round(val / 10)) : Math.min(100, Math.round(val));
+    return val > 100 ? Math.min(100, Math.round(val / 10)) : Math.max(0, Math.round(val));
   });
+
+  const chartValues = normalizeToHundred(rawChartValues);
 
   const sortedIndices = [...Array(chartValues.length).keys()].sort((a, b) => chartValues[b] - chartValues[a]);
   const primaryIdx = sortedIndices[0] || 0;
