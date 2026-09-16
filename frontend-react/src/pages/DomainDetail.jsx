@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import domainsData from '../data/domains.json';
-import { BookOpen, Wrench, Trophy, Briefcase, TrendingUp, ArrowRight, CheckCircle2, ChevronLeft, Target, Globe, MapPin, Building2 } from 'lucide-react';
+import { BookOpen, Wrench, Trophy, Briefcase, TrendingUp, ArrowRight, CheckCircle2, ChevronLeft, Target, Globe, MapPin, Building2, Sparkles, Award } from 'lucide-react';
 import MiniQuiz from '../components/MiniQuiz';
 
 export default function DomainDetail() {
@@ -23,7 +23,7 @@ export default function DomainDetail() {
 
       {/* Modern Hero Header */}
       <section style={{ marginBottom: '4rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
           <span style={{ 
             padding: '6px 16px', background: `${domain.color}22`, color: domain.color, 
             borderRadius: '999px', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase',
@@ -31,6 +31,17 @@ export default function DomainDetail() {
           }}>
             {domain.id.toUpperCase()} • Specialization
           </span>
+
+          {domain.wefInsight && (
+            <span style={{ 
+              padding: '6px 16px', background: 'rgba(16, 185, 129, 0.12)', color: '#10b981', 
+              borderRadius: '999px', fontSize: '0.75rem', fontWeight: 800,
+              border: '1px solid rgba(16, 185, 129, 0.3)', display: 'inline-flex', alignItems: 'center', gap: '6px'
+            }}>
+              <Sparkles size={13} /> WEF Benchmark: {domain.wefInsight.rank}
+            </span>
+          )}
+
           <span style={{ color: 'var(--color-text-3)', fontSize: '0.875rem', fontWeight: 600 }}>
              {domain.insights.jobDemand} Job Demand
           </span>
@@ -103,7 +114,7 @@ export default function DomainDetail() {
             </div>
             
             <div style={{ marginBottom: '2.5rem' }}>
-               <h4 style={{ fontSize: '1.125rem', marginBottom: '0.75rem', color: 'var(--color-text)' }}>Future Scope</h4>
+               <h4 style={{ fontSize: '1.125rem', marginBottom: '0.75rem', color: 'var(--color-text)' }}>Future Scope & Emerging Trends</h4>
                <p style={{ color: 'var(--color-text-2)', fontSize: '1.0625rem', lineHeight: 1.7 }}>
                  {domain.careerDetails?.futureScopeDetail || domain.insights.futureScope}
                </p>
@@ -170,6 +181,38 @@ export default function DomainDetail() {
             </div>
           </div>
 
+          {/* WEF Strategic Insights Box */}
+          {domain.wefInsight && (
+            <div className="glass-card" style={{ padding: '2.5rem', position: 'relative', overflow: 'hidden', background: 'radial-gradient(circle at top right, rgba(16, 185, 129, 0.08), transparent 70%), var(--color-card)', border: '1px solid rgba(16, 185, 129, 0.25)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+                <div style={{ width: '40px', height: '40px', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Award size={20} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.375rem', margin: 0 }}>WEF Global Market Intelligence</h3>
+                  <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)', margin: 0 }}>World Economic Forum Future of Jobs & Emerging Tech Alignment.</p>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
+                <div style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
+                  <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#10b981', textTransform: 'uppercase', marginBottom: '0.25rem' }}>WEF Growth Rank</div>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-text)' }}>{domain.wefInsight.rank}</div>
+                </div>
+
+                <div style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
+                  <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-accent)', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Growth & Adoption Metric</div>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-text)' }}>{domain.wefInsight.stat}</div>
+                </div>
+
+                <div style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
+                  <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-purple)', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Core Emerging Focus</div>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-text)' }}>{domain.wefInsight.focus}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Academic & Industry Verification Section */}
           <div className="glass-card" style={{ padding: '2.5rem', position: 'relative', overflow: 'hidden', background: 'radial-gradient(circle at top left, rgba(79, 70, 229, 0.08), transparent 70%), var(--color-card)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
@@ -197,8 +240,8 @@ export default function DomainDetail() {
 
               <a href="https://www.weforum.org/publications/the-future-of-jobs-report-2025/" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', padding: '1rem 1.25rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                 <span style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-success)', textTransform: 'uppercase' }}>Global Market Demand</span>
-                <span style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'var(--color-text)' }}>WEF Future of Jobs 2025 ↗</span>
-                <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)' }}>Top growing tech skills & roles</span>
+                <span style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'var(--color-text)' }}>WEF Future of Jobs 2025/2026 ↗</span>
+                <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)' }}>Top growing tech skills & 170M new roles</span>
               </a>
 
               <a href="https://onetinterestprofiler.org/p/riasec" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', padding: '1rem 1.25rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
@@ -218,7 +261,6 @@ export default function DomainDetail() {
             <MiniQuiz questions={domain.miniQuiz} domainName={domain.title} />
           </section>
 
-
         </div>
 
         {/* Sidebar Insights */}
@@ -237,6 +279,12 @@ export default function DomainDetail() {
                   <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-text-3)', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Path Complexity</div>
                   <div style={{ fontWeight: 700, color: 'var(--color-text)' }}>{domain.insights.timeToLearn}</div>
                 </div>
+                {domain.wefInsight && (
+                  <div>
+                    <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#10b981', textTransform: 'uppercase', marginBottom: '0.25rem' }}>WEF Rank</div>
+                    <div style={{ fontWeight: 700, color: 'var(--color-text)', fontSize: '0.9375rem' }}>{domain.wefInsight.rank}</div>
+                  </div>
+                )}
              </div>
           </div>
 

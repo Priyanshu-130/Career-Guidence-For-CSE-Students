@@ -2,9 +2,14 @@
   {
     "id": "ai",
     "title": "AI, ML & Deep Learning",
-    "description": "Intelligent systems, machine learning models, neural networks, computer vision, and generative AI.",
+    "description": "Intelligent systems, machine learning models, neural networks, computer vision, and generative Agentic AI.",
     "color": "#3b82f6",
-    "overview": "This domain focuses on building intelligent systems that learn from data. It spans supervised and unsupervised learning, deep neural networks, computer vision, and natural language processing — culminating in modern generative AI applications.",
+    "overview": "This domain focuses on building intelligent systems that learn, reason, and act autonomously. Spanning foundational statistical learning, deep neural networks, computer vision, and Transformer architectures — AI is highlighted by the World Economic Forum (WEF) as the single largest catalyst of global workforce transformation, powering next-generation Agentic AI and enterprise intelligence.",
+    "wefInsight": {
+      "rank": "Top WEF Growth Track",
+      "stat": "+38% Net Role Expansion",
+      "focus": "Agentic AI, LLMs & GenAI Watermarking"
+    },
     "prerequisites": [
       "Python Basics",
       "Programming Fundamentals",
@@ -13,56 +18,56 @@
       "Basic Calculus"
     ],
     "skills": [
-      "AI Fundamentals",
-      "Supervised Learning",
-      "Unsupervised Learning",
-      "Model Training",
-      "Feature Engineering",
-      "Neural Networks",
-      "CNN & RNN",
-      "NLP Basics",
-      "Deep Learning"
+      "AI & Agentic Fundamentals",
+      "Supervised & Unsupervised Learning",
+      "Model Training & Feature Engineering",
+      "Neural Networks & Deep Learning",
+      "CNN, RNN & Transformer Architectures",
+      "NLP & Large Language Models (LLMs)",
+      "MLOps & Agent Workflows",
+      "Computer Vision & Multimodal AI"
     ],
     "tools": [
       "Python",
-      "NumPy",
-      "Pandas",
-      "Matplotlib",
+      "NumPy & Pandas",
       "Scikit-learn",
-      "TensorFlow",
-      "PyTorch",
-      "Jupyter Notebook"
+      "TensorFlow & PyTorch",
+      "Hugging Face Transformers",
+      "LangChain & LlamaIndex",
+      "Ollama & OpenCV",
+      "Jupyter & MLflow"
     ],
     "projects": [
       {
-        "name": "Spam Detection",
-        "desc": "Build a classifier to identify spam from ham email messages."
+        "name": "Autonomous AI Research Agent",
+        "desc": "Build an agentic workflow using LangChain that gathers, summarizes, and verifies web research."
       },
       {
-        "name": "Performance Predictor",
-        "desc": "Predict student academic performance from historical data."
+        "name": "Spam & Fraud Detection",
+        "desc": "Build a classifier to identify anomalous transactions and spam messages."
       },
       {
-        "name": "Movie Recommender",
-        "desc": "Collaborative and content-based movie recommendation engine."
+        "name": "Student Performance Predictor",
+        "desc": "Predict student academic trajectories using regression and classification models."
       },
       {
-        "name": "Image Classification",
-        "desc": "CNN that classifies images into multiple object categories."
+        "name": "Multimodal Image & Video Classifier",
+        "desc": "CNN & Transformer architecture that classifies complex image datasets in real time."
       }
     ],
     "roles": [
       "AI Engineer",
       "Machine Learning Engineer",
-      "Deep Learning Engineer",
-      "Data Analyst",
-      "Research Intern"
+      "AI Agent & LLM Specialist",
+      "Deep Learning Researcher",
+      "MLOps Specialist",
+      "Data & AI Scientist"
     ],
     "insights": {
       "timeToLearn": "6–12 months",
-      "jobDemand": "Extremely High",
-      "topCompanies": "Google, OpenAI, Microsoft, NVIDIA",
-      "futureScope": "Limitless (AGI Evolution)"
+      "jobDemand": "Extremely High (WEF Top 3)",
+      "topCompanies": "Google DeepMind, OpenAI, Microsoft, NVIDIA, Meta, Anthropic",
+      "futureScope": "Agentic AI, AGI Evolution & Multimodal Models"
     },
     "miniQuiz": [
       {
@@ -72,36 +77,36 @@
         "q": "Are you comfortable with Python and basic statistics?"
       },
       {
-        "q": "Do you prefer research-oriented tasks over building final UI products?"
+        "q": "Do you prefer research-oriented tasks and algorithmic logic over building UI layouts?"
       },
       {
-        "q": "Are you fascinated by neural networks and generative models?"
+        "q": "Are you fascinated by neural networks, agentic systems, and generative models?"
       }
     ],
     "steps": [
       {
-        "title": "Core Programming",
-        "desc": "Master Python — data structures, OOP, and basic algorithms. Build foundational scripting skills."
+        "title": "Core Programming & Data Science",
+        "desc": "Master Python — data structures, OOP, NumPy, and Pandas. Build foundational algorithmic scripting."
       },
       {
-        "title": "Applied Mathematics",
-        "desc": "Deep-dive into Statistics, Probability, Linear Algebra, and Calculus. These form the backbone of all ML."
+        "title": "Applied Mathematics for AI",
+        "desc": "Deep-dive into Statistics, Probability, Linear Algebra, and Calculus algorithms."
       },
       {
         "title": "Machine Learning Algorithms",
-        "desc": "Learn Supervised, Unsupervised, and Reinforcement Learning. Practice with Scikit-Learn."
+        "desc": "Learn Supervised, Unsupervised, and Reinforcement Learning using Scikit-Learn."
       },
       {
         "title": "Deep Learning & Neural Networks",
-        "desc": "Understand ANNs, CNNs, and RNNs. Gain hands-on experience using TensorFlow or PyTorch."
+        "desc": "Understand ANNs, CNNs, and RNNs. Gain hands-on experience using PyTorch and TensorFlow."
       },
       {
-        "title": "Specialisation — NLP or CV",
-        "desc": "Specialise in text processing (Transformers, LLMs) or image processing (YOLO, ResNets)."
+        "title": "Specialisation — LLMs & Agentic AI",
+        "desc": "Specialise in Transformers, Retrieval-Augmented Generation (RAG), and AI Agent frameworks."
       },
       {
         "title": "Deployment & MLOps",
-        "desc": "Wrap models into APIs using FastAPI, then deploy with Docker, AWS, or Hugging Face."
+        "desc": "Wrap models into REST APIs using FastAPI, containerize with Docker, and deploy on cloud AI pipelines."
       }
     ],
     "curriculum": {
@@ -127,8 +132,8 @@
           "desc": "Architecting neural networks (CNNs, RNNs) and implementing them using TensorFlow and PyTorch."
         },
         {
-          "title": "Specialisation — NLP or CV",
-          "desc": "Advanced specialization in Large Language Models (Transformers) or Computer Vision systems."
+          "title": "Specialisation — LLMs & Agents",
+          "desc": "Advanced specialization in Large Language Models, Transformers, and Autonomous AI Agent frameworks."
         }
       ],
       "year4": [
@@ -152,7 +157,7 @@
       {
         "title": "Hugging Face Course",
         "link": "https://huggingface.co/course",
-        "desc": "State-of-the-art NLP and Transformers tutorial."
+        "desc": "State-of-the-art NLP, Transformers, and Agentic AI tutorial."
       },
       {
         "title": "Fast.ai",
@@ -160,25 +165,25 @@
         "desc": "Practical deep learning for coders with a 'top-down' approach."
       },
       {
-        "title": "Machine Learning Mastery",
-        "link": "https://machinelearningmastery.com/",
-        "desc": "Step-by-step tutorials for almost every ML problem."
+        "title": "WEF Future of Jobs AI Report",
+        "link": "https://www.weforum.org/publications/the-future-of-jobs-report-2025/",
+        "desc": "Insights on global AI talent growth and workforce adoption."
       }
     ],
     "category": "software",
     "careerDetails": {
-      "futureScopeDetail": "The AI industry is rapidly moving towards Artificial General Intelligence (AGI), autonomous agents, and ubiquitous generative AI. Over the next decade, AI will deeply integrate into healthcare diagnostics, automated software engineering, and personalized education.",
+      "futureScopeDetail": "According to the World Economic Forum (WEF) Future of Jobs Report, AI and Machine Learning Specialists are among the top 3 fastest-growing career roles globally, with over 86% of global enterprises planning rapid AI integration. Key future focus areas include Agentic Workflows, Generative Content Watermarking & Provenance (WEF 2025 Breakthrough), Multimodal Foundation Models, and Scalable MLOps.",
       "locations": {
         "india": [
           "Karnataka (Bengaluru)",
           "Telangana (Hyderabad)",
-          "Maharashtra (Pune)",
-          "Delhi NCR (Gurgaon)"
+          "Maharashtra (Pune/Mumbai)",
+          "Delhi NCR (Gurgaon/Noida)"
         ],
         "global": [
           "USA (Silicon Valley/Seattle)",
           "UK (London)",
-          "Canada (Toronto)",
+          "Canada (Toronto/Montreal)",
           "Singapore"
         ]
       },
@@ -188,112 +193,118 @@
         "Microsoft",
         "NVIDIA",
         "Meta",
+        "Anthropic",
         "Tesla"
       ]
     }
   },
   {
     "id": "data",
-    "title": "Data Science",
-    "description": "Data analysis, visualization, statistics, and predictive techniques to drive better decisions.",
+    "title": "Data Science & Big Data",
+    "description": "Data analysis, visualization, statistics, predictive techniques, and Privacy-Enhancing Technologies.",
     "color": "#10b981",
-    "overview": "Data Science involves collecting, cleaning, and analysing large datasets to uncover actionable insights. Practitioners use statistical models, data visualisation tools, and predictive algorithms to support business strategy.",
+    "overview": "Data Science involves collecting, engineering, and extracting actionable intelligence from massive, unstructured datasets. Recognized by the World Economic Forum (WEF) Future of Jobs Report as the #1 fastest-growing specialization globally, data specialists drive strategic decision-making using statistical modeling, predictive analytics, and Privacy-Enhancing Technologies (PETs).",
+    "wefInsight": {
+      "rank": "#1 Fastest Growing Role Globally",
+      "stat": "86% Enterprise Adoption Rate",
+      "focus": "Big Data, Real-Time Analytics & PETs"
+    },
     "prerequisites": [
       "Python Basics",
-      "Statistics",
-      "Probability",
+      "Statistics & Probability",
       "SQL Basics",
+      "Linear Algebra Basics",
       "Spreadsheet Basics"
     ],
     "skills": [
-      "Data Cleaning",
-      "Exploratory Analysis",
-      "Data Visualisation",
-      "Statistical Analysis",
-      "SQL Querying",
-      "Dashboarding",
-      "Predictive Analytics"
+      "Data Cleaning & Preprocessing",
+      "Exploratory Data Analysis (EDA)",
+      "Data Visualisation & Storytelling",
+      "Advanced SQL & Data Warehousing",
+      "Statistical Inference & A/B Testing",
+      "Big Data Distributed Processing",
+      "Predictive Modeling & AutoML",
+      "Privacy-Enhancing Technologies (PETs)"
     ],
     "tools": [
-      "Python",
-      "Pandas",
-      "NumPy",
-      "Matplotlib",
-      "Seaborn",
-      "SQL",
-      "Excel",
-      "Power BI",
-      "Tableau"
+      "Python & R",
+      "Pandas & NumPy",
+      "SQL (PostgreSQL / Snowflake)",
+      "Power BI & Tableau",
+      "Apache Spark & Databricks",
+      "Seaborn & Plotly",
+      "BigQuery & dbt"
     ],
     "projects": [
       {
-        "name": "Sales Dashboard",
-        "desc": "Interactive dashboard tracking revenue, trends, and KPIs."
+        "name": "Enterprise Executive Sales Dashboard",
+        "desc": "Interactive dashboard tracking revenue, multi-region trends, and operational KPIs."
       },
       {
-        "name": "Student Result Analysis",
-        "desc": "Visualise patterns and performance distribution across a cohort."
+        "name": "Real-Time Customer Segmentation Engine",
+        "desc": "K-means clustering and RFM analysis to group users by behavioral patterns."
       },
       {
-        "name": "Customer Segmentation",
-        "desc": "K-means clustering to group customers by behavioural patterns."
+        "name": "Predictive Churn & Analytics Pipeline",
+        "desc": "Predictive ML model for identifying subscription churn risks in real-time."
       },
       {
-        "name": "Trend Analysis Dashboard",
-        "desc": "Time-series visualisation for identifying business trends."
+        "name": "Big Data Time-Series Forecaster",
+        "desc": "Distributed time-series forecasting for supply chain demand using Apache Spark."
       }
     ],
     "roles": [
-      "Data Analyst",
-      "Business Analyst",
+      "Big Data Specialist (WEF #1)",
       "Data Scientist",
-      "BI Developer",
-      "Analytics Intern"
+      "Data Analyst",
+      "Business Intelligence Engineer",
+      "Data Architect",
+      "Analytics Engineer"
     ],
     "insights": {
       "timeToLearn": "6–9 months",
-      "jobDemand": "Very High",
-      "topCompanies": "Google, Deloitte, TCS, Accenture",
-      "futureScope": "Automated analytics and personalised experiences"
+      "jobDemand": "Extremely High (WEF #1 Growth)",
+      "topCompanies": "Amazon, Google, Deloitte, Fractal Analytics, Snowflake, Netflix",
+      "futureScope": "Real-Time Big Data, Automated Analytics & PETs"
     },
     "miniQuiz": [
       {
-        "q": "Do you like finding stories hidden in numbers and charts?"
+        "q": "Do you enjoy discovering hidden trends and stories in massive datasets?"
       },
       {
-        "q": "Is SQL or Excel something you enjoy working with?"
+        "q": "Is writing SQL queries and visualizing complex data something you find rewarding?"
       },
       {
-        "q": "Would you rather analyze a problem than build a piece of hardware?"
+        "q": "Would you rather analyze patterns and drive business strategy than design UI elements?"
       },
       {
-        "q": "Does the idea of predicting business trends excite you?"
+        "q": "Does predicting market trends using statistical algorithms excite you?"
       }
     ],
     "steps": [
       {
-        "title": "Programming & Databases",
-        "desc": "Master Python or R. Deeply understand SQL for querying large datasets."
+        "title": "Programming & Database Mastering",
+        "desc": "Master Python and R. Deeply understand SQL for querying multi-table relational databases."
       },
       {
         "title": "Data Wrangling & EDA",
-        "desc": "Use Pandas and NumPy to clean messy data. Find patterns and anomalies."
+        "desc": "Use Pandas and NumPy to clean messy data, impute missing values, and analyze anomalies."
       },
       {
-        "title": "Data Visualisation",
-        "desc": "Communicate insights visually using Tableau, Power BI, or Python libraries."
+        "title": "Data Visualisation & BI",
+        "desc": "Communicate business insights visually using Tableau, Power BI, and interactive Python libraries."
       },
       {
-        "title": "Applied Statistics",
-        "desc": "Learn A/B testing, hypothesis testing, and inferential statistics."
+        "title": "Applied Statistics & A/B Testing",
+        "desc": "Learn A/B testing, hypothesis testing, and inferential statistics for decision making."
       },
       {
-        "title": "Predictive Modelling",
-        "desc": "Apply ML models for forecasting, clustering, and classification."
+        "title": "Predictive Modeling & ML",
+        "desc": "Apply regression, classification, and forecasting models to practical dataset challenges."
       },
       {
-        "title": "Big Data Technologies",
-        "desc": "Scale with Apache Spark, Hadoop, and cloud data warehouses like Snowflake."
+        "title": "Big Data & Cloud Warehouses",
+        "desc": "Scale data processing with Apache Spark, PySpark, Snowflake, and Google BigQuery."
       }
     ],
     "curriculum": {
@@ -337,7 +348,7 @@
         "desc": "Interactive Python and SQL data science courses."
       },
       {
-        "title": "Google Data Analytics",
+        "title": "Google Data Analytics Certificate",
         "link": "https://grow.google/certificates/data-analytics/",
         "desc": "Industry-standard professional certification for analysts."
       },
@@ -347,14 +358,14 @@
         "desc": "Leading publication for data science techniques and trends."
       },
       {
-        "title": "StatQuest",
+        "title": "StatQuest by Josh Starmer",
         "link": "https://statquest.org/",
-        "desc": "Breakdown of complex statistical concepts into simple visuals."
+        "desc": "Breakdown of complex statistical concepts into simple visual guides."
       }
     ],
     "category": "software",
     "careerDetails": {
-      "futureScopeDetail": "Data Science is evolving from retrospective reporting to predictive and prescriptive analytics. Automated machine learning (AutoML) and real-time big data processing will dominate, shifting the focus towards complex data engineering and strategic decision-making.",
+      "futureScopeDetail": "The WEF Future of Jobs Report ranks Big Data Specialists as the single fastest-growing job role worldwide. As organizations scale digital operations, demand is skyrocketing for professionals skilled in real-time data streaming (Apache Spark), cloud data warehousing (Snowflake/BigQuery), and Privacy-Enhancing Technologies (PETs) to ensure regulatory compliance and secure analytics.",
       "locations": {
         "india": [
           "Karnataka (Bengaluru)",
@@ -371,118 +382,123 @@
       },
       "companies": [
         "Amazon",
+        "Google",
         "Deloitte",
         "Fractal Analytics",
-        "Mu Sigma",
-        "Netflix",
-        "Uber"
+        "Snowflake",
+        "Uber",
+        "Netflix"
       ]
     }
   },
   {
     "id": "web",
     "title": "Web, App & Game Development",
-    "description": "Websites, mobile applications, full-stack software systems, and interactive game experiences.",
+    "description": "Websites, mobile applications, full-stack software systems, FinTech apps, and spatial game experiences.",
     "color": "#f59e0b",
-    "overview": "This domain spans the full stack of digital product development — from crafting pixel-perfect interfaces with HTML, CSS, and JavaScript, to building robust backend APIs, mobile applications, and interactive video games.",
+    "overview": "This domain spans the full stack of digital product development — from crafting pixel-perfect interfaces with HTML, CSS, and JavaScript, to building robust backend APIs, mobile applications, and interactive video games. Highlighted by the WEF as key drivers for digital connectivity and FinTech growth, web and app developers build modern, high-performance web products.",
+    "wefInsight": {
+      "rank": "Top WEF Creator Track",
+      "stat": "+25% Demand Growth",
+      "focus": "FinTech, Spatial Apps & Edge UI"
+    },
     "prerequisites": [
       "Programming Fundamentals",
-      "HTML & CSS",
+      "HTML & CSS Basics",
       "JavaScript Basics",
       "OOP Concepts",
       "Database Basics"
     ],
     "skills": [
-      "Frontend Development",
-      "Backend Development",
-      "RESTful APIs",
-      "Database Design",
-      "Mobile App Basics",
-      "Game Design Basics",
-      "UI/UX Fundamentals"
+      "Modern Responsive Frontend",
+      "Scalable Microservices Backend",
+      "RESTful & GraphQL APIs",
+      "Cross-Platform Mobile Apps",
+      "Database Design & ORMs",
+      "Web Security & Auth (OAuth/JWT)",
+      "Interactive 2D/3D Game Logic",
+      "UI/UX Design Systems & WebAssembly"
     ],
     "tools": [
-      "HTML",
-      "CSS",
-      "JavaScript",
-      "React",
-      "Node.js",
-      "Express.js",
-      "MongoDB",
-      "MySQL",
-      "Flutter",
-      "Unity",
-      "Git"
+      "HTML5 / CSS3 / JavaScript",
+      "React.js & Next.js",
+      "Node.js & Express",
+      "TypeScript",
+      "PostgreSQL & MongoDB",
+      "Flutter & React Native",
+      "Unity (C#)",
+      "Git & Vercel"
     ],
     "projects": [
       {
-        "name": "Portfolio Website",
-        "desc": "A personal site showcasing projects, skills, and contact info."
+        "name": "Full-Stack SaaS Management Platform",
+        "desc": "SaaS dashboard featuring subscription management, stripe payments, and role-based access control."
       },
       {
-        "name": "To-Do Application",
-        "desc": "Full-stack CRUD app with persistent storage and user auth."
+        "name": "Real-Time Collaborative Workspace App",
+        "desc": "Live document editing and chat workspace built with WebSockets and React."
       },
       {
-        "name": "Chat Application",
-        "desc": "Real-time messaging app using WebSockets."
+        "name": "Cross-Platform Mobile FinTech Wallet",
+        "desc": "Mobile financial management app with transaction tracking built in Flutter."
       },
       {
-        "name": "Mobile Calculator",
-        "desc": "Cross-platform calculator built with Flutter."
+        "name": "Interactive WebGL 3D Browser Game",
+        "desc": "3D browser action game utilizing Three.js and WebGL rendering."
       }
     ],
     "roles": [
+      "Full Stack Engineer",
+      "Software & Applications Developer (WEF Top Role)",
+      "FinTech Software Engineer",
       "Frontend Developer",
-      "Backend Developer",
-      "Full Stack Developer",
-      "Mobile App Developer",
+      "Mobile App Developer (iOS/Android)",
       "Game Developer"
     ],
     "insights": {
       "timeToLearn": "4–8 months",
-      "jobDemand": "Evergreen",
-      "topCompanies": "Google, Microsoft, Ubisoft, Electronic Arts",
-      "futureScope": "Web3, XR interfaces, and immersive game worlds"
+      "jobDemand": "Evergreen & High Demand (WEF Top 5)",
+      "topCompanies": "Google, Microsoft, Stripe, Atlassian, Adobe, Ubisoft, EA",
+      "futureScope": "Spatial Computing, WebAssembly & AI-Assisted UI"
     },
     "miniQuiz": [
       {
-        "q": "Do you love seeing your code turn into something visual immediately?"
+        "q": "Do you love seeing your code transform into an interactive visual UI instantly?"
       },
       {
-        "q": "Are you interested in how mobile apps and websites are built?"
+        "q": "Are you curious about how high-traffic web apps and mobile applications function under the hood?"
       },
       {
-        "q": "Do you enjoy the challenge of making things look good AND work well?"
+        "q": "Do you enjoy the dual challenge of sleek design aesthetics and clean backend logic?"
       },
       {
-        "q": "Does the idea of building your own video game sound fun?"
+        "q": "Does building your own SaaS application or video game excite you?"
       }
     ],
     "steps": [
       {
-        "title": "Web Foundations",
-        "desc": "Master HTML, CSS and core JavaScript (DOM, events, ES6+)."
+        "title": "Web Foundations & Modern JS",
+        "desc": "Master semantic HTML, CSS (Flex/Grid/Tailwind), and advanced ES6+ JavaScript."
       },
       {
-        "title": "Frontend Frameworks",
-        "desc": "Learn React.js for component-driven UI and state management."
+        "title": "Frontend Frameworks & Next.js",
+        "desc": "Learn React.js component architecture, state management, and server-side rendering with Next.js."
       },
       {
-        "title": "Backend & Databases",
-        "desc": "Build REST APIs using Node.js/Express. Learn MySQL and MongoDB."
+        "title": "Backend Engineering & Databases",
+        "desc": "Build scalable RESTful and GraphQL APIs using Node.js, Express, and PostgreSQL."
       },
       {
-        "title": "Full Stack Integration",
-        "desc": "Connect frontend and backend, implement auth, and deploy apps."
+        "title": "Full Stack Architecture & Auth",
+        "desc": "Integrate front-to-back authentication (OAuth/JWT), database migrations, and CI/CD deployment."
       },
       {
-        "title": "Mobile Development",
-        "desc": "Learn React Native or Flutter for iOS and Android publication."
+        "title": "Mobile App Development",
+        "desc": "Master cross-platform mobile app development with Flutter or React Native for iOS and Android."
       },
       {
-        "title": "Game Development",
-        "desc": "Create games using Unity (C#) or web-based game libraries."
+        "title": "Game Engines & Spatial Apps",
+        "desc": "Create interactive games using Unity (C#) or web spatial frameworks like Three.js and WebGL."
       }
     ],
     "curriculum": {
@@ -505,7 +521,7 @@
       "year3": [
         {
           "title": "Full Stack Integration",
-          "desc": "End-to-end product development including authentication, Real-time sync, and deployment."
+          "desc": "End-to-end product development including authentication, real-time sync, and deployment."
         },
         {
           "title": "Mobile Development",
@@ -514,7 +530,7 @@
       ],
       "year4": [
         {
-          "title": "Game Development",
+          "title": "Game Development & Spatial Media",
           "desc": "Building interactive 2D/3D web-based and standalone game engines."
         }
       ]
@@ -523,37 +539,37 @@
       {
         "title": "MDN Web Docs",
         "link": "https://developer.mozilla.org/",
-        "desc": "The ultimate resource for web technologies and documentation."
+        "desc": "The authoritative documentation for web standards and APIs."
       },
       {
         "title": "FreeCodeCamp",
         "link": "https://www.freecodecamp.org/",
-        "desc": "Global community for learning full stack development hands-on."
+        "desc": "Global community for learning hands-on full stack development."
       },
       {
-        "title": "frontendmasters",
+        "title": "Frontend Masters",
         "link": "https://frontendmasters.com/",
-        "desc": "In-depth courses from world-class industry engineers."
+        "desc": "In-depth video courses from top principal software engineers."
       },
       {
         "title": "roadmap.sh",
         "link": "https://roadmap.sh/",
-        "desc": "Visual career pathways for every modern web specialisation."
+        "desc": "Interactive visual learning paths for modern software developers."
       }
     ],
     "category": "software",
     "careerDetails": {
-      "futureScopeDetail": "Web and App development is transitioning towards immersive spatial computing (XR), Web3 decentralized applications, and heavily integrated AI assistants. High-performance, edge-rendered applications will become the standard for consumer products.",
+      "futureScopeDetail": "The WEF highlights Software and Application Developers and FinTech Engineers as crucial drivers of digital access and commerce. Future scope centers on spatial computing applications (XR/AR), micro-frontend architectures, high-speed WebAssembly engines, and embedding intelligent AI agents directly into everyday user workflows.",
       "locations": {
         "india": [
           "Karnataka (Bengaluru)",
           "Telangana (Hyderabad)",
-          "Maharashtra (Pune)",
-          "Delhi NCR (Noida)"
+          "Maharashtra (Pune/Mumbai)",
+          "Delhi NCR (Noida/Gurgaon)"
         ],
         "global": [
-          "USA (San Francisco/Austin)",
-          "Canada (Vancouver)",
+          "USA (San Francisco/Seattle/Austin)",
+          "Canada (Vancouver/Toronto)",
           "Germany (Berlin)",
           "Netherlands (Amsterdam)"
         ]
@@ -564,112 +580,119 @@
         "Stripe",
         "Airbnb",
         "Flipkart",
-        "ByteDance"
+        "ByteDance",
+        "Shopify"
       ]
     }
   },
   {
     "id": "security",
     "title": "Cyber Security & Blockchain",
-    "description": "System security, ethical hacking, cryptography, and decentralized application development.",
+    "description": "System security, ethical hacking, cryptography, Zero Trust defense, and decentralized blockchain apps.",
     "color": "#ef4444",
-    "overview": "This domain covers protecting computing systems, networks, and data from attacks. It also spans the development of decentralised systems using blockchain — from smart contracts to on-chain apps.",
+    "overview": "This domain covers protecting computing systems, enterprise networks, and cloud workloads from systemic attacks, while leveraging blockchain for tamper-proof decentralized applications. The World Economic Forum identifies cybersecurity and Security Management as top strategic imperatives as geopolitical and AI-driven cyber risks escalate worldwide.",
+    "wefInsight": {
+      "rank": "Critical WEF Strategic Need",
+      "stat": "92% Global Threat Surge",
+      "focus": "Zero Trust, PETs & Quantum Security"
+    },
     "prerequisites": [
-      "Computer Networks",
-      "Operating Systems",
-      "Linux Basics",
-      "Programming Basics",
+      "Computer Networks Basics",
+      "Operating System Internals",
+      "Linux CLI Commands",
+      "Programming Fundamentals",
       "Cryptography Basics"
     ],
     "skills": [
-      "Network Security",
-      "Web Security",
-      "Ethical Hacking",
-      "Vulnerability Assessment",
-      "Cryptography",
-      "Blockchain Basics",
-      "Smart Contracts",
-      "Decentralised Apps"
+      "Ethical Hacking & Penetration Testing",
+      "Network & Web Security Auditing",
+      "Zero Trust Architecture (ZTNA)",
+      "Incident Response & SIEM Log Analysis",
+      "Applied Cryptography & PKI",
+      "Privacy-Enhancing Technologies (PETs)",
+      "Blockchain Smart Contract Development",
+      "Solidity & Web3 Security Auditing"
     ],
     "tools": [
       "Kali Linux",
-      "Wireshark",
-      "Nmap",
-      "Burp Suite",
-      "Metasploit",
-      "OpenSSL",
-      "Solidity",
-      "Remix IDE"
+      "Wireshark & Nmap",
+      "Burp Suite Professional",
+      "Metasploit Framework",
+      "Splunk & Elastic SIEM",
+      "Ghidra & Radare2",
+      "Solidity & Remix IDE",
+      "Foundry & Hardhat"
     ],
     "projects": [
       {
-        "name": "Password strength checker",
-        "desc": "Evaluate password entropy and resistance to attack vectors."
+        "name": "Automated Web Vulnerability Scanner",
+        "desc": "Python script detecting SQL injection, XSS vulnerabilities, and open server ports."
       },
       {
-        "name": "Vulnerability Scanner",
-        "desc": "Detect open ports and outdated services on a target host."
+        "name": "SIEM Threat Detection & Alert System",
+        "desc": "Log analysis pipeline identifying brute-force attempts and anomalous network spikes."
       },
       {
-        "name": "Phishing Detector",
-        "desc": "ML-based classifier that identifies malicious links."
+        "name": "Zero-Trust Identity Authentication Gateway",
+        "desc": "Multi-factor authentication system with strict continuous token verification."
       },
       {
-        "name": "Simple Smart Contract",
-        "desc": "Deploy a basic ERC-20 token on a test blockchain network."
+        "name": "Audited ERC-20 Decentralized Escrow Contract",
+        "desc": "Smart contract with reentrancy protection deployed on an Ethereum testnet."
       }
     ],
     "roles": [
-      "Security Analyst",
-      "Ethical Hacker",
-      "Pentester",
-      "SOC Analyst",
-      "Blockchain Developer"
+      "Security Management Specialist (WEF Fast-Growing)",
+      "Cybersecurity Analyst",
+      "Ethical Hacker / Penetration Tester",
+      "SOC Incident Responder",
+      "Cloud Security Engineer",
+      "Blockchain & Smart Contract Developer"
     ],
     "insights": {
       "timeToLearn": "6–12 months",
-      "jobDemand": "Critical",
-      "topCompanies": "Cisco, Palo Alto, IBM, Binance",
-      "futureScope": "AI-driven threat detection and Zero Trust"
+      "jobDemand": "Critical (WEF Security Priority)",
+      "topCompanies": "Palo Alto Networks, CrowdStrike, Cisco, IBM Security, Cloudflare, Binance",
+      "futureScope": "Zero Trust, Post-Quantum Cryptography & AI Cyber Defense"
     },
     "miniQuiz": [
       {
-        "q": "Do you think about how to break systems to make them stronger?"
+        "q": "Do you enjoy analyzing how complex software systems can be exploited in order to patch them?"
       },
       {
-        "q": "Are you interested in cryptography and private data?"
+        "q": "Are you fascinated by data privacy, cryptographic keys, and defensive network security?"
       },
       {
-        "q": "Do you enjoy the 'cat and mouse' game of finding exploits?"
+        "q": "Do you like the investigative puzzle of hunting down security threats and bugs?"
       },
       {
-        "q": "Does the idea of decentralized web (Blockchain) intrigue you?"
+        "q": "Does the concept of decentralized ledgers and smart contracts intrigue you?"
       }
     ],
     "steps": [
       {
-        "title": "IT & Networking Foundations",
-        "desc": "Master TCP/IP, DNS, OSI model, and Linux internals."
+        "title": "Networking & OS Foundations",
+        "desc": "Master TCP/IP, OSI layers, DNS, and Linux system administration."
       },
       {
-        "title": "Security Fundamentals",
-        "desc": "Learn CIA triad, auth mechanisms, and CompTIA Security+ syllabus."
+        "title": "Security Concepts & Cryptography",
+        "desc": "Understand the CIA triad, symmetric/asymmetric encryption, hashing, and PKI."
       },
       {
-        "title": "Offensive Security",
-        "desc": "Study OWASP Top 10 and practice on TryHackMe or HackTheBox."
+        "title": "Offensive Security & Pentesting",
+        "desc": "Study OWASP Top 10 vulnerabilities and practice hacking labs on TryHackMe or HackTheBox."
       },
       {
-        "title": "Defensive Security",
-        "desc": "Understand SIEM (Splunk), digital forensics, and incident response."
+        "title": "Defensive Security & SIEM",
+        "desc": "Learn SOC monitoring using Splunk, log forensics, and Zero Trust access controls."
       },
       {
-        "title": "Malware Analysis",
-        "desc": "Learn assembly basics and reverse-engineer binaries with Ghidra."
+        "title": "Binary Analysis & Reverse Engineering",
+        "desc": "Learn x86 assembly, reverse-engineer malware binaries using Ghidra, and analyze exploits."
       },
       {
-        "title": "Cloud Security & Advanced",
-        "desc": "Branch into Cloud audits, DevSecOps, and OSCP certification."
+        "title": "Blockchain & Smart Contracts",
+        "desc": "Write secure smart contracts in Solidity, audit gas costs, and deploy decentralized dApps."
       }
     ],
     "curriculum": {
@@ -701,8 +724,8 @@
       ],
       "year4": [
         {
-          "title": "Cloud Security & Advanced",
-          "desc": "Securing distributed systems and deep dive into Blockchain infrastructure."
+          "title": "Cloud Security & Blockchain",
+          "desc": "Securing distributed cloud systems and deep dive into Blockchain smart contract verification."
         }
       ]
     },
@@ -710,17 +733,17 @@
       {
         "title": "TryHackMe",
         "link": "https://tryhackme.com/",
-        "desc": "Gamified labs for learning real-world cybersecurity."
+        "desc": "Gamified labs for learning practical cybersecurity hands-on."
       },
       {
         "title": "Krebs on Security",
         "link": "https://krebsonsecurity.com/",
-        "desc": "In-depth investigative journalism on global cybercrime."
+        "desc": "Investigative cybercrime research and security breach analysis."
       },
       {
-        "title": "OWASP Hot 10",
+        "title": "OWASP Top 10",
         "link": "https://owasp.org/www-project-top-ten/",
-        "desc": "Standard awareness document for web application security."
+        "desc": "Standard security awareness reference for web application threats."
       },
       {
         "title": "CryptoZombies",
@@ -730,12 +753,12 @@
     ],
     "category": "software",
     "careerDetails": {
-      "futureScopeDetail": "Cyber Security is adopting a Zero Trust architecture globally. With the rise of quantum computing and sophisticated AI-driven cyber attacks, there is an immense demand for automated threat detection, quantum-resistant cryptography, and blockchain-based identity solutions.",
+      "futureScopeDetail": "Ranked by the WEF Global Risks & Future of Jobs Reports as an essential defensive line, Cybersecurity demand is propelled by systemic digital threats and strict data sovereignty laws. Key technological shifts include mandatory Zero Trust Network Architecture (ZTNA), Privacy-Enhancing Technologies (PETs), post-quantum cryptography, and AI-powered automated threat hunting.",
       "locations": {
         "india": [
           "Maharashtra (Pune/Mumbai)",
           "Karnataka (Bengaluru)",
-          "Delhi NCR",
+          "Delhi NCR (Gurgaon/Noida)",
           "Tamil Nadu (Chennai)"
         ],
         "global": [
@@ -749,115 +772,120 @@
         "Palo Alto Networks",
         "CrowdStrike",
         "Cisco",
-        "FireEye",
         "IBM Security",
+        "Cloudflare",
+        "Mandiant",
         "Binance"
       ]
     }
   },
   {
     "id": "cloud",
-    "title": "Cloud Computing",
-    "description": "Scalable virtualization, serverless architecture, containerization, and cloud deployment strategies.",
+    "title": "Cloud Computing & DevOps",
+    "description": "Scalable cloud infrastructure, containerization, serverless architectures, and automated GitOps pipelines.",
     "color": "#f59e0b",
-    "overview": "Cloud Computing delivers on-demand computing services over the internet. Practitioners design and manage scalable infrastructure using virtualisation, containers, and pipelines across AWS, Azure, and GCP.",
+    "overview": "Cloud Computing delivers on-demand compute, storage, and database services over global networks. Highlighted by the WEF as the foundational backbone for AI and digital expansion, cloud engineers design scalable multi-cloud architectures, automated CI/CD pipelines, and edge compute nodes across AWS, Azure, and GCP.",
+    "wefInsight": {
+      "rank": "High-Demand WEF Infrastructure",
+      "stat": "85% Multi-Cloud Migration",
+      "focus": "Edge Cloud, Serverless MLOps & Sovereign Cloud"
+    },
     "prerequisites": [
       "OS Fundamentals",
       "Linux Command Line",
-      "Basic Networking",
+      "Basic Networking Concepts",
       "Bash / Python Scripting",
-      "Web Architecture"
+      "Web Architecture Basics"
     ],
     "skills": [
-      "Virtualisation",
-      "Containerisation",
-      "Serverless Architecture",
-      "Microservices",
-      "IaC",
-      "CI/CD Pipelines",
-      "Load Balancing",
-      "High Availability"
+      "Cloud Infrastructure Provisioning",
+      "Containerization & Orchestration",
+      "Infrastructure as Code (IaC)",
+      "CI/CD Pipeline Automation",
+      "Serverless & Microservices Design",
+      "Site Reliability Engineering (SRE)",
+      "Cloud Observability & Monitoring",
+      "Edge Cloud Architecture"
     ],
     "tools": [
-      "AWS",
-      "Azure",
-      "GCP",
-      "Docker",
-      "Kubernetes",
-      "Terraform",
-      "Linux",
-      "Jenkins",
-      "GitHub Actions"
+      "AWS / Azure / GCP",
+      "Docker & Kubernetes",
+      "Terraform & Ansible",
+      "Linux (Ubuntu/RHEL)",
+      "GitHub Actions & Jenkins",
+      "Prometheus & Grafana",
+      "Helm & ArgoCD"
     ],
     "projects": [
       {
-        "name": "Static Website (AWS)",
-        "desc": "Host a highly available site using S3 and CloudFront."
+        "name": "Multi-Region Highly Available Web Cluster",
+        "desc": "Provision auto-scaling cloud cluster with load balancers and route 53 DNS."
       },
       {
-        "name": "Serverless API",
-        "desc": "REST API using AWS Lambda and API Gateway."
+        "name": "Serverless API & Event Processing Pipeline",
+        "desc": "Build serverless microservices using AWS Lambda, API Gateway, and DynamoDB."
       },
       {
-        "name": "Dockerised Web App",
-        "desc": "Containerise and deploy using Docker and K8s."
+        "name": "Kubernetes Microservice Deployment",
+        "desc": "Containerize microservices and orchestrate deployment using K8s and Helm charts."
       },
       {
-        "name": "Terraform Infrastructure",
-        "desc": "Automate cloud resource provisioning with scripts."
+        "name": "GitOps Terraform Infrastructure Pipeline",
+        "desc": "Automate complete cloud infrastructure deployment via GitHub Actions and Terraform."
       }
     ],
     "roles": [
       "Cloud Engineer",
       "DevOps Engineer",
-      "Cloud Architect",
-      "SRE",
-      "Cloud Security Engineer"
+      "Site Reliability Engineer (SRE)",
+      "Cloud Solutions Architect",
+      "Cloud Security Engineer",
+      "Infrastructure Engineer"
     ],
     "insights": {
       "timeToLearn": "4–8 months",
-      "jobDemand": "Extremely High",
-      "topCompanies": "AWS, Microsoft, Google, IBM",
-      "futureScope": "Edge computing and multi-cloud strategies"
+      "jobDemand": "Extremely High (WEF Core Infra)",
+      "topCompanies": "Amazon Web Services, Microsoft Azure, Google Cloud, Oracle, Red Hat, IBM",
+      "futureScope": "Edge Computing, Multi-Cloud Mesh & Sovereign Cloud Networks"
     },
     "miniQuiz": [
       {
-        "q": "Are you interested in how websites handle millions of users?"
+        "q": "Are you interested in how large-scale platforms like Netflix or Spotify handle millions of simultaneous users?"
       },
       {
-        "q": "Do you enjoy automating tasks with scripts?"
+        "q": "Do you enjoy automating repetitive server configuration tasks using scripts?"
       },
       {
-        "q": "Does managing virtual servers and containers sound cool?"
+        "q": "Does managing virtual containers and cloud clusters sound exciting?"
       },
       {
-        "q": "Are you more interested in infrastructure than frontend pixels?"
+        "q": "Are you more passionate about back-end system reliability and infrastructure than frontend visuals?"
       }
     ],
     "steps": [
       {
-        "title": "Linux & Scripting",
-        "desc": "Master CLI, file systems, and automation in Bash/Python."
+        "title": "Linux & Command Line Automation",
+        "desc": "Master Linux administration, shell scripting (Bash), and system automation."
       },
       {
-        "title": "Networking Essentials",
-        "desc": "Understand DNS, firewalls, subnetting, VPNs, and load balancers."
+        "title": "Networking Essentials for Cloud",
+        "desc": "Understand VPCs, subnets, DNS, gateways, load balancers, and firewalls."
       },
       {
-        "title": "Core Cloud Services",
-        "desc": "Learn EC2, S3, RDS, and IAM on AWS, Azure, or GCP."
+        "title": "Core Cloud Provider Platforms",
+        "desc": "Learn core compute, storage, IAM, and database services on AWS, Azure, or GCP."
       },
       {
-        "title": "Containers & K8s",
-        "desc": "Package apps with Docker and orchestrate with Kubernetes."
+        "title": "Containers & Kubernetes",
+        "desc": "Package applications with Docker and orchestrate microservices at scale using Kubernetes."
       },
       {
-        "title": "IaC & CI/CD",
-        "desc": "Provision with Terraform and automate with GitHub Actions."
+        "title": "IaC & GitOps Pipelines",
+        "desc": "Automate cloud provisioning with Terraform and build CI/CD pipelines with GitHub Actions."
       },
       {
-        "title": "SRE & Cloud Security",
-        "desc": "Apply SRE principles and implement secure IAM policies."
+        "title": "SRE & Cloud Observability",
+        "desc": "Implement SRE practices, monitoring with Prometheus/Grafana, and high-availability design."
       }
     ],
     "curriculum": {
@@ -896,29 +924,29 @@
     },
     "resources": [
       {
-        "title": "AWS Training",
+        "title": "AWS Skill Builder",
         "link": "https://explore.skillbuilder.aws/",
-        "desc": "Free digital training paths directly from Amazon Web Services."
+        "desc": "Official digital training paths directly from Amazon Web Services."
       },
       {
-        "title": "Microsoft Learn",
+        "title": "Microsoft Learn Azure",
         "link": "https://learn.microsoft.com/en-us/training/azure/",
-        "desc": "Official learning paths for Azure cloud architecture."
+        "desc": "Official learning modules for Azure cloud architect pathways."
       },
       {
-        "title": "Google Cloud Training",
+        "title": "Google Cloud Skills Boost",
         "link": "https://www.cloudskillsboost.google/",
-        "desc": "Hands-on labs and tutorials for Google Cloud Platform."
+        "desc": "Hands-on labs and certification prep for Google Cloud Platform."
       },
       {
-        "title": "Kubernetes Docs",
+        "title": "Kubernetes Documentation",
         "link": "https://kubernetes.io/docs/home/",
-        "desc": "The definitive technical guide for container orchestration."
+        "desc": "Definitive documentation for container orchestration."
       }
     ],
     "category": "software",
     "careerDetails": {
-      "futureScopeDetail": "Cloud computing is moving to the edge. Edge computing, multi-cloud strategies, and serverless architectures will become the backbone of low-latency applications (like autonomous driving and AR), driving massive infrastructure demand.",
+      "futureScopeDetail": "According to WEF market findings, cloud computing literacy and cloud infrastructure operations are top priority skills for global organizations. Future expansion relies heavily on Edge Computing for ultra-low latency AI inference, Serverless MLOps pipelines, Infrastructure as Code (IaC), and Sovereign Cloud networks compliant with regional data protection.",
       "locations": {
         "india": [
           "Karnataka (Bengaluru)",
@@ -937,112 +965,119 @@
         "Amazon Web Services",
         "Microsoft Azure",
         "Google Cloud",
-        "Oracle",
-        "IBM",
-        "VMware"
+        "Oracle Cloud",
+        "Red Hat",
+        "VMware",
+        "IBM"
       ]
     }
   },
   {
     "id": "iot",
     "title": "IoT & Embedded Systems",
-    "description": "Smart devices, microcontrollers, sensors, and the integration of hardware with software.",
+    "description": "Smart hardware devices, microcontrollers, edge sensors, TinyML, and physical device connectivity.",
     "color": "#ec4899",
-    "overview": "This domain focuses on programming microcontrollers to interact with the physical world through sensors and wireless communication — forming the foundation of smart homes and industry.",
+    "overview": "This domain connects microcontrollers, sensors, and actuators to digital networks, bringing intelligence to physical environments. The WEF highlights IoT and Autonomous Sensing as key emerging drivers for Industry 4.0, smart cities, sustainable energy grids, and digital healthcare.",
+    "wefInsight": {
+      "rank": "Key WEF Industry 4.0 Driver",
+      "stat": "50B+ Connected Devices",
+      "focus": "Autonomous Sensing, Smart Grids & Edge AI"
+    },
     "prerequisites": [
-      "C Programming Basics",
-      "C++ Basics",
-      "Basic Electronics",
-      "Programming Fundamentals",
-      "Logic Building"
+      "C / C++ Basics",
+      "Basic Circuit Electronics",
+      "Digital Logic Fundamentals",
+      "Programming Logic",
+      "Microprocessor Basics"
     ],
     "skills": [
-      "Microcontrollers",
-      "Embedded Programming",
-      "Sensors & Actuators",
-      "Serial Communication",
-      "IoT Architecture",
-      "Firmware",
-      "Real-Time Systems"
+      "Microcontroller Programming",
+      "Embedded C/C++ Systems",
+      "Sensor & Actuator Interfacing",
+      "Serial Protocols (I2C, SPI, UART)",
+      "Wireless IoT Protocols (MQTT, BLE, LoRa)",
+      "Firmware & RTOS Development",
+      "Edge AI & TinyML Processing",
+      "IoT Cloud Platform Integration"
     ],
     "tools": [
-      "Arduino",
-      "ESP32",
-      "Raspberry Pi",
-      "C/C++",
-      "Python",
-      "MQTT",
-      "Firebase",
-      "Proteus"
+      "ESP32 & STM32",
+      "Arduino & Raspberry Pi",
+      "C / C++ & Python",
+      "FreeRTOS",
+      "MQTT & HTTP/WebSockets",
+      "AWS IoT Core & ThingsBoard",
+      "Proteus & KiCAD"
     ],
     "projects": [
       {
-        "name": "Smart Light Control",
-        "desc": "Remotely control lights via a mobile app or voice."
+        "name": "Smart Energy & Grid Monitoring Node",
+        "desc": "IoT node tracking voltage, current, and transmitting telemetry over MQTT."
       },
       {
-        "name": "Temperature Monitor",
-        "desc": "Real-time tracking with data logging."
+        "name": "Industrial Environmental Sensor Array",
+        "desc": "Air quality and temperature tracking system logging data to cloud dashboards."
       },
       {
-        "name": "Smart Irrigation",
-        "desc": "Automate plant watering using moisture sensors."
+        "name": "Autonomous Soil Moisture & Smart Irrigation",
+        "desc": "Automated plant watering node with wireless sensor feedback."
       },
       {
-        "name": "IoT Attendance",
-        "desc": "RFID-based tracker logging to cloud database."
+        "name": "Edge AI Wearable Health Tracker",
+        "desc": "ESP32 wearable collecting pulse and acceleration with on-device TinyML inference."
       }
     ],
     "roles": [
-      "Embedded Engineer",
-      "IoT Developer",
+      "Embedded Systems Engineer",
+      "IoT Solutions Architect",
       "Firmware Developer",
-      "HW Integration Engineer"
+      "Hardware Integration Engineer",
+      "Edge AI Developer"
     ],
     "insights": {
       "timeToLearn": "6–12 months",
-      "jobDemand": "High",
-      "topCompanies": "Intel, Bosch, Qualcomm, Siemens",
-      "futureScope": "Industry 4.0 and smart infrastructure"
+      "jobDemand": "High Growth (WEF Industry 4.0)",
+      "topCompanies": "Bosch, Siemens, Intel, Qualcomm, Texas Instruments, STMicroelectronics",
+      "futureScope": "Autonomous Biochemical Sensing, Smart Energy Grids & TinyML"
     },
     "miniQuiz": [
       {
-        "q": "Do you enjoy working with microcontrollers and sensors?"
+        "q": "Do you enjoy connecting microcontrollers, sensors, and physical breadboards?"
       },
       {
-        "q": "Are you interested in building smart devices (homes, wearables)?"
+        "q": "Are you interested in building smart devices like wearable trackers or home automation hubs?"
       },
       {
-        "q": "Does writing low-level C code for hardware excite you?"
+        "q": "Does writing efficient low-level C code for microprocessors excite you?"
       },
       {
-        "q": "Do you prefer physical building over pure software simulation?"
+        "q": "Do you prefer physical hardware testing over purely virtual software apps?"
       }
     ],
     "steps": [
       {
-        "title": "Electronics Fundamentals",
-        "desc": "Learn Ohm's law, circuits, digital logic, and breadboarding."
+        "title": "Electronics & Circuit Fundamentals",
+        "desc": "Understand Ohm's law, digital logic gates, breadboarding, and basic component physics."
       },
       {
-        "title": "Embedded C/C++",
-        "desc": "Understand pointers, interrupts, and register manipulation."
+        "title": "Embedded C / C++ Programming",
+        "desc": "Master memory pointers, bitwise manipulation, interrupts, and clock timers."
       },
       {
-        "title": "Arduino & ESP32",
-        "desc": "Interface sensors and motors via UART, I2C, and SPI."
+        "title": "Microcontrollers & Hardware Peripherals",
+        "desc": "Interface sensors and displays via I2C, SPI, and UART protocols using ESP32 or STM32."
       },
       {
-        "title": "Raspberry Pi",
-        "desc": "Run Linux, write Python hardware scripts, and build smart apps."
+        "title": "Edge Computing with Raspberry Pi",
+        "desc": "Run Linux on embedded single-board computers, script in Python, and process camera feeds."
       },
       {
-        "title": "Wireless Protocols",
-        "desc": "Implement MQTT, WiFi, Bluetooth, BLE and LoRa."
+        "title": "Wireless IoT Protocols & Networks",
+        "desc": "Implement MQTT, Bluetooth Low Energy (BLE), LoRaWAN, and Wi-Fi data telemetry."
       },
       {
-        "title": "Cloud & Platforms",
-        "desc": "Connect to Firebase or AWS IoT and build monitoring dashboards."
+        "title": "IoT Cloud Dashboards & TinyML",
+        "desc": "Connect sensors to AWS IoT Core, stream real-time data, and run on-device TinyML models."
       }
     ],
     "curriculum": {
@@ -1081,29 +1116,29 @@
     },
     "resources": [
       {
-        "title": "Arduino Docs",
+        "title": "Arduino Documentation",
         "link": "https://docs.arduino.cc/",
-        "desc": "Project-based guides and documentation for the Arduino ecosystem."
+        "desc": "Project guides and API reference for the open hardware ecosystem."
       },
       {
         "title": "Hackster.io",
         "link": "https://www.hackster.io/",
-        "desc": "The largest community for hardware hackers and IoT projects."
+        "desc": "Global hardware community featuring open-source IoT designs."
       },
       {
-        "title": "Electronic Hub",
+        "title": "Electronics Hub",
         "link": "https://www.electronicshub.org/",
-        "desc": "Step-by-step electronics tutorials and circuit designs."
+        "desc": "Step-by-step tutorials for circuits and embedded hardware."
       },
       {
-        "title": "Adafruit Learning",
+        "title": "Adafruit Learning System",
         "link": "https://learn.adafruit.com/",
-        "desc": "High-quality guides for sensors, displays, and wearables."
+        "desc": "High quality tutorials for sensors, wearables, and microcontrollers."
       }
     ],
     "category": "hardware",
     "careerDetails": {
-      "futureScopeDetail": "IoT is bridging the gap between physical and digital worlds through Industry 4.0, smart cities, and advanced medical wearables. The proliferation of 5G networks will enable millions of low-latency connected devices to operate simultaneously.",
+      "futureScopeDetail": "The WEF Top 10 Emerging Technologies report highlights Autonomous Sensing and connected sensor networks as transformative across agriculture, environmental monitoring, and smart healthcare. With 5G and LPWAN expansion, low-power embedded edge AI (TinyML) will enable intelligent real-time processing directly on low-cost microchips.",
       "locations": {
         "india": [
           "Karnataka (Bengaluru)",
@@ -1112,7 +1147,7 @@
           "Gujarat (Ahmedabad)"
         ],
         "global": [
-          "Germany (Munich)",
+          "Germany (Munich/Stuttgart)",
           "Japan (Tokyo)",
           "South Korea (Seoul)",
           "USA (Boston/Silicon Valley)"
@@ -1124,110 +1159,117 @@
         "Intel",
         "Qualcomm",
         "Texas Instruments",
+        "STMicroelectronics",
         "Honeywell"
       ]
     }
   },
   {
     "id": "robotics",
-    "title": "Robotics & Automation",
-    "description": "Robot design, automation systems, machine control, and intelligent physical systems.",
+    "title": "Robotics & Autonomous Systems",
+    "description": "Robot design, control theory, autonomous mobility, computer vision, and physical AI systems.",
     "color": "#8b5cf6",
-    "overview": "Robotics focuses on designing autonomous systems that can sense, plan, and act in physical environments — from wheeled robots to industrial automation arms.",
+    "overview": "Robotics integrates mechanical design, control theory, and artificial intelligence to create autonomous physical systems. The World Economic Forum identifies robotics and autonomous vehicle specialists among the fastest-growing technological fields as industrial automation and green transport accelerate worldwide.",
+    "wefInsight": {
+      "rank": "Fastest WEF Automation Sector",
+      "stat": "58% Enterprise Adoption Rate",
+      "focus": "EV/Autonomous Systems & Humanoid Tech"
+    },
     "prerequisites": [
-      "Programming Basics",
+      "Programming Basics (C++ / Python)",
       "Basic Electronics",
-      "Mathematics",
-      "Logical Thinking",
-      "Mechanics Basics"
+      "Linear Algebra & Calculus",
+      "Physics Kinematics",
+      "Logical Thinking"
     ],
     "skills": [
-      "Robotics Fundamentals",
-      "Motors & Actuators",
-      "Sensor Integration",
-      "Automation Logic",
-      "Control Systems",
-      "Robot Movement",
-      "Path Planning"
+      "Robot Kinematics & Dynamics",
+      "Actuator & Motor Control Systems",
+      "Sensor Integration & Perception",
+      "Feedback Control Loops (PID)",
+      "Robot Operating System (ROS / ROS2)",
+      "SLAM & Autonomous Path Planning",
+      "Computer Vision & Deep RL",
+      "CAD Modeling & Simulation"
     ],
     "tools": [
-      "Arduino",
-      "Raspberry Pi",
-      "Python",
-      "C/C++",
-      "ROS",
-      "Motor Drivers",
-      "Servo Motors",
-      "Simulation Tools"
+      "ROS2 & Gazebo",
+      "Python & C++",
+      "OpenCV & Isaac Sim",
+      "Raspberry Pi & Jetson Nano",
+      "SolidWorks / Fusion 360",
+      "PID Controllers",
+      "LiDAR & Depth Cameras"
     ],
     "projects": [
       {
-        "name": "Line-Following Robot",
-        "desc": "IR sensor-based robot that autonomously follows a path."
+        "name": "Autonomous SLAM Mapping Robot",
+        "desc": "Differential drive robot building 2D/3D environment maps using LiDAR and ROS2."
       },
       {
-        "name": "Obstacle-Avoiding Robot",
-        "desc": "Ultrasonic sensor-based bot that navigates around obstacles."
+        "name": "6-DOF Servo Robotic Manipulator Arm",
+        "desc": "Inverse kinematics robotic arm capable of precision object pick-and-place."
       },
       {
-        "name": "Robotic Arm Prototype",
-        "desc": "Servo-controlled arm capable of picking and placing objects."
+        "name": "Computer Vision Obstacle Navigation Bot",
+        "desc": "Camera-equipped bot identifying and maneuvering around dynamic obstacles."
       },
       {
-        "name": "Home Automation",
-        "desc": "Control home appliances through voice or mobile."
+        "name": "Autonomous Drone Flight Controller",
+        "desc": "Quadcopter flight stabilizer running PID loops and telemetry."
       }
     ],
     "roles": [
-      "Robotics Engineer",
-      "Automation Engineer",
+      "Autonomous & EV Specialist (WEF Fast-Growing)",
+      "Robotics Systems Engineer",
       "Control Systems Engineer",
+      "Perception & Motion Planning Engineer",
       "Mechatronics Engineer"
     ],
     "insights": {
       "timeToLearn": "6–12 months",
-      "jobDemand": "High",
-      "topCompanies": "ABB, Siemens, Tesla, Boston Dynamics",
-      "futureScope": "Industrial automation and autonomous systems"
+      "jobDemand": "High & Accelerating (WEF Top Trend)",
+      "topCompanies": "Boston Dynamics, ABB, Tesla, NVIDIA Robotics, KUKA, Intuitive Surgical",
+      "futureScope": "Humanoid Assistive Robots, Swarm Intelligence & Autonomous Mobility"
     },
     "miniQuiz": [
       {
-        "q": "Are you fascinated by autonomous machines and robots?"
+        "q": "Are you fascinated by autonomous self-driving vehicles and mobile robots?"
       },
       {
-        "q": "Do you enjoy combining mechanical parts with software logic?"
+        "q": "Do you enjoy combining mechanical chassis, electronics, and algorithm code?"
       },
       {
-        "q": "Is the idea of building a robotic arm or self-driving car exciting?"
+        "q": "Is the idea of programming a robotic arm or quadcopter drone exciting to you?"
       },
       {
-        "q": "Do you have a strong background/interest in physics and math?"
+        "q": "Do you have a strong background or curiosity in physics, math, and spatial logic?"
       }
     ],
     "steps": [
       {
-        "title": "Programming & Logic",
-        "desc": "Build C++ and Python skills. Learn embedded data structures."
+        "title": "Programming & Math Foundations",
+        "desc": "Build strong C++ and Python skills. Learn linear algebra, matrices, and spatial transformations."
       },
       {
-        "title": "Mechanical Basics",
-        "desc": "Understand motors (DC, Servo, Stepper) and robot frames."
+        "title": "Kinematics & Actuator Control",
+        "desc": "Understand motors (DC, Stepper, Servo), motor drivers, and forward/inverse kinematics."
       },
       {
-        "title": "Microcontrollers",
-        "desc": "Use Arduino/Pi to control actuators and coordinate sensors."
+        "title": "Microcontrollers & Hardware",
+        "desc": "Interface sensors (LiDAR, IMU, Ultrasonics) with control boards and Jetson hardware."
       },
       {
-        "title": "Control Theory",
-        "desc": "Study PID controllers and feedback loops for smooth movement."
+        "title": "Control Systems & Feedback Loops",
+        "desc": "Implement PID controllers and state estimators for precise positioning."
       },
       {
-        "title": "ROS Foundations",
-        "desc": "Learn Robot Operating System for sensor fusion and navigation."
+        "title": "ROS2 Navigation & Simulation",
+        "desc": "Master Robot Operating System (ROS2) nodes, topics, services, and Gazebo simulation."
       },
       {
-        "title": "AI & Computer Vision",
-        "desc": "Integrate OpenCV, YOLO, and RL for autonomous behavior."
+        "title": "Perception, SLAM & Autonomous AI",
+        "desc": "Integrate OpenCV vision, SLAM mapping, and reinforcement learning for full autonomy."
       }
     ],
     "curriculum": {
@@ -1266,29 +1308,29 @@
     },
     "resources": [
       {
-        "title": "ROS Tutorials",
+        "title": "ROS2 Documentation",
         "link": "https://docs.ros.org/",
-        "desc": "Official learning path for the world's leading robotics framework."
+        "desc": "Official documentation for the global standard robotics framework."
       },
       {
-        "title": "Clearpath Robotics",
-        "link": "https://clearpathrobotics.com/blog/",
-        "desc": "Real-world industrial robotics case studies and tutorials."
+        "title": "NVIDIA Isaac Robotics",
+        "link": "https://developer.nvidia.com/isaac",
+        "desc": "SDKs and simulation platforms for AI-powered robotics."
       },
       {
         "title": "Robohub",
         "link": "https://robohub.org/",
-        "desc": "Latest research and news from the global robotics community."
+        "desc": "Latest news and peer-reviewed research in global robotics."
       },
       {
-        "title": "ETH Zurich Robotics",
+        "title": "ETH Zurich Autonomous Systems Lab",
         "link": "https://asl.ethz.ch/",
-        "desc": "Cutting-edge robotics research and open-source projects."
+        "desc": "Pioneering research and open-source robotics projects."
       }
     ],
     "category": "hardware",
     "careerDetails": {
-      "futureScopeDetail": "Robotics is expanding beyond factory floors into homes, hospitals, and agriculture. Swarm robotics, humanoid assistive robots, and advanced reinforcement learning will make robots highly adaptable to unstructured environments.",
+      "futureScopeDetail": "WEF Future of Jobs data shows over 58% of surveyed global enterprises actively adopting robotics and physical automation. Growth is led by Autonomous and Electric Vehicle (EV) systems, warehouse logistics robotics, ROS2-based spatial navigation, and vision-language-action (VLA) models for humanoid robotics in unstructured workplaces.",
       "locations": {
         "india": [
           "Maharashtra (Pune)",
@@ -1298,8 +1340,8 @@
         ],
         "global": [
           "Japan (Tokyo/Kyoto)",
-          "USA (Boston)",
-          "Germany (Munich)",
+          "USA (Boston/Silicon Valley)",
+          "Germany (Munich/Stuttgart)",
           "Switzerland (Zurich)"
         ]
       },
@@ -1308,111 +1350,117 @@
         "ABB",
         "KUKA",
         "Tesla",
-        "Fanuc",
-        "NVIDIA Robotics"
+        "NVIDIA Robotics",
+        "Intuitive Surgical",
+        "Fanuc"
       ]
     }
   },
   {
     "id": "vlsi",
-    "title": "VLSI & Computer Architecture",
-    "description": "Chip design, circuit layout, processor architecture, and the fundamentals of hardware.",
+    "title": "VLSI & Chip Architecture",
+    "description": "Integrated circuit design, processor architecture, RISC-V, custom AI silicon, and semiconductor engineering.",
     "color": "#f97316",
-    "overview": "This domain covers the design and verification of digital circuits and CPUs — from logic gates to complete pipelines using HDL and FPGA platforms.",
+    "overview": "This domain covers the design, verification, and fabrication of microchips, microprocessors, and custom silicon architectures. Highlighted by global economic forums as a critical strategic domain, chip design powers everything from smartphone processors to massive AI supercomputer accelerators.",
+    "wefInsight": {
+      "rank": "Strategic WEF Silicon Pillar",
+      "stat": "$1 Trillion Global Market",
+      "focus": "Silicon Sovereignty, RISC-V & Custom AI Accelerators"
+    },
     "prerequisites": [
-      "Number Systems",
-      "Boolean Algebra",
+      "Number Systems & Boolean Algebra",
       "Digital Logic Basics",
-      "Computer Organisation",
-      "Problem-Solving"
+      "Computer Organization Basics",
+      "C Programming",
+      "Problem-Solving Aptitude"
     ],
     "skills": [
-      "Logic Gates",
-      "Combinational Circuits",
-      "Sequential Circuits",
-      "Registers & Counters",
-      "Processor Basics",
-      "Memory Organisation",
-      "Pipelining",
-      "HDL Design"
+      "Combinational & Sequential Circuit Design",
+      "RTL Design in Verilog / SystemVerilog",
+      "FPGA Prototyping & Synthesis",
+      "Processor Pipeline Architecture",
+      "RISC-V / ARM Architecture",
+      "Static Timing Analysis (STA)",
+      "ASIC Physical Design Flow",
+      "Design Verification (UVM)"
     ],
     "tools": [
-      "Verilog",
-      "VHDL",
-      "Logisim",
-      "Vivado",
-      "ModelSim",
-      "Cadence",
-      "Synopsys"
+      "Verilog & SystemVerilog",
+      "VHDL & Logisim",
+      "Xilinx Vivado",
+      "ModelSim & EDA Playground",
+      "Cadence Virtuoso",
+      "Synopsys Design Compiler"
     ],
     "projects": [
       {
-        "name": "ALU Design",
-        "desc": "Arithmetic Logic Unit in Verilog performing basic operations."
+        "name": "32-Bit RISC-V Processor Core",
+        "desc": "Implement a 5-stage pipelined RISC-V CPU core in synthesizable Verilog."
       },
       {
-        "name": "Traffic Light Controller",
-        "desc": "Sequential circuit modelling a traffic signal."
+        "name": "High-Speed Floating Point ALU",
+        "desc": "Arithmetic Logic Unit supporting IEEE-754 floating point arithmetic."
       },
       {
-        "name": "Simple CPU Simulation",
-        "desc": "Fetch-decode-execute cycle implemented in HDL."
+        "name": "FPGA Traffic & Signal Controller",
+        "desc": "State machine circuit implemented and verified on a Xilinx FPGA board."
       },
       {
-        "name": "Digital Counter",
-        "desc": "4-bit synchronous counter with enable controls."
+        "name": "Direct Memory Access (DMA) Controller",
+        "desc": "RTL module facilitating high-bandwidth bus data transfers."
       }
     ],
     "roles": [
-      "VLSI Engineer",
-      "Hardware Design Engineer",
-      "Verification Engineer",
-      "Architecture Intern"
+      "VLSI Design Engineer",
+      "RTL Hardware Engineer",
+      "Design Verification Engineer (UVM)",
+      "ASIC Physical Design Engineer",
+      "Silicon Architecture Specialist"
     ],
     "insights": {
       "timeToLearn": "8–14 months",
-      "jobDemand": "High",
-      "topCompanies": "Intel, NVIDIA, AMD, Qualcomm, TSMC",
-      "futureScope": "AI chips and next-gen edge processors"
+      "jobDemand": "Critical Strategic Need (WEF Semiconductor)",
+      "topCompanies": "NVIDIA, Intel, AMD, Qualcomm, TSMC, Apple Silicon, Arm",
+      "futureScope": "Custom AI Chips (NPUs), RISC-V Open Architecture & 3D Stacking"
     },
     "miniQuiz": [
       {
-        "q": "Do you enjoy logic puzzles and digital circuit design?"
+        "q": "Do you enjoy logic puzzles, Boolean algebra, and digital circuit diagrams?"
       },
       {
-        "q": "Are you interested in how CPUs and microchips work inside?"
+        "q": "Are you curious about how billions of transistors function inside microchips and CPUs?"
       },
       {
-        "q": "Does writing hardware description languages (Verilog) sound fun?"
+        "q": "Does writing Hardware Description Languages like Verilog appeal to you?"
       },
       {
-        "q": "Do you prefer low-level hardware design over high-level app building?"
+        "q": "Do you prefer low-level micro-architecture design over high-level app code?"
       }
     ],
     "steps": [
       {
-        "title": "Digital Logic",
-        "desc": "Master number systems, Boolean algebra, and K-maps."
+        "title": "Digital Logic & Boolean Algebra",
+        "desc": "Master number systems, K-maps, logic gates, adders, and flip-flops."
       },
       {
-        "title": "Circuit Design",
-        "desc": "Design adders, muxes, and flip-flops using Logisim."
+        "title": "Circuit Design & Logisim Simulation",
+        "desc": "Design state machines, multiplexers, and counters using Logisim simulation."
       },
       {
-        "title": "HDL (Verilog/VHDL)",
-        "desc": "Write RTL and testbenches for digital circuit simulation."
+        "title": "RTL Design with Verilog",
+        "desc": "Write synthesizable Verilog code and create testbenches for logic verification."
       },
       {
-        "title": "FPGA Implementation",
-        "desc": "Synthesise HDL designs onto Xilinx/Intel hardware."
+        "title": "FPGA Synthesis & Hardware Labs",
+        "desc": "Synthesize designs onto Xilinx or Intel FPGA boards using Vivado."
       },
       {
-        "title": "Computer Architecture",
-        "desc": "Study RISC-V/ARM, pipelining, and memory hierarchies."
+        "title": "Computer Architecture & RISC-V",
+        "desc": "Study instruction set architectures (RISC-V/ARM), pipelining, and cache hierarchies."
       },
       {
-        "title": "Physical Design",
-        "desc": "Learn cell libraries, place-and-route, and verification."
+        "title": "ASIC Flow & Physical Design",
+        "desc": "Learn synthesis, place-and-route (P&R), clock tree synthesis, and static timing analysis."
       }
     ],
     "curriculum": {
@@ -1444,7 +1492,7 @@
       ],
       "year4": [
         {
-          "title": "Physical Design",
+          "title": "Physical Design & ASIC Flow",
           "desc": "ASIC flow including placement, routing, and timing closure for chip fabrication."
         }
       ]
@@ -1453,33 +1501,33 @@
       {
         "title": "All About Circuits",
         "link": "https://www.allaboutcircuits.com/",
-        "desc": "Massive collection of hardware theory and circuit designs."
-      },
-      {
-        "title": "VLSI System Design",
-        "link": "https://www.vlsisystemdesign.com/",
-        "desc": "Specialized courses for ASIC and FPGA professional paths."
+        "desc": "Massive repository of electrical and hardware circuit engineering."
       },
       {
         "title": "SemiWiki",
         "link": "https://semiwiki.com/",
-        "desc": "The semiconductor wiki for industry trends and expert insights."
+        "desc": "Semiconductor industry forum featuring expert chip architecture analysis."
       },
       {
         "title": "ASIC World",
         "link": "https://www.asic-world.com/",
-        "desc": "Comprehensive tutorials for Verilog, VHDL, and SystemVerilog."
+        "desc": "Comprehensive Verilog, VHDL, and SystemVerilog tutorials."
+      },
+      {
+        "title": "RISC-V International",
+        "link": "https://riscv.org/",
+        "desc": "Open ISA specifications and chip design resources."
       }
     ],
     "category": "hardware",
     "careerDetails": {
-      "futureScopeDetail": "The semiconductor industry is racing to build custom AI accelerators and ultra-efficient chips. Innovations in extreme ultraviolet (EUV) lithography and 3D chip stacking will drive the next decade of exponentially more powerful hardware.",
+      "futureScopeDetail": "Semiconductor supply chains and Silicon Sovereignty initiatives (e.g., India Semiconductor Mission, US CHIPS Act) are driving record investments. WEF trends point to exploding demand for specialized AI hardware accelerators (NPUs/TPUs), RISC-V open instruction architecture, Extreme Ultraviolet (EUV) lithography, and chiplet designs.",
       "locations": {
         "india": [
           "Karnataka (Bengaluru)",
           "Telangana (Hyderabad)",
           "Uttar Pradesh (Noida)",
-          "Gujarat (Dholera)"
+          "Gujarat (Dholera Semiconductor Hub)"
         ],
         "global": [
           "Taiwan (Hsinchu)",
@@ -1490,119 +1538,128 @@
       },
       "companies": [
         "TSMC",
-        "Intel",
         "NVIDIA",
+        "Intel",
         "AMD",
         "Qualcomm",
-        "Broadcom"
+        "Apple Silicon",
+        "Broadcom",
+        "Arm"
       ]
     }
   },
   {
     "id": "networking",
     "title": "Networking & Communication Systems",
-    "description": "Network design, communication protocols, routing, switching, and digital connectivity.",
+    "description": "Network architecture, routing, protocols, 5G/6G, Integrated Sensing, and global connectivity systems.",
     "color": "#059669",
-    "overview": "Networking covers the management of communication systems — from understanding the OSI model to configuring routers and secure enterprise infrastructures.",
+    "overview": "Networking & Communication Systems manage the protocols, routing infrastructure, and optical/wireless networks connecting global information systems. WEF highlights Integrated Sensing and Communication as a top emerging tech trend transforming global digital ecosystems.",
+    "wefInsight": {
+      "rank": "WEF Global Connectivity Essential",
+      "stat": "Integrated Sensing & 6G Rollout",
+      "focus": "SDN, Integrated Sensing & Satellite Mesh"
+    },
     "prerequisites": [
       "Computer Basics",
-      "OS Basics",
-      "Internet Fundamentals",
-      "Logical Thinking",
-      "Command Line Basics"
+      "OS Fundamentals",
+      "Command Line Interface",
+      "Internet Infrastructure Basics",
+      "Logical Thinking"
     ],
     "skills": [
-      "OSI Model",
-      "TCP/IP",
-      "IP Addressing",
-      "Subnetting",
-      "Routing",
-      "Switching",
-      "Wireless Communication",
-      "Troubleshooting"
+      "OSI & TCP/IP Architecture",
+      "CIDR IP Subnetting & Addressing",
+      "Enterprise Routing (OSPF, BGP)",
+      "VLAN Switching & Spanning Tree",
+      "Software-Defined Networking (SDN)",
+      "Wireless Communication (5G / 6G)",
+      "Packet Sniffing & Traffic Analysis",
+      "Zero-Trust Network Access (ZTNA)"
     ],
     "tools": [
       "Cisco Packet Tracer",
       "Wireshark",
-      "Linux",
       "GNS3",
-      "Router Config"
+      "Linux CLI & iptables",
+      "OpenFlow Controllers",
+      "Putty & SSH"
     ],
     "projects": [
       {
-        "name": "Office Network Design",
-        "desc": "Design and simulate a small office LAN."
+        "name": "Enterprise Subnetted LAN Infrastructure",
+        "desc": "Design and simulate multi-VLAN corporate network with OSPF routing."
       },
       {
-        "name": "Subnetting System",
-        "desc": "Tool that generates and validates subnet problems."
+        "name": "Packet Analyzer & Flow Diagnostic Tool",
+        "desc": "Python utility capturing network traffic and calculating packet loss stats."
       },
       {
-        "name": "Packet Analysis Lab",
-        "desc": "Capture and analyse live traffic using Wireshark."
+        "name": "Software-Defined Network (SDN) Controller",
+        "desc": "Configure programmable OpenFlow network controller in Mininet."
       },
       {
-        "name": "Secure Network Layout",
-        "desc": "Design with firewall rules and VLAN segmentation."
+        "name": "Secure VPN & Firewall Gateway",
+        "desc": "Set up encrypted IPsec VPN tunnel with strict access control policies."
       }
     ],
     "roles": [
-      "Network Engineer",
-      "System Admin",
-      "Infrastructure Engineer",
-      "Security Associate"
+      "Network Infrastructure Engineer",
+      "Network Architect",
+      "System Administrator",
+      "5G / Wireless Network Engineer",
+      "Network Security Specialist"
     ],
     "insights": {
       "timeToLearn": "4–8 months",
-      "jobDemand": "High",
-      "topCompanies": "Cisco, Juniper, IBM, Airtel, TCS",
-      "futureScope": "5G and secure cloud connectivity"
+      "jobDemand": "High & Essential (WEF Connectivity)",
+      "topCompanies": "Cisco, Juniper Networks, Ericsson, Nokia, Cloudflare, AT&T, Airtel",
+      "futureScope": "Integrated Sensing & Communication, 6G Wireless & Satellite Networks"
     },
     "miniQuiz": [
       {
-        "q": "Are you interested in how data flows across the globe?"
+        "q": "Are you curious about how internet packets flow across submarine cables and routers globally?"
       },
       {
-        "q": "Do you enjoy troubleshooting complex technical systems?"
+        "q": "Do you enjoy diagnosing system bottlenecks using command line network tools?"
       },
       {
-        "q": "Is the idea of configuring routers and managing VLANs cool?"
+        "q": "Is configuring routers, switches, and secure access lists appealing to you?"
       },
       {
-        "q": "Are you more interested in connections than code-building?"
+        "q": "Are you more passionate about infrastructure connectivity than writing application software?"
       }
     ],
     "steps": [
       {
-        "title": "Fundamentals",
-        "desc": "Understand TCP/IP, DNS, OSI model, and CIDR subnetting."
+        "title": "Networking Fundamentals & Subnetting",
+        "desc": "Master the 7-layer OSI model, TCP/IP, DNS, DHCP, and CIDR subnetting math."
       },
       {
-        "title": "Routing & Switching",
-        "desc": "Configure Cisco IOS for OSPF, VLANs, and spanning tree."
+        "title": "Routing & Enterprise Switching",
+        "desc": "Configure Cisco IOS routers and switches for OSPF, VLANs, trunking, and STP."
       },
       {
-        "title": "Network Security",
-        "desc": "Implement ACLs, firewall rules, NAT, and VPN tunnels."
+        "title": "Network Security & Firewalls",
+        "desc": "Implement Access Control Lists (ACLs), NAT, firewalls, and encrypted IPsec VPNs."
       },
       {
-        "title": "Wireless & Mobile",
-        "desc": "Configure 802.11 and understand 4G/5G generations."
+        "title": "Wireless & Mobile Networks",
+        "desc": "Understand Wi-Fi 6/7 (802.11ax), 5G standalone architecture, and mobile spectrum."
       },
       {
-        "title": "Troubleshooting",
-        "desc": "Master Wireshark, ping, traceroute, and diagnostic tools."
+        "title": "Packet Forensics & Troubleshooting",
+        "desc": "Master Wireshark trace analysis, tcpdump, and latency diagnostic tools."
       },
       {
-        "title": "Cloud & SDN",
-        "desc": "Explore OpenFlow and virtual clouds on AWS/Azure."
+        "title": "Software-Defined Networking & Cloud",
+        "desc": "Explore SDN controllers, programmable networks, and cloud VPC interconnects."
       }
     ],
     "curriculum": {
       "year1": [
         {
           "title": "Fundamentals",
-          "desc": "Mastering the OSI model, IP addressing, and CIDRM subnetting basics."
+          "desc": "Mastering the OSI model, IP addressing, and CIDR subnetting basics."
         },
         {
           "title": "Routing & Switching",
@@ -1636,27 +1693,27 @@
       {
         "title": "Cisco Networking Academy",
         "link": "https://www.netacad.com/",
-        "desc": "World-class networking courses and simulator tools."
+        "desc": "World-class network learning paths and simulation tools."
       },
       {
         "title": "Network World",
         "link": "https://www.networkworld.com/",
-        "desc": "Strategic networking information for IT professionals."
+        "desc": "Industry news and technical benchmarks for IT networking."
       },
       {
-        "title": "Wireshark University",
+        "title": "Wireshark Training",
         "link": "https://www.wireshark.org/training/",
-        "desc": "Mastering packet analysis with the world's leading tool."
+        "desc": "Official packet analysis and troubleshooting guides."
       },
       {
-        "title": "Brocade Learning",
+        "title": "Broadcom / Brocade Learning",
         "link": "https://www.broadcom.com/training",
-        "desc": "Specialized training for storage and enterprise networking."
+        "desc": "Enterprise network and storage architecture courses."
       }
     ],
     "category": "hardware",
     "careerDetails": {
-      "futureScopeDetail": "Next-generation networking relies on Software-Defined Networking (SDN) and the rollout of 6G infrastructure. Satellite-based global internet (like Starlink) and ultra-secure quantum communication networks will redefine global connectivity.",
+      "futureScopeDetail": "The WEF Top Emerging Technologies report flags Integrated Sensing and Communication as a game-changer for 6G and next-generation connectivity. Combined with Software-Defined Networking (SDN) and Low-Earth-Orbit (LEO) satellite constellations, networking engineers are rebuilding global connectivity infrastructure.",
       "locations": {
         "india": [
           "Karnataka (Bengaluru)",
@@ -1667,7 +1724,7 @@
         "global": [
           "USA (San Jose/Dallas)",
           "Sweden (Stockholm)",
-          "China (Shenzhen)",
+          "Finland (Espoo)",
           "UK (London)"
         ]
       },
@@ -1677,6 +1734,7 @@
         "Ericsson",
         "Nokia",
         "Huawei",
+        "Cloudflare",
         "AT&T"
       ]
     }
