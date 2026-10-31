@@ -2,23 +2,31 @@
  * Adaptive Assessment Router & Next Question Selector
  * 
  * Rules:
- * - Dynamic selection based on:
- *   1. Student Intro Profile (semester, self-reported experience, target goals)
- *   2. Previous answer outcomes (correct vs wrong / I don't know)
- *   3. Strict Category Mix:
- *      - O*NET Interest Profiler questions
- *      - Bebras Computational Logic puzzle tasks
- *      - Guided Career Activities (Code.org / Applied Software Labs)
- *      - Technical Knowledge Ladder items (Python, SQL, Java)
- *   4. Zero Orientation filler questions.
+ * - Exactly:
+ *   - 6 Logic puzzle questions from Bebras (computational thinking, graph/network, binary, trees, sorting)
+ *   - 10 Interest-based questions from O*NET (RIASEC traits, work activities)
+ *   - 5 Guided Career Engineering activities from Code.org
+ *   - Total = 21 targeted diagnostic questions
+ * - Dynamic adaptive difficulty:
+ *   - Promotes to higher difficulty on 2 consecutive correct answers
+ *   - Demotes to easier difficulty on 2 consecutive wrong answers or "I don't know"
+ * - Questions adapt dynamically to previous answers and introductory student profile
+ * - Zero Orientation filler questions.
  */
 
 import itemBankData from './item_bank.json';
 
 const ALL_QUESTIONS = (itemBankData.questions || []).filter(q => q.status === 'approved');
 
+export const QUIZ_STRUCTURE = {
+  LOGIC_COUNT: 6,       // Steps 1 to 6 (Bebras logic puzzles)
+  INTEREST_COUNT: 10,   // Steps 7 to 16 (O*NET interest items)
+  GUIDED_COUNT: 5,      // Steps 17 to 21 (Code.org guided engineering activities)
+  TOTAL_QUESTIONS: 21
+};
+
 export function getAdaptiveQuestion({
-  stepNumber,          // 1-based index (e.g., 1 to 15)
+  stepNumber,          // 1-based index (1 to 21)
   previousAnswers = {}, // { [questionId]: { answer, isCorrect, isDontKnow, timeTaken } }
   studentIntro = {},   // { semester, experienceLevel, preferredArea }
   askedQuestionIds = [],
@@ -29,9 +37,8 @@ export function getAdaptiveQuestion({
 
   if (remaining.length === 0) return null;
 
-  // Track recent correctness for ladder stepping
+  // Track consecutive correct and wrong answers for the knowledge ladder
   const answeredList = Object.values(previousAnswers);
-  const recentTwo = answeredList.slice(-2);
   let consecutiveCorrect = 0;
   let consecutiveWrong = 0;
 
@@ -46,7 +53,7 @@ export function getAdaptiveQuestion({
     }
   }
 
-  // Ladder adjustment: promote on 2 correct, demote on 2 wrong
+  // Adjust ladder difficulty based on previous answers (promote on 2 correct, demote on 2 wrong)
   let targetDifficulty = currentLadderLevel;
   if (consecutiveCorrect >= 2) {
     targetDifficulty = Math.min(4, targetDifficulty + 1);
@@ -54,43 +61,33 @@ export function getAdaptiveQuestion({
     targetDifficulty = Math.max(1, targetDifficulty - 1);
   }
 
-  // Phase scheduling across assessment journey:
-  // Q1 - Q2: Bebras Computational Logic / Starter Diagnostic (calibrating baseline reasoning)
-  // Q3 - Q5: O*NET Work Activities & RIASEC Interest Profiling
-  // Q6 - Q7: Guided Career Activities (Code.org / Real-world engineering labs)
-  // Q8+: Adaptive Technical Knowledge Ladder (Difficulty dynamically adjusts to student capability)
+  // Strict Section Allocation:
+  // Step 1 - 6: Bebras Logic Puzzles (6 questions)
+  // Step 7 - 16: O*NET Interest Profiler Items (10 questions)
+  // Step 17 - 21: Code.org Guided Engineering Activities (5 questions)
 
-  let preferredCategory = 'knowledge';
-  let preferredTopic = null;
+  let preferredCategory = 'logic';
+  let categoryLabel = 'Bebras Computational Logic Puzzle';
 
-  if (stepNumber <= 2) {
+  if (stepNumber <= QUIZ_STRUCTURE.LOGIC_COUNT) {
     preferredCategory = 'logic';
-  } else if (stepNumber <= 5) {
+    categoryLabel = 'Bebras Computational Logic Puzzle';
+  } else if (stepNumber <= (QUIZ_STRUCTURE.LOGIC_COUNT + QUIZ_STRUCTURE.INTEREST_COUNT)) {
     preferredCategory = 'interest';
-  } else if (stepNumber <= 7) {
-    preferredCategory = 'guided_activity';
+    categoryLabel = 'O*NET Career Interest Activity';
   } else {
-    preferredCategory = 'knowledge';
-    // Focus topic according to student intro or adaptive exploration
-    const preferredArea = (studentIntro.preferredArea || '').toLowerCase();
-    if (preferredArea.includes('data') || preferredArea.includes('sql') || preferredArea.includes('database')) {
-      preferredTopic = 'sql';
-    } else if (preferredArea.includes('system') || preferredArea.includes('java') || preferredArea.includes('backend')) {
-      preferredTopic = 'java';
-    } else {
-      preferredTopic = 'python';
-    }
+    preferredCategory = 'guided_activity';
+    categoryLabel = 'Code.org Guided Career Engineering Lab';
   }
 
-  // 1. Try exact match: category + topic + difficulty
+  // 1. Try matching preferred category and difficulty level
   let candidates = remaining.filter(q => {
     const catMatch = q.category === preferredCategory;
     const diffMatch = preferredCategory === 'interest' ? true : q.difficulty === targetDifficulty;
-    const topicMatch = preferredTopic ? q.topic === preferredTopic : true;
-    return catMatch && diffMatch && topicMatch;
+    return catMatch && diffMatch;
   });
 
-  // 2. Fallback: match category + difficulty
+  // 2. Fallback: match category with adjacent difficulty (target +/- 1)
   if (candidates.length === 0) {
     candidates = remaining.filter(q => {
       const catMatch = q.category === preferredCategory;
@@ -99,16 +96,12 @@ export function getAdaptiveQuestion({
     });
   }
 
-  // 3. Fallback: match category
+  // 3. Fallback: any question in the preferred category
   if (candidates.length === 0) {
     candidates = remaining.filter(q => q.category === preferredCategory);
   }
 
-  // 4. Fallback: any remaining question matching ladder difficulty
-  if (candidates.length === 0) {
-    candidates = remaining.filter(q => Math.abs(q.difficulty - targetDifficulty) <= 1);
-  }
-
+  // 4. Ultimate fallback if category is exhausted: any remaining question
   if (candidates.length === 0) {
     candidates = remaining;
   }
@@ -120,6 +113,7 @@ export function getAdaptiveQuestion({
     targetDifficulty,
     consecutiveCorrect,
     consecutiveWrong,
-    reasoning: `Scheduled step ${stepNumber} (${preferredCategory}) at Difficulty Level ${targetDifficulty} based on your introductory profile and ${consecutiveCorrect > 0 ? `${consecutiveCorrect} correct answer(s) in a row` : consecutiveWrong > 0 ? `${consecutiveWrong} consecutive miss/IDK (adjusting difficulty)` : 'balanced performance'}.`
+    categoryLabel,
+    reasoning: `Selected Question #${stepNumber} (${categoryLabel}) at Difficulty Level ${targetDifficulty} based on your introductory profile (${studentIntro.experienceLevel || 'standard'}) and ${consecutiveCorrect > 0 ? `${consecutiveCorrect} correct answer(s) in a row` : consecutiveWrong > 0 ? `${consecutiveWrong} consecutive miss/IDK (adjusting difficulty)` : 'balanced performance'}.`
   };
 }

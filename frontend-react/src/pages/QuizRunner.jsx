@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getApiBaseUrl } from '../utils/roadmapHelper';
 import { useAuth } from '../context/AuthContext';
-import { getAdaptiveQuestion } from '../data/adaptive/adaptiveRouter';
+import { getAdaptiveQuestion, QUIZ_STRUCTURE } from '../data/adaptive/adaptiveRouter';
 import { domainMapping } from '../data/adaptive/adaptiveEngine';
 import domainMappingConfig from '../data/adaptive/domain_mapping_version.json';
 import { 
@@ -19,7 +19,9 @@ import {
   Zap, 
   Bot,
   Brain,
-  Award
+  Award,
+  Layers,
+  Activity
 } from 'lucide-react';
 
 export default function QuizRunner() {
@@ -39,10 +41,11 @@ export default function QuizRunner() {
   });
 
   // Step 2: Adaptive Quiz Running State
-  const TOTAL_ADAPTIVE_QUESTIONS = 10;
+  const TOTAL_QUESTIONS = QUIZ_STRUCTURE.TOTAL_QUESTIONS; // 21 total: 6 logic, 10 interest, 5 guided
   const [currentStep, setCurrentStep] = useState(1);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [agentReasoning, setAgentReasoning] = useState('');
+  const [categoryLabel, setCategoryLabel] = useState('');
   const [selectedOption, setSelectedOption] = useState(null);
   const [answers, setAnswers] = useState({});
   const [askedIds, setAskedIds] = useState([]);
@@ -52,7 +55,6 @@ export default function QuizRunner() {
 
   // Initial question load upon entering quiz stage
   const startAdaptiveSession = () => {
-    // Set baseline ladder level from intro
     let startLvl = 2;
     if (introProfile.experienceLevel === 'zero') startLvl = 1;
     else if (introProfile.experienceLevel === 'intermediate') startLvl = 3;
@@ -70,6 +72,8 @@ export default function QuizRunner() {
     if (initial) {
       setCurrentQuestion(initial.question);
       setAgentReasoning(initial.reasoning);
+      setCategoryLabel(initial.categoryLabel);
+      setCurrentLadderLevel(initial.targetDifficulty);
       setAskedIds([initial.question.id]);
       setQuestionStartTime(Date.now());
       setStage('quiz');
@@ -105,7 +109,7 @@ export default function QuizRunner() {
     };
     setAnswers(updatedAnswers);
 
-    if (currentStep < TOTAL_ADAPTIVE_QUESTIONS) {
+    if (currentStep < TOTAL_QUESTIONS) {
       const nextStepNum = currentStep + 1;
       const nextResult = getAdaptiveQuestion({
         stepNumber: nextStepNum,
@@ -118,6 +122,7 @@ export default function QuizRunner() {
       if (nextResult) {
         setCurrentQuestion(nextResult.question);
         setAgentReasoning(nextResult.reasoning);
+        setCategoryLabel(nextResult.categoryLabel);
         setCurrentLadderLevel(nextResult.targetDifficulty);
         setAskedIds(prev => [...prev, nextResult.question.id]);
         setSelectedOption(null);
@@ -132,23 +137,40 @@ export default function QuizRunner() {
   const finalizeAndSubmitResults = async (finalAnswers) => {
     setLoading(true);
 
-    // 1. Calculate RIASEC Vector from Interest Questions
+    // 1. Calculate RIASEC Vector from 10 O*NET Interest Questions
     const riasecScores = { R: 40, I: 50, A: 40, S: 40, E: 40, C: 40 };
     Object.values(finalAnswers).forEach(ans => {
       if (ans.category === 'interest' && ans.riasec) {
         const opt = ans.answer || '';
         let weight = 60;
-        if (opt.includes('(5)') || opt.includes('Strongly Like')) weight = 90;
-        else if (opt.includes('(4)') || opt.includes('Like')) weight = 75;
+        if (opt.includes('(5)') || opt.includes('Strongly Like')) weight = 95;
+        else if (opt.includes('(4)') || opt.includes('Like')) weight = 80;
+        else if (opt.includes('(3)') || opt.includes('Neutral')) weight = 50;
         else if (opt.includes('(2)') || opt.includes('Dislike')) weight = 30;
         else if (opt.includes('(1)')) weight = 15;
         riasecScores[ans.riasec] = Math.min(100, Math.round((riasecScores[ans.riasec] + weight) / 2));
       }
     });
 
-    // 2. Derive Domain Recommendations using pure O*NET Euclidean formula
-    const hypothesis = domainMapping(riasecScores, null, domainMappingConfig);
-    const topDomain = hypothesis.top3Domains[0] || { title: 'AI, ML & Deep Learning', score: 85, id: 'ai' };
+    // 2. Behavioral adjustment from Bebras Logic and Code.org Guided Activities
+    let correctCount = 0;
+    let guidedCompleted = 0;
+    Object.values(finalAnswers).forEach(ans => {
+      if (ans.category === 'logic' && ans.isCorrect) correctCount++;
+      if (ans.category === 'guided_activity' && ans.isCorrect) guidedCompleted++;
+    });
+
+    // Derive Domain Recommendations using pure O*NET Euclidean formula
+    const behaviorSignals = {
+      domainAdjustments: {
+        ai: Math.min(15, correctCount * 2),
+        web: Math.min(15, guidedCompleted * 3),
+        security: Math.min(15, correctCount * 2)
+      }
+    };
+
+    const hypothesis = domainMapping(riasecScores, behaviorSignals, domainMappingConfig);
+    const topDomain = hypothesis.top3Domains[0] || { title: 'AI, ML & Deep Learning', score: 88, id: 'ai' };
 
     // Format scores object for Results page
     const processScores = {};
@@ -200,16 +222,34 @@ export default function QuizRunner() {
         <div className="max-w-xl w-full bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6 sm:p-10 shadow-lg">
           
           <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold w-fit mb-4">
-            <Bot size={15} /> Adaptive Assessment Agent
+            <Bot size={15} /> 21-Question Adaptive Diagnostic Agent
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-extrabold text-on-surface mb-2">
-            Personalize Your Diagnostic
+            Personalize Your Assessment
           </h1>
           <p className="text-sm text-on-surface-variant mb-6 leading-relaxed">
-            Our assessment agent dynamically chooses questions for you based on your introductory background:
-            <strong> O*NET career interests</strong>, <strong>Bebras computational puzzles</strong>, and <strong>Code.org engineering activities</strong>.
+            Your assessment sequence adapts dynamically across three verified academic components:
           </p>
+
+          {/* Breakdown cards */}
+          <div className="grid grid-cols-3 gap-2.5 mb-6 text-center">
+            <div className="p-3 rounded-xl bg-surface-container border border-outline-variant/30">
+              <div className="text-lg font-black text-primary">6</div>
+              <div className="text-[11px] font-bold text-on-surface">Bebras Puzzles</div>
+              <div className="text-[10px] text-on-surface-variant">Logic & Graph</div>
+            </div>
+            <div className="p-3 rounded-xl bg-surface-container border border-outline-variant/30">
+              <div className="text-lg font-black text-accent">10</div>
+              <div className="text-[11px] font-bold text-on-surface">O*NET Interests</div>
+              <div className="text-[10px] text-on-surface-variant">RIASEC Profiler</div>
+            </div>
+            <div className="p-3 rounded-xl bg-surface-container border border-outline-variant/30">
+              <div className="text-lg font-black text-success">5</div>
+              <div className="text-[11px] font-bold text-on-surface">Code.org Labs</div>
+              <div className="text-[10px] text-on-surface-variant">Guided Career</div>
+            </div>
+          </div>
 
           <div className="flex flex-col gap-5 mb-8">
             {/* Semester */}
@@ -231,14 +271,14 @@ export default function QuizRunner() {
             {/* Experience Level */}
             <div>
               <label className="block text-xs font-bold text-on-surface uppercase tracking-wider mb-2">
-                Programming Exposure
+                Prior Coding Background
               </label>
               <div className="grid grid-cols-2 gap-3">
                 {[
                   { id: 'zero', label: 'Zero Prior Coding', desc: 'Explainer & logic first' },
-                  { id: 'beginner', label: 'Beginner', desc: 'Know basic variables/loops' },
-                  { id: 'intermediate', label: 'Intermediate', desc: 'Built scripts & projects' },
-                  { id: 'experienced', label: 'Advanced', desc: 'Strong DSA & frameworks' }
+                  { id: 'beginner', label: 'Beginner', desc: 'Variables & conditions' },
+                  { id: 'intermediate', label: 'Intermediate', desc: 'Built projects & loops' },
+                  { id: 'experienced', label: 'Advanced', desc: 'DSA & software design' }
                 ].map(lvl => (
                   <button
                     key={lvl.id}
@@ -260,14 +300,14 @@ export default function QuizRunner() {
             {/* Target Area of Interest */}
             <div>
               <label className="block text-xs font-bold text-on-surface uppercase tracking-wider mb-2">
-                Curious Career Specialization
+                Preferred Area for Deep-Dive
               </label>
               <select
                 value={introProfile.preferredArea}
                 onChange={(e) => setIntroProfile({ ...introProfile, preferredArea: e.target.value })}
                 className="w-full p-3.5 rounded-xl border border-outline-variant/40 bg-surface-container text-on-surface text-sm font-semibold focus:outline-none focus:border-primary"
               >
-                <option value="AI, ML & Data Science">Artificial Intelligence & Data Science</option>
+                <option value="AI, ML & Data Science">Artificial Intelligence, ML & Data Science</option>
                 <option value="Full Stack & Cloud Systems">Web Development, APIs & Cloud Systems</option>
                 <option value="Cybersecurity & Networks">Cybersecurity, Networking & Systems</option>
                 <option value="Open to Discovery">Undecided / Exploring Broad Options</option>
@@ -280,7 +320,7 @@ export default function QuizRunner() {
             onClick={startAdaptiveSession}
             className="w-full py-4 rounded-xl bg-primary text-on-primary font-bold text-base hover:bg-primary-container shadow-md transition-all flex items-center justify-center gap-2"
           >
-            <span>Launch Personalized Assessment</span>
+            <span>Start 21-Question Diagnostic</span>
             <ArrowRight size={18} />
           </button>
 
@@ -294,7 +334,15 @@ export default function QuizRunner() {
   // -------------------------------------------------------------
   if (!currentQuestion) return null;
 
-  const progressPct = Math.round((currentStep / TOTAL_ADAPTIVE_QUESTIONS) * 100);
+  const progressPct = Math.round((currentStep / TOTAL_QUESTIONS) * 100);
+
+  // Section milestone indicator
+  let currentPhase = 'Phase 1: Bebras Logic';
+  if (currentStep > QUIZ_STRUCTURE.LOGIC_COUNT && currentStep <= (QUIZ_STRUCTURE.LOGIC_COUNT + QUIZ_STRUCTURE.INTEREST_COUNT)) {
+    currentPhase = 'Phase 2: O*NET Career Interests';
+  } else if (currentStep > (QUIZ_STRUCTURE.LOGIC_COUNT + QUIZ_STRUCTURE.INTEREST_COUNT)) {
+    currentPhase = 'Phase 3: Code.org Guided Labs';
+  }
 
   return (
     <div className="min-h-screen bg-background text-on-surface flex flex-col pb-16 animate-in">
@@ -312,10 +360,10 @@ export default function QuizRunner() {
 
           <div className="flex items-center gap-3">
             <span className="text-xs uppercase tracking-wider font-extrabold text-primary">
-              {currentQuestion.category.replace('_', ' ')}
+              {currentPhase}
             </span>
             <span className="text-xs font-bold text-on-surface-variant">
-              Q{currentStep} of {TOTAL_ADAPTIVE_QUESTIONS}
+              Q{currentStep} of {TOTAL_QUESTIONS}
             </span>
           </div>
 
@@ -409,7 +457,7 @@ export default function QuizRunner() {
             onClick={handleNextQuestion}
             className="px-8 py-3.5 rounded-xl bg-primary text-on-primary font-bold text-sm hover:bg-primary-container shadow-md transition-all flex items-center gap-2 disabled:opacity-40 disabled:pointer-events-none"
           >
-            <span>{currentStep === TOTAL_ADAPTIVE_QUESTIONS ? (loading ? 'Analyzing...' : 'Complete & View Results') : 'Next Question'}</span>
+            <span>{currentStep === TOTAL_QUESTIONS ? (loading ? 'Analyzing...' : 'Complete & View Results') : 'Next Question'}</span>
             <ArrowRight size={18} />
           </button>
         </div>

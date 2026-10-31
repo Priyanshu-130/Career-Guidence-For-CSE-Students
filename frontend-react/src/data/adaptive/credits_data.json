@@ -83,6 +83,20 @@
       "source_url": "https://codehs.com/curriculum/catalog",
       "attribution_text": "Original hands-on software engineering laboratory exercise authored by CSE PathFinder Curriculum Team.",
       "item_count": 2
+    },
+    {
+      "source": "Code.org Computer Science Principles (Unit 1: Digital Information)",
+      "license": "CC BY-NC-SA 4.0",
+      "source_url": "https://code.org/educate/csp",
+      "attribution_text": "Adapted from Code.org CS Principles Unit 1 Digital Information compression labs under CC BY-NC-SA 4.0.",
+      "item_count": 1
+    },
+    {
+      "source": "Code.org Computer Science Principles (Unit 2: The Internet)",
+      "license": "CC BY-NC-SA 4.0",
+      "source_url": "https://code.org/educate/csp",
+      "attribution_text": "Adapted from Code.org CS Principles Internet Simulator curriculum under CC BY-NC-SA 4.0.",
+      "item_count": 1
     }
   ]
 }
