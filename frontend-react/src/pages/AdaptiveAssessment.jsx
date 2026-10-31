@@ -17,7 +17,8 @@ import {
   Brain,
   ShieldCheck,
   Zap,
-  Info
+  Info,
+  Check
 } from 'lucide-react';
 
 import {
@@ -54,11 +55,17 @@ export default function AdaptiveAssessment() {
   // -----------------------------------------------------------------------
   // STEP 1: INTRO PROFILE FORM STATE
   // -----------------------------------------------------------------------
-  const [codingExperience, setCodingExperience] = useState('none'); // 'none' | 'basic' | 'intermediate'
-  const [seenLanguages, setSeenLanguages] = useState([]);
-  const [thingsBuilt, setThingsBuilt] = useState([]);
-  const [enjoyedSubjects, setEnjoyedSubjects] = useState([]);
-  const [toolsUsed, setToolsUsed] = useState([]);
+  // Section 01: Programming experience ('none' | 'basic' | 'intermediate' | 'advanced')
+  const [codingExperience, setCodingExperience] = useState('none');
+  
+  // Section 02: Technical knowledge
+  const [seenLanguages, setSeenLanguages] = useState(['None yet']);
+  
+  // Section 03: Previous experience
+  const [thingsBuilt, setThingsBuilt] = useState(['Nothing yet — starting completely fresh']);
+  
+  // Section 04: Interests
+  const [interests, setInterests] = useState(['Artificial Intelligence', 'Software development']);
 
   // -----------------------------------------------------------------------
   // STEP 2: STARTER DIAGNOSTIC STATE
@@ -139,7 +146,7 @@ export default function AdaptiveAssessment() {
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [questionCount, setQuestionCount] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
-  const [lastEvent, setLastEvent] = useState(null); // 'promote' | 'demote' | 'dont_know'
+  const [lastEvent, setLastEvent] = useState(null);
   const [loadingQuestion, setLoadingQuestion] = useState(false);
 
   // Explainer Card & Guided Activity Reflection
@@ -161,33 +168,43 @@ export default function AdaptiveAssessment() {
   const [feedbackComment, setFeedbackComment] = useState('');
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
-  // -----------------------------------------------------------------------
-  // STEP 1 HANDLERS: PROFILE FORM
-  // -----------------------------------------------------------------------
-  const toggleArrayItem = (setter, current, item) => {
-    if (current.includes(item)) {
-      setter(current.filter(i => i !== item));
+  // Helper for toggle multi-select with exclusive "none" / "nothing" item
+  const toggleWithExclusive = (setter, currentList, item, exclusiveItem) => {
+    if (item === exclusiveItem) {
+      setter([exclusiveItem]);
+      return;
+    }
+    const filtered = currentList.filter(i => i !== exclusiveItem);
+    if (filtered.includes(item)) {
+      const remaining = filtered.filter(i => i !== item);
+      setter(remaining.length === 0 ? [exclusiveItem] : remaining);
     } else {
-      setter([...current, item]);
+      setter([...filtered, item]);
     }
   };
 
+  // -----------------------------------------------------------------------
+  // STEP 1 HANDLERS: PROFILE FORM
+  // -----------------------------------------------------------------------
   const handleProfileSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
 
-    // Derive per-topic self-reported experience
+    // Map to normalized topics for adaptiveEngine
+    const hasPython = seenLanguages.includes('Python') || seenLanguages.includes('python');
+    const hasJava = seenLanguages.includes('Java') || seenLanguages.includes('java');
+    const hasSql = seenLanguages.includes('Database Management') || seenLanguages.includes('sql');
+
     const topics = {
-      python: seenLanguages.includes('python') ? codingExperience : 'none',
-      java: seenLanguages.includes('java') ? codingExperience : 'none',
-      sql: seenLanguages.includes('sql') ? codingExperience : 'none'
+      python: hasPython ? codingExperience : 'none',
+      java: hasJava ? codingExperience : 'none',
+      sql: hasSql ? codingExperience : 'none'
     };
 
     const introProfile = {
       codingExperience,
       seenLanguages,
       thingsBuilt,
-      enjoyedSubjects,
-      toolsUsed,
+      enjoyedSubjects: interests,
       topics
     };
 
@@ -228,24 +245,27 @@ export default function AdaptiveAssessment() {
       const diagScore = diagnosticScore(updatedAnswers, null, rulesConfig);
       setDiagnosticResult(diagScore);
 
-      // Derive starting levels per topic
+      const hasPython = seenLanguages.includes('Python') || seenLanguages.includes('python');
+      const hasJava = seenLanguages.includes('Java') || seenLanguages.includes('java');
+      const hasSql = seenLanguages.includes('Database Management') || seenLanguages.includes('sql');
+
       const topics = {
-        python: seenLanguages.includes('python') ? codingExperience : 'none',
-        java: seenLanguages.includes('java') ? codingExperience : 'none',
-        sql: seenLanguages.includes('sql') ? codingExperience : 'none'
+        python: hasPython ? codingExperience : 'none',
+        java: hasJava ? codingExperience : 'none',
+        sql: hasSql ? codingExperience : 'none'
       };
 
       const placements = startingLevel(topics, diagScore, rulesConfig);
       setTopicPlacements(placements);
 
       // Determine starting topic and level
-      const initialTopic = seenLanguages.includes('python') ? 'python' : (seenLanguages.includes('sql') ? 'sql' : 'python');
+      const initialTopic = hasPython ? 'python' : (hasSql ? 'sql' : 'python');
       const initialLevel = placements[initialTopic]?.level ?? (diagScore.category === 'strong_logic' ? 1 : 0);
 
       setCurrentTopic(initialTopic);
       setCurrentLevel(initialLevel);
 
-      // If level is 0, prepare explainer-first
+      // If level is 0, prepare explainer-first (zero-knowledge pathway)
       if (initialLevel === 0) {
         setShowExplainerCard(true);
         setActiveExplainer(explainerCardsData.explainers[0]);
@@ -274,7 +294,6 @@ export default function AdaptiveAssessment() {
       if (res.question) {
         setCurrentQuestion(res.question);
 
-        // Check if question calls for an explainer card
         if (res.explainer_first || res.question.explainer_ref) {
           const refId = res.question.explainer_ref || 'exp_logic_patterns';
           const found = explainerCardsData.explainers.find(e => e.id === refId) || explainerCardsData.explainers[0];
@@ -284,8 +303,8 @@ export default function AdaptiveAssessment() {
           setReflectionText('');
         }
       } else {
-        // Questions exhausted for this topic; switch topic or finish
-        if (topic === 'python' && seenLanguages.includes('sql')) {
+        const hasSql = seenLanguages.includes('Database Management') || seenLanguages.includes('sql');
+        if (topic === 'python' && hasSql) {
           setCurrentTopic('sql');
           fetchNextLadderQuestion('sql', topicPlacements.sql?.level || 1);
         } else {
@@ -305,7 +324,6 @@ export default function AdaptiveAssessment() {
     const isDontKnow = answer.includes("I don't know");
     const isCorrect = (answer === currentQuestion.answer || answer === currentQuestion.correctOption) && !isDontKnow;
 
-    // Track answer for RIASEC interest calculation
     const responseRecord = {
       questionId: currentQuestion.id,
       itemType: currentQuestion.category || currentQuestion.type,
@@ -321,7 +339,6 @@ export default function AdaptiveAssessment() {
 
     setAllAnswerResponses(prev => [...prev, responseRecord]);
 
-    // Send answer attempt to API
     const res = await submitAnswer({
       session_id: sessionId,
       student_email: studentEmail,
@@ -337,12 +354,10 @@ export default function AdaptiveAssessment() {
     const newLvl = res.new_level ?? currentLevel;
     setCurrentLevel(newLvl);
 
-    // Event notification
     if (res.transition_event === 'promote') {
       setLastEvent('promote');
     } else if (res.transition_event === 'demote') {
       setLastEvent('demote');
-      // Demotion triggers explainer card
       const refId = currentQuestion.explainer_ref || 'exp_logic_patterns';
       const found = explainerCardsData.explainers.find(e => e.id === refId) || explainerCardsData.explainers[0];
       setActiveExplainer(found);
@@ -356,7 +371,6 @@ export default function AdaptiveAssessment() {
 
     setQuestionCount(prev => prev + 1);
 
-    // Check completion threshold (e.g. 6-8 total ladder questions)
     if (questionCount + 1 >= 6) {
       finishAssessment();
     } else {
@@ -373,21 +387,14 @@ export default function AdaptiveAssessment() {
   // STEP 4 HANDLERS: SUMMARY & HYPOTHESIS
   // -----------------------------------------------------------------------
   const finishAssessment = async () => {
-    // 1. Fetch current mastery state
     const masteryRes = await getMastery(studentEmail);
     setMasteryData(masteryRes.current_mastery || {});
 
-    // 2. Compute 6 RIASEC scores
     const riasec = interestScores(allAnswerResponses);
-
-    // 3. Evaluate behavioral adjustments (capped at +/- 20%)
     const behaviorAdj = behaviorSignals({ voluntaryRetries }, rulesConfig);
-
-    // 4. Compute Domain Mapping hypothesis (hypothesis v1)
     const mapping = domainMapping(riasec, behaviorAdj, domainMappingConfig);
     setHypothesisResult(mapping);
 
-    // 5. Persist Session snapshot
     await saveSession({
       id: sessionId,
       student_email: studentEmail,
@@ -413,597 +420,1253 @@ export default function AdaptiveAssessment() {
   };
 
   // =======================================================================
-  // RENDER STEP 1: INTRO PROFILE FORM
+  // RENDER STEP 1: STUDENT BACKGROUND ASSESSMENT SCREEN (VELLUM EDITORIAL)
   // =======================================================================
   if (step === 'profile') {
     return (
-      <div className="page-wrapper content-container animate-in" style={{ paddingTop: '3rem', maxWidth: '840px', margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <div className="page-label" style={{ marginBottom: '1rem' }}>
-            <Sparkles size={14} style={{ marginRight: '6px' }} />
-            Adaptive Assessment • Phase 4 Engine
-          </div>
-          <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>
-            Tell Us About Your <span className="text-gradient">Experience.</span>
-          </h1>
-          <p style={{ color: 'var(--color-text-3)', fontSize: '1.125rem' }}>
-            We adapt every question to your actual background — whether you're completely new or already writing scripts.
-          </p>
-        </div>
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: '#F7F7F4',
+        color: '#17191C',
+        fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif",
+        padding: '2.5rem 1.5rem 6rem'
+      }}>
+        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
 
-        <form onSubmit={handleProfileSubmit} className="glass-card" style={{ padding: '3rem 2.5rem' }}>
-          
-          {/* Question 1: Ever written code */}
-          <div style={{ marginBottom: '2.5rem' }}>
-            <label style={{ display: 'block', fontSize: '1.125rem', fontWeight: 700, marginBottom: '1rem' }}>
-              1. Have you ever written code before?
-            </label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
-              {[
-                { id: 'none', title: 'Never written code', desc: 'Complete beginner, starting fresh.' },
-                { id: 'basic', title: 'A little bit', desc: 'Tried tutorials or high-school coding.' },
-                { id: 'intermediate', title: 'Yes, regularly', desc: 'Built scripts, apps, or solved exercises.' }
-              ].map(opt => (
-                <div
-                  key={opt.id}
-                  onClick={() => setCodingExperience(opt.id)}
-                  style={{
-                    padding: '1.25rem',
-                    borderRadius: 'var(--radius-md)',
-                    border: codingExperience === opt.id ? '2px solid var(--color-accent)' : '1px solid var(--color-border)',
-                    background: codingExperience === opt.id ? 'var(--color-accent-lt)' : 'rgba(255, 255, 255, 0.4)',
-                    cursor: 'pointer',
-                    transition: 'var(--transition)'
-                  }}
-                >
-                  <div style={{ fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.25rem' }}>{opt.title}</div>
-                  <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)' }}>{opt.desc}</div>
-                </div>
-              ))}
+          {/* Minimal Breadcrumb & Header */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingBottom: '1.5rem',
+            borderBottom: '1px solid #D8DAD7',
+            marginBottom: '3.5rem',
+            fontFamily: "'DM Mono', monospace",
+            fontSize: '0.8125rem'
+          }}>
+            <div style={{ color: '#646A73' }}>
+              <Link to="/quiz" style={{ color: '#50545B', textDecoration: 'none' }}>Diagnostic Selection</Link>
+              <span style={{ margin: '0 0.5rem', color: '#D8DAD7' }}>/</span>
+              <span style={{ color: '#17191C', fontWeight: 600 }}>Background Profile</span>
+            </div>
+
+            <div style={{ color: '#E85D3F', fontWeight: 600 }}>
+              STEP 01 OF 03 · CALIBRATION
             </div>
           </div>
 
-          {/* Question 2: Which languages seen */}
-          <div style={{ marginBottom: '2.5rem' }}>
-            <label style={{ display: 'block', fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.75rem' }}>
-              2. Which of these languages or tools have you seen / encountered? (Select all that apply)
-            </label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-              {[
-                { id: 'python', label: 'Python' },
-                { id: 'java', label: 'Java' },
-                { id: 'html', label: 'HTML / CSS' },
-                { id: 'sql', label: 'SQL / Databases' },
-                { id: 'excel', label: 'Excel Formulas' },
-                { id: 'scratch', label: 'Scratch / Block Coding' },
-                { id: 'none', label: 'None of these' }
-              ].map(lang => {
-                const checked = seenLanguages.includes(lang.id);
-                return (
-                  <button
-                    type="button"
-                    key={lang.id}
-                    onClick={() => {
-                      if (lang.id === 'none') {
-                        setSeenLanguages(['none']);
-                      } else {
-                        const filtered = seenLanguages.filter(l => l !== 'none');
-                        toggleArrayItem(setSeenLanguages, filtered, lang.id);
-                      }
-                    }}
-                    style={{
-                      padding: '0.625rem 1.25rem',
-                      borderRadius: '30px',
-                      border: checked ? '2px solid var(--color-accent)' : '1px solid var(--color-border)',
-                      background: checked ? 'var(--color-accent)' : 'var(--color-surface)',
-                      color: checked ? '#fff' : 'var(--color-text-2)',
-                      fontWeight: 600,
-                      fontSize: '0.875rem',
-                      cursor: 'pointer',
-                      transition: 'var(--transition)'
-                    }}
-                  >
-                    {lang.label}
-                  </button>
-                );
-              })}
+          {/* Main Section Heading */}
+          <header style={{ marginBottom: '3.5rem' }}>
+            <div style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              color: '#E85D3F',
+              marginBottom: '0.85rem'
+            }}>
+              STUDENT INTAKE DOSSIER
             </div>
-          </div>
 
-          {/* Question 3: Things built */}
-          <div style={{ marginBottom: '2.5rem' }}>
-            <label style={{ display: 'block', fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.75rem' }}>
-              3. Things you have built, tinkered with, or explored:
-            </label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem' }}>
-              {[
-                'Simple game or Scratch animation',
-                'Personal website or blog',
-                'Automation script or small bot',
-                'Data spreadsheet or tracker',
-                'Hardware / Arduino / Raspberry Pi project',
-                'Nothing yet — starting completely fresh!'
-              ].map(item => {
-                const checked = thingsBuilt.includes(item);
-                return (
-                  <div
-                    key={item}
-                    onClick={() => toggleArrayItem(setThingsBuilt, thingsBuilt, item)}
-                    style={{
-                      padding: '0.875rem 1rem',
-                      borderRadius: 'var(--radius-md)',
-                      border: checked ? '2px solid var(--color-accent)' : '1px solid var(--color-border)',
-                      background: checked ? 'var(--color-accent-lt)' : 'var(--color-surface)',
-                      fontSize: '0.875rem',
-                      fontWeight: 500,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem'
-                    }}
-                  >
-                    <div style={{
-                      width: '18px', height: '18px', borderRadius: '4px',
-                      border: checked ? '2px solid var(--color-accent)' : '1px solid var(--color-border)',
-                      background: checked ? 'var(--color-accent)' : 'transparent',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center'
-                    }}>
-                      {checked && <CheckCircle size={14} color="#fff" />}
+            <h1 style={{
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontSize: 'clamp(2.5rem, 5.5vw, 4.25rem)',
+              fontWeight: 800,
+              lineHeight: 0.98,
+              letterSpacing: '-0.02em',
+              textTransform: 'uppercase',
+              color: '#17191C',
+              margin: '0 0 1.25rem 0'
+            }}>
+              LET'S UNDERSTAND YOUR BACKGROUND.
+            </h1>
+
+            <p style={{
+              fontSize: '1.125rem',
+              lineHeight: 1.6,
+              color: '#50545B',
+              margin: 0
+            }}>
+              Your answers help us determine the right starting point for your personalized assessment.
+            </p>
+          </header>
+
+          <form onSubmit={handleProfileSubmit}>
+
+            {/* SECTION 01 — PROGRAMMING EXPERIENCE */}
+            <div style={{
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #D8DAD7',
+              padding: 'clamp(2rem, 4vw, 3rem)',
+              marginBottom: '2rem'
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                fontFamily: "'DM Mono', monospace",
+                fontSize: '0.75rem',
+                color: '#646A73',
+                letterSpacing: '0.08em',
+                marginBottom: '0.75rem'
+              }}>
+                <span style={{ color: '#E85D3F', fontWeight: 700 }}>01</span>
+                <span>// PROGRAMMING EXPERIENCE</span>
+              </div>
+
+              <h2 style={{
+                fontFamily: "'Manrope', sans-serif",
+                fontSize: '1.25rem',
+                fontWeight: 700,
+                color: '#17191C',
+                margin: '0 0 1.5rem 0'
+              }}>
+                How familiar are you with programming?
+              </h2>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+                {[
+                  { id: 'none', title: 'Complete beginner', desc: 'I have never programmed.' },
+                  { id: 'basic', title: 'Beginner', desc: 'I know basic syntax.' },
+                  { id: 'intermediate', title: 'Intermediate', desc: 'I can write programs independently.' },
+                  { id: 'advanced', title: 'Advanced', desc: 'I regularly solve programming problems.' }
+                ].map(opt => {
+                  const isChecked = codingExperience === opt.id;
+                  return (
+                    <div
+                      key={opt.id}
+                      onClick={() => setCodingExperience(opt.id)}
+                      style={{
+                        padding: '1.5rem',
+                        border: isChecked ? '2px solid #E85D3F' : '1px solid #D8DAD7',
+                        backgroundColor: isChecked ? '#FFF0EB' : '#FFFFFF',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                        position: 'relative'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                        <div style={{ fontWeight: 700, fontSize: '1rem', color: '#17191C' }}>
+                          {opt.title}
+                        </div>
+                        <div style={{
+                          width: '18px',
+                          height: '18px',
+                          border: isChecked ? '2px solid #E85D3F' : '1px solid #D8DAD7',
+                          backgroundColor: isChecked ? '#E85D3F' : 'transparent',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0
+                        }}>
+                          {isChecked && <Check size={12} color="#FFFFFF" />}
+                        </div>
+                      </div>
+                      <div style={{ fontSize: '0.875rem', color: '#50545B', lineHeight: 1.5 }}>
+                        {opt.desc}
+                      </div>
                     </div>
-                    {item}
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
-          </div>
 
-          <div style={{ textAlign: 'center', marginTop: '3rem' }}>
-            <button type="submit" className="btn-primary" style={{ padding: '1rem 3rem', fontSize: '1.125rem' }}>
-              Begin Personalized Assessment <ArrowRight size={20} />
-            </button>
-          </div>
-        </form>
+            {/* SECTION 02 — TECHNICAL KNOWLEDGE */}
+            <div style={{
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #D8DAD7',
+              padding: 'clamp(2rem, 4vw, 3rem)',
+              marginBottom: '2rem'
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                fontFamily: "'DM Mono', monospace",
+                fontSize: '0.75rem',
+                color: '#646A73',
+                letterSpacing: '0.08em',
+                marginBottom: '0.75rem'
+              }}>
+                <span style={{ color: '#E85D3F', fontWeight: 700 }}>02</span>
+                <span>// TECHNICAL KNOWLEDGE</span>
+              </div>
+
+              <h2 style={{
+                fontFamily: "'Manrope', sans-serif",
+                fontSize: '1.25rem',
+                fontWeight: 700,
+                color: '#17191C',
+                margin: '0 0 0.5rem 0'
+              }}>
+                Which technical areas have you explored?
+              </h2>
+
+              <p style={{ fontSize: '0.875rem', color: '#50545B', margin: '0 0 1.5rem 0' }}>
+                Select all areas you have encountered or studied. Choose "None yet" if you are starting completely fresh.
+              </p>
+
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+                {[
+                  'Python',
+                  'Java',
+                  'C / C++',
+                  'Data Structures and Algorithms',
+                  'Database Management',
+                  'Computer Networks',
+                  'Operating Systems',
+                  'Artificial Intelligence / ML',
+                  'None yet'
+                ].map(area => {
+                  const isChecked = seenLanguages.includes(area);
+                  const isNone = area === 'None yet';
+
+                  return (
+                    <button
+                      type="button"
+                      key={area}
+                      onClick={() => toggleWithExclusive(setSeenLanguages, seenLanguages, area, 'None yet')}
+                      style={{
+                        padding: '0.75rem 1.25rem',
+                        backgroundColor: isChecked ? '#FFF0EB' : '#FFFFFF',
+                        border: isChecked ? '2px solid #E85D3F' : '1px solid #D8DAD7',
+                        color: isChecked ? '#17191C' : '#50545B',
+                        fontFamily: "'Manrope', sans-serif",
+                        fontSize: '0.875rem',
+                        fontWeight: isChecked ? 700 : 500,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <span style={{
+                        width: '8px',
+                        height: '8px',
+                        backgroundColor: isChecked ? '#E85D3F' : (isNone ? '#D8DAD7' : 'transparent'),
+                        border: isChecked ? 'none' : '1px solid #D8DAD7'
+                      }} />
+                      <span>{area}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* SECTION 03 — PREVIOUS EXPERIENCE */}
+            <div style={{
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #D8DAD7',
+              padding: 'clamp(2rem, 4vw, 3rem)',
+              marginBottom: '2rem'
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                fontFamily: "'DM Mono', monospace",
+                fontSize: '0.75rem',
+                color: '#646A73',
+                letterSpacing: '0.08em',
+                marginBottom: '0.75rem'
+              }}>
+                <span style={{ color: '#E85D3F', fontWeight: 700 }}>03</span>
+                <span>// PREVIOUS EXPERIENCE</span>
+              </div>
+
+              <h2 style={{
+                fontFamily: "'Manrope', sans-serif",
+                fontSize: '1.25rem',
+                fontWeight: 700,
+                color: '#17191C',
+                margin: '0 0 0.5rem 0'
+              }}>
+                What have you built, experimented with, or explored?
+              </h2>
+
+              <p style={{ fontSize: '0.875rem', color: '#50545B', margin: '0 0 1.5rem 0' }}>
+                Select all applicable activities to help us calibrate initial practical readiness.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.85rem' }}>
+                {[
+                  'Simple game or Scratch animation',
+                  'Personal website or blog',
+                  'Automation script or small bot',
+                  'Data spreadsheet or tracker',
+                  'Hardware / Arduino / Raspberry Pi project',
+                  'Nothing yet — starting completely fresh'
+                ].map(item => {
+                  const isChecked = thingsBuilt.includes(item);
+                  return (
+                    <div
+                      key={item}
+                      onClick={() => toggleWithExclusive(setThingsBuilt, thingsBuilt, item, 'Nothing yet — starting completely fresh')}
+                      style={{
+                        padding: '1rem 1.25rem',
+                        border: isChecked ? '2px solid #E85D3F' : '1px solid #D8DAD7',
+                        backgroundColor: isChecked ? '#FFF0EB' : '#FFFFFF',
+                        color: isChecked ? '#17191C' : '#50545B',
+                        fontSize: '0.875rem',
+                        fontWeight: isChecked ? 700 : 500,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <div style={{
+                        width: '18px',
+                        height: '18px',
+                        border: isChecked ? '2px solid #E85D3F' : '1px solid #D8DAD7',
+                        backgroundColor: isChecked ? '#E85D3F' : 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}>
+                        {isChecked && <Check size={12} color="#FFFFFF" />}
+                      </div>
+                      <span>{item}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* SECTION 04 — INTERESTS */}
+            <div style={{
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #D8DAD7',
+              padding: 'clamp(2rem, 4vw, 3rem)',
+              marginBottom: '3rem'
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                fontFamily: "'DM Mono', monospace",
+                fontSize: '0.75rem',
+                color: '#646A73',
+                letterSpacing: '0.08em',
+                marginBottom: '0.75rem'
+              }}>
+                <span style={{ color: '#E85D3F', fontWeight: 700 }}>04</span>
+                <span>// DOMAIN CURIOSITY</span>
+              </div>
+
+              <h2 style={{
+                fontFamily: "'Manrope', sans-serif",
+                fontSize: '1.25rem',
+                fontWeight: 700,
+                color: '#17191C',
+                margin: '0 0 0.5rem 0'
+              }}>
+                What fields or challenges are you curious about?
+              </h2>
+
+              <p style={{ fontSize: '0.875rem', color: '#50545B', margin: '0 0 1.5rem 0' }}>
+                Select all that spark your interest. Our engine will calibrate topic questions to probe these areas.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.85rem' }}>
+                {[
+                  'Artificial Intelligence',
+                  'Software development',
+                  'Data Science',
+                  'Cybersecurity',
+                  'Cloud Computing',
+                  'Computer Hardware',
+                  'Robotics and Embedded Systems',
+                  'Not sure yet'
+                ].map(item => {
+                  const isChecked = interests.includes(item);
+                  return (
+                    <div
+                      key={item}
+                      onClick={() => toggleWithExclusive(setInterests, interests, item, 'Not sure yet')}
+                      style={{
+                        padding: '1rem 1.25rem',
+                        border: isChecked ? '2px solid #E85D3F' : '1px solid #D8DAD7',
+                        backgroundColor: isChecked ? '#FFF0EB' : '#FFFFFF',
+                        color: isChecked ? '#17191C' : '#50545B',
+                        fontSize: '0.875rem',
+                        fontWeight: isChecked ? 700 : 500,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <div style={{
+                        width: '18px',
+                        height: '18px',
+                        border: isChecked ? '2px solid #E85D3F' : '1px solid #D8DAD7',
+                        backgroundColor: isChecked ? '#E85D3F' : 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}>
+                        {isChecked && <Check size={12} color="#FFFFFF" />}
+                      </div>
+                      <span>{item}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* PRIMARY CTA & VALIDATION NOTE */}
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '1rem'
+            }}>
+              <button
+                type="submit"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.75rem',
+                  backgroundColor: '#17191C',
+                  color: '#FFFFFF',
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: '1.25rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  padding: '1.25rem 3.5rem',
+                  border: '1px solid #17191C',
+                  cursor: 'pointer',
+                  width: '100%',
+                  maxWidth: '520px',
+                  transition: 'all 0.15s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#E85D3F';
+                  e.currentTarget.style.borderColor = '#E85D3F';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#17191C';
+                  e.currentTarget.style.borderColor = '#17191C';
+                }}
+              >
+                <span>BEGIN PERSONALIZED ASSESSMENT</span>
+                <ArrowRight size={20} />
+              </button>
+
+              <div style={{
+                fontFamily: "'DM Mono', monospace",
+                fontSize: '0.75rem',
+                color: '#646A73',
+                textAlign: 'center'
+              }}>
+                [CALIBRATING: {codingExperience === 'none' ? 'BEGINNER / ZERO-KNOWLEDGE PATHWAY' : 'PREREQUISITE-AWARE PATHWAY'}]
+              </div>
+            </div>
+
+          </form>
+
+        </div>
       </div>
     );
   }
 
   // =======================================================================
-  // RENDER STEP 2: STARTER DIAGNOSTIC
+  // RENDER STEP 2: STARTER DIAGNOSTIC (VELLUM EDITORIAL)
   // =======================================================================
   if (step === 'diagnostic') {
     const currentDiagQ = DIAGNOSTIC_QUESTIONS[diagnosticIndex];
     const progressPct = ((diagnosticIndex + 1) / DIAGNOSTIC_QUESTIONS.length) * 100;
 
     return (
-      <div className="page-wrapper content-container animate-in" style={{ paddingTop: '3rem', maxWidth: '840px', margin: '0 auto' }}>
-        
-        {/* Stepper Progress */}
-        <div style={{ marginBottom: '2rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--color-text-3)', fontWeight: 600 }}>
-            <span><Zap size={14} style={{ display: 'inline', marginRight: '4px' }} /> Starter Logic Diagnostic</span>
-            <span>Question {diagnosticIndex + 1} of {DIAGNOSTIC_QUESTIONS.length}</span>
-          </div>
-          <div style={{ height: '8px', background: 'var(--color-border)', borderRadius: '4px', overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${progressPct}%`, background: 'var(--color-accent)', transition: 'width 0.4s ease' }} />
-          </div>
-        </div>
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: '#F7F7F4',
+        color: '#17191C',
+        fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif",
+        padding: '2.5rem 1.5rem 6rem'
+      }}>
+        <div style={{ maxWidth: '820px', margin: '0 auto' }}>
 
-        <div className="glass-card" style={{ padding: '3rem 2.5rem' }}>
-          <div style={{ display: 'inline-block', padding: '0.25rem 0.75rem', borderRadius: '20px', background: 'var(--color-accent-lt)', color: 'var(--color-accent)', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1.5rem' }}>
-            {currentDiagQ.skill}
-          </div>
-
-          <h2 style={{ fontSize: '1.5rem', lineHeight: 1.5, marginBottom: '2rem', whiteSpace: 'pre-line' }}>
-            {currentDiagQ.questionText}
-          </h2>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
-            {currentDiagQ.options.map((opt, idx) => {
-              const isDontKnowOpt = opt.includes("I don't know");
-              return (
-                <button
-                  key={idx}
-                  onClick={() => handleDiagnosticAnswer(opt)}
-                  style={{
-                    padding: '1.25rem 1.5rem',
-                    borderRadius: 'var(--radius-md)',
-                    border: isDontKnowOpt ? '1px dashed var(--color-border)' : '1px solid var(--color-border)',
-                    background: isDontKnowOpt ? 'rgba(241, 245, 249, 0.6)' : 'var(--color-surface)',
-                    color: isDontKnowOpt ? 'var(--color-text-3)' : 'var(--color-text)',
-                    fontStyle: isDontKnowOpt ? 'italic' : 'normal',
-                    textAlign: 'left',
-                    fontSize: '1rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '1rem',
-                    transition: 'var(--transition)'
-                  }}
-                >
-                  <span style={{
-                    width: '32px', height: '32px', borderRadius: '8px',
-                    background: isDontKnowOpt ? 'transparent' : 'var(--color-accent-lt)',
-                    color: isDontKnowOpt ? 'var(--color-text-3)' : 'var(--color-accent)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '0.875rem', fontWeight: 800
-                  }}>
-                    {isDontKnowOpt ? '?' : String.fromCharCode(65 + idx)}
-                  </span>
-                  <span>{opt}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // =======================================================================
-  // RENDER STEP 3: LADDER RUNNER
-  // =======================================================================
-  if (step === 'ladder') {
-    return (
-      <div className="page-wrapper content-container animate-in" style={{ paddingTop: '2.5rem', maxWidth: '880px', margin: '0 auto' }}>
-        
-        {/* Adaptive Ladder Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <span style={{ padding: '0.35rem 0.85rem', borderRadius: '20px', background: 'var(--color-accent)', color: '#fff', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase' }}>
-              Topic: {currentTopic}
-            </span>
-            <span style={{ padding: '0.35rem 0.85rem', borderRadius: '20px', background: 'var(--color-purple-lt)', color: 'var(--color-purple)', fontSize: '0.75rem', fontWeight: 800 }}>
-              Ladder Level {currentLevel} {currentLevel === 0 ? '(Intro)' : (currentLevel === 1 ? '(Basic)' : (currentLevel === 2 ? '(Foundational)' : '(Intermediate)'))}
-            </span>
-          </div>
-          <div style={{ fontSize: '0.875rem', color: 'var(--color-text-3)', fontWeight: 600 }}>
-            Question {questionCount + 1} of 8
-          </div>
-        </div>
-
-        {/* Promotion / Demotion Alert Banner */}
-        {lastEvent === 'promote' && (
-          <div style={{ padding: '1rem 1.25rem', borderRadius: 'var(--radius-md)', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--color-success)', color: 'var(--color-success)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 700 }}>
-            <TrendingUp size={20} />
-            Level Up! Promoted to Level {currentLevel} after consecutive correct responses. Serving deeper challenge.
-          </div>
-        )}
-
-        {lastEvent === 'demote' && (
-          <div style={{ padding: '1rem 1.25rem', borderRadius: 'var(--radius-md)', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid var(--color-danger)', color: 'var(--color-danger)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 700 }}>
-            <TrendingDown size={20} />
-            Stepping back to foundational level with conceptual guidance to reinforce prerequisites.
-          </div>
-        )}
-
-        {lastEvent === 'dont_know' && (
-          <div style={{ padding: '1rem 1.25rem', borderRadius: 'var(--radius-md)', background: 'rgba(79, 70, 229, 0.05)', border: '1px solid var(--color-accent)', color: 'var(--color-accent)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 700 }}>
-            <Info size={20} />
-            Knowledge boundary cleanly recorded. No penalty applied — guiding your path forward.
-          </div>
-        )}
-
-        {/* EXPLAINER CARD (Level 0 / Demoted / Guided Activity) */}
-        {showExplainerCard && activeExplainer && (
-          <div className="glass-card" style={{ padding: '2.5rem', marginBottom: '2rem', border: '2px solid var(--color-accent)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-accent)', fontWeight: 800, fontSize: '0.8125rem', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
-              <BookOpen size={16} /> Conceptual Explainer Card
+          {/* Stepper Progress */}
+          <div style={{ marginBottom: '2.5rem' }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              marginBottom: '0.75rem',
+              fontFamily: "'DM Mono', monospace",
+              fontSize: '0.75rem',
+              color: '#646A73'
+            }}>
+              <span>STARTER LOGIC DIAGNOSTIC</span>
+              <span>QUESTION {diagnosticIndex + 1} OF {DIAGNOSTIC_QUESTIONS.length}</span>
             </div>
-            <h3 style={{ fontSize: '1.625rem', marginBottom: '1rem' }}>{activeExplainer.title}</h3>
-            <p style={{ color: 'var(--color-text-2)', fontSize: '1rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-              {activeExplainer.summary}
-            </p>
-
-            <div style={{ background: 'var(--color-surface)', padding: '1.25rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem' }}>
-              <div style={{ fontWeight: 700, fontSize: '0.875rem', marginBottom: '0.75rem', color: 'var(--color-text)' }}>Key Takeaways:</div>
-              <ul style={{ margin: 0, paddingLeft: '1.25rem', color: 'var(--color-text-2)', fontSize: '0.9375rem', lineHeight: 1.7 }}>
-                {activeExplainer.key_takeaways?.map((point, idx) => (
-                  <li key={idx}>{point}</li>
-                ))}
-              </ul>
-            </div>
-
-            {activeExplainer.official_doc_url && (
-              <a
-                href={activeExplainer.official_doc_url}
-                target="_blank"
-                rel="noreferrer"
-                style={{ fontSize: '0.875rem', color: 'var(--color-accent)', display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none', fontWeight: 600, marginBottom: '1.5rem' }}
-              >
-                Official Documentation Reference <ExternalLink size={14} />
-              </a>
-            )}
-
-            {/* One-Line Reflection */}
-            <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.5rem', marginTop: '1rem' }}>
-              <label style={{ display: 'block', fontWeight: 700, fontSize: '0.9375rem', marginBottom: '0.5rem' }}>
-                One-Line Reflection: What is your key takeaway or core rule from this concept?
-              </label>
-              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                <input
-                  type="text"
-                  placeholder="e.g., Variables evaluate the right side before reassignment..."
-                  value={reflectionText}
-                  onChange={(e) => setReflectionText(e.target.value)}
-                  style={{
-                    flex: '1 1 300px',
-                    padding: '0.75rem 1rem',
-                    borderRadius: 'var(--radius-md)',
-                    border: '1px solid var(--color-border)',
-                    fontSize: '0.9375rem'
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowExplainerCard(false);
-                    setReflectionConfirmed(true);
-                  }}
-                  className="btn-primary"
-                  style={{ padding: '0.75rem 1.5rem', fontSize: '0.875rem' }}
-                >
-                  Continue to Question <ArrowRight size={16} />
-                </button>
-              </div>
+            <div style={{ height: '4px', backgroundColor: '#D8DAD7' }}>
+              <div style={{ height: '100%', width: `${progressPct}%`, backgroundColor: '#E85D3F', transition: 'width 0.3s ease' }} />
             </div>
           </div>
-        )}
 
-        {/* ACTIVE QUESTION CARD */}
-        {currentQuestion && !showExplainerCard && (
-          <div className="glass-card" style={{ padding: '3rem 2.5rem' }}>
-            <h2 style={{ fontSize: '1.375rem', lineHeight: 1.6, marginBottom: '2rem', whiteSpace: 'pre-line' }}>
-              {currentQuestion.questionText}
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #D8DAD7',
+            padding: 'clamp(2rem, 4vw, 3rem)'
+          }}>
+            <div style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              color: '#E85D3F',
+              marginBottom: '1rem'
+            }}>
+              SKILL: {currentDiagQ.skill.toUpperCase()}
+            </div>
+
+            <h2 style={{
+              fontFamily: "'Manrope', sans-serif",
+              fontSize: '1.35rem',
+              lineHeight: 1.5,
+              fontWeight: 700,
+              color: '#17191C',
+              marginBottom: '2rem',
+              whiteSpace: 'pre-line'
+            }}>
+              {currentDiagQ.questionText}
             </h2>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2.5rem' }}>
-              {currentQuestion.options?.map((opt, idx) => {
-                const optText = typeof opt === 'object' ? opt.text : opt;
-                const isSelected = selectedOption === optText;
-                const isDontKnowOpt = optText.includes("I don't know");
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              {currentDiagQ.options.map((opt, idx) => {
+                const isDontKnowOpt = opt.includes("I don't know");
+                const letter = isDontKnowOpt ? '?' : String.fromCharCode(65 + idx);
 
                 return (
                   <button
                     key={idx}
                     type="button"
-                    onClick={() => handleLadderSubmit(optText)}
+                    onClick={() => handleDiagnosticAnswer(opt)}
                     style={{
-                      padding: '1.25rem 1.5rem',
-                      borderRadius: 'var(--radius-md)',
-                      border: isDontKnowOpt
-                        ? '1px dashed var(--color-border)'
-                        : (isSelected ? '2px solid var(--color-accent)' : '1px solid var(--color-border)'),
-                      background: isDontKnowOpt
-                        ? 'rgba(241, 245, 249, 0.6)'
-                        : (isSelected ? 'var(--color-accent-lt)' : 'var(--color-surface)'),
-                      color: isDontKnowOpt ? 'var(--color-text-3)' : 'var(--color-text)',
+                      padding: '1.125rem 1.5rem',
+                      border: isDontKnowOpt ? '1px dashed #D8DAD7' : '1px solid #D8DAD7',
+                      backgroundColor: isDontKnowOpt ? '#F7F7F4' : '#FFFFFF',
+                      color: isDontKnowOpt ? '#646A73' : '#17191C',
                       fontStyle: isDontKnowOpt ? 'italic' : 'normal',
                       textAlign: 'left',
-                      fontSize: '1rem',
+                      fontSize: '0.9375rem',
                       fontWeight: 600,
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '1rem',
-                      transition: 'var(--transition)'
+                      transition: 'all 0.15s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = '#E85D3F';
+                      e.currentTarget.style.backgroundColor = '#FFF0EB';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = isDontKnowOpt ? '#D8DAD7' : '#D8DAD7';
+                      e.currentTarget.style.backgroundColor = isDontKnowOpt ? '#F7F7F4' : '#FFFFFF';
                     }}
                   >
                     <span style={{
-                      width: '32px', height: '32px', borderRadius: '8px',
-                      background: isDontKnowOpt ? 'transparent' : 'var(--color-accent-lt)',
-                      color: isDontKnowOpt ? 'var(--color-text-3)' : 'var(--color-accent)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '0.875rem', fontWeight: 800
+                      width: '28px',
+                      height: '28px',
+                      backgroundColor: isDontKnowOpt ? 'transparent' : '#17191C',
+                      color: isDontKnowOpt ? '#646A73' : '#FFFFFF',
+                      border: isDontKnowOpt ? '1px solid #D8DAD7' : 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '0.8125rem',
+                      fontFamily: "'DM Mono', monospace",
+                      fontWeight: 700,
+                      flexShrink: 0
                     }}>
-                      {isDontKnowOpt ? '?' : String.fromCharCode(65 + idx)}
+                      {letter}
                     </span>
-                    <span>{optText}</span>
+                    <span>{opt}</span>
                   </button>
                 );
               })}
             </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--color-border)', paddingTop: '1.5rem' }}>
-              <button
-                type="button"
-                onClick={handleSkipQuestion}
-                style={{ background: 'none', border: 'none', color: 'var(--color-text-3)', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer' }}
-              >
-                Skip Question
-              </button>
-
-              <button
-                type="button"
-                onClick={finishAssessment}
-                className="btn-secondary"
-                style={{ padding: '0.625rem 1.5rem', fontSize: '0.875rem' }}
-              >
-                View Career Hypothesis Results <ArrowRight size={16} />
-              </button>
-            </div>
           </div>
-        )}
+
+        </div>
       </div>
     );
   }
 
   // =======================================================================
-  // RENDER STEP 4: MASTERY SUMMARY & INTEREST HYPOTHESIS
+  // RENDER STEP 3: LADDER RUNNER (VELLUM EDITORIAL)
+  // =======================================================================
+  if (step === 'ladder') {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: '#F7F7F4',
+        color: '#17191C',
+        fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif",
+        padding: '2.5rem 1.5rem 6rem'
+      }}>
+        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
+
+          {/* Stepper Header */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingBottom: '1.25rem',
+            borderBottom: '1px solid #D8DAD7',
+            marginBottom: '2.5rem',
+            fontFamily: "'DM Mono', monospace",
+            fontSize: '0.8125rem'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <span style={{ padding: '0.25rem 0.65rem', backgroundColor: '#17191C', color: '#FFFFFF', fontWeight: 700 }}>
+                TOPIC: {currentTopic.toUpperCase()}
+              </span>
+              <span style={{ color: '#50545B' }}>
+                LADDER LEVEL 0{currentLevel} / 04
+              </span>
+            </div>
+
+            <div style={{ color: '#646A73' }}>
+              QUESTION {questionCount + 1} OF 8
+            </div>
+          </div>
+
+          {/* Promotion / Demotion Alert Banner */}
+          {lastEvent === 'promote' && (
+            <div style={{
+              padding: '1rem 1.25rem',
+              backgroundColor: '#FFFFFF',
+              borderLeft: '4px solid #2EC4B6',
+              border: '1px solid #D8DAD7',
+              color: '#17191C',
+              marginBottom: '1.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              fontSize: '0.875rem',
+              fontWeight: 600
+            }}>
+              <TrendingUp size={18} style={{ color: '#2EC4B6' }} />
+              <span>Level Up! Promoted to Level {currentLevel} after consecutive correct responses.</span>
+            </div>
+          )}
+
+          {lastEvent === 'demote' && (
+            <div style={{
+              padding: '1rem 1.25rem',
+              backgroundColor: '#FFFFFF',
+              borderLeft: '4px solid #E85D3F',
+              border: '1px solid #D8DAD7',
+              color: '#17191C',
+              marginBottom: '1.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              fontSize: '0.875rem',
+              fontWeight: 600
+            }}>
+              <TrendingDown size={18} style={{ color: '#E85D3F' }} />
+              <span>Stepping back to foundational level with conceptual guidance to reinforce prerequisites.</span>
+            </div>
+          )}
+
+          {lastEvent === 'dont_know' && (
+            <div style={{
+              padding: '1rem 1.25rem',
+              backgroundColor: '#FFFFFF',
+              borderLeft: '4px solid #646A73',
+              border: '1px solid #D8DAD7',
+              color: '#17191C',
+              marginBottom: '1.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              fontSize: '0.875rem',
+              fontWeight: 600
+            }}>
+              <Info size={18} style={{ color: '#646A73' }} />
+              <span>Knowledge boundary cleanly recorded. No penalty applied — guiding your path forward.</span>
+            </div>
+          )}
+
+          {/* EXPLAINER CARD (Level 0 / Demoted / Guided Activity) */}
+          {showExplainerCard && activeExplainer && (
+            <div style={{
+              backgroundColor: '#FFFFFF',
+              border: '2px solid #E85D3F',
+              padding: 'clamp(2rem, 4vw, 3rem)',
+              marginBottom: '2rem'
+            }}>
+              <div style={{
+                fontFamily: "'DM Mono', monospace",
+                fontSize: '0.75rem',
+                color: '#E85D3F',
+                fontWeight: 700,
+                letterSpacing: '0.08em',
+                marginBottom: '0.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                <BookOpen size={16} />
+                <span>CONCEPTUAL EXPLAINER CARD</span>
+              </div>
+
+              <h3 style={{
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: '1.75rem',
+                fontWeight: 800,
+                textTransform: 'uppercase',
+                color: '#17191C',
+                margin: '0 0 1rem 0'
+              }}>
+                {activeExplainer.title}
+              </h3>
+
+              <p style={{ color: '#50545B', fontSize: '1rem', lineHeight: 1.6, margin: '0 0 1.5rem 0' }}>
+                {activeExplainer.summary}
+              </p>
+
+              <div style={{ backgroundColor: '#F7F7F4', border: '1px solid #D8DAD7', padding: '1.25rem', marginBottom: '1.5rem' }}>
+                <div style={{ fontWeight: 700, fontSize: '0.875rem', color: '#17191C', marginBottom: '0.5rem' }}>
+                  Key Principles:
+                </div>
+                <ul style={{ margin: 0, paddingLeft: '1.25rem', color: '#50545B', fontSize: '0.9375rem', lineHeight: 1.7 }}>
+                  {activeExplainer.key_takeaways?.map((point, idx) => (
+                    <li key={idx}>{point}</li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* One-Line Reflection */}
+              <div style={{ borderTop: '1px solid #D8DAD7', paddingTop: '1.5rem' }}>
+                <label style={{ display: 'block', fontWeight: 700, fontSize: '0.9375rem', color: '#17191C', marginBottom: '0.5rem' }}>
+                  One-Line Reflection: What is your key takeaway or core rule?
+                </label>
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <input
+                    type="text"
+                    placeholder="e.g., Variables evaluate the right side before reassignment..."
+                    value={reflectionText}
+                    onChange={(e) => setReflectionText(e.target.value)}
+                    style={{
+                      flex: '1 1 300px',
+                      padding: '0.75rem 1rem',
+                      border: '1px solid #D8DAD7',
+                      fontSize: '0.9375rem',
+                      fontFamily: 'inherit',
+                      color: '#17191C',
+                      backgroundColor: '#FFFFFF'
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowExplainerCard(false);
+                      setReflectionConfirmed(true);
+                    }}
+                    style={{
+                      padding: '0.75rem 1.5rem',
+                      backgroundColor: '#17191C',
+                      color: '#FFFFFF',
+                      fontFamily: "'Barlow Condensed', sans-serif",
+                      fontSize: '1rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                      textTransform: 'uppercase',
+                      border: '1px solid #17191C',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Continue to Question →
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ACTIVE QUESTION CARD */}
+          {currentQuestion && !showExplainerCard && (
+            <div style={{
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #D8DAD7',
+              padding: 'clamp(2rem, 4vw, 3rem)'
+            }}>
+              <h2 style={{
+                fontFamily: "'Manrope', sans-serif",
+                fontSize: '1.35rem',
+                lineHeight: 1.6,
+                fontWeight: 700,
+                color: '#17191C',
+                marginBottom: '2rem',
+                whiteSpace: 'pre-line'
+              }}>
+                {currentQuestion.questionText}
+              </h2>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginBottom: '2.5rem' }}>
+                {currentQuestion.options?.map((opt, idx) => {
+                  const optText = typeof opt === 'object' ? opt.text : opt;
+                  const isDontKnowOpt = optText.includes("I don't know");
+                  const letter = isDontKnowOpt ? '?' : String.fromCharCode(65 + idx);
+
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleLadderSubmit(optText)}
+                      style={{
+                        padding: '1.125rem 1.5rem',
+                        border: isDontKnowOpt ? '1px dashed #D8DAD7' : '1px solid #D8DAD7',
+                        backgroundColor: isDontKnowOpt ? '#F7F7F4' : '#FFFFFF',
+                        color: isDontKnowOpt ? '#646A73' : '#17191C',
+                        fontStyle: isDontKnowOpt ? 'italic' : 'normal',
+                        textAlign: 'left',
+                        fontSize: '0.9375rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '1rem',
+                        transition: 'all 0.15s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = '#E85D3F';
+                        e.currentTarget.style.backgroundColor = '#FFF0EB';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = isDontKnowOpt ? '#D8DAD7' : '#D8DAD7';
+                        e.currentTarget.style.backgroundColor = isDontKnowOpt ? '#F7F7F4' : '#FFFFFF';
+                      }}
+                    >
+                      <span style={{
+                        width: '28px',
+                        height: '28px',
+                        backgroundColor: isDontKnowOpt ? 'transparent' : '#17191C',
+                        color: isDontKnowOpt ? '#646A73' : '#FFFFFF',
+                        border: isDontKnowOpt ? '1px solid #D8DAD7' : 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.8125rem',
+                        fontFamily: "'DM Mono', monospace",
+                        fontWeight: 700,
+                        flexShrink: 0
+                      }}>
+                        {letter}
+                      </span>
+                      <span>{optText}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                borderTop: '1px solid #D8DAD7',
+                paddingTop: '1.5rem'
+              }}>
+                <button
+                  type="button"
+                  onClick={handleSkipQuestion}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#646A73',
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: '0.8125rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  [SKIP QUESTION]
+                </button>
+
+                <button
+                  type="button"
+                  onClick={finishAssessment}
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid #D8DAD7',
+                    color: '#17191C',
+                    padding: '0.625rem 1.25rem',
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: '0.9375rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.04em',
+                    textTransform: 'uppercase',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <span>VIEW CAREER HYPOTHESIS</span>
+                  <ArrowRight size={14} />
+                </button>
+              </div>
+
+            </div>
+          )}
+
+        </div>
+      </div>
+    );
+  }
+
+  // =======================================================================
+  // RENDER STEP 4: SUMMARY & HYPOTHESIS (VELLUM EDITORIAL)
   // =======================================================================
   if (step === 'summary') {
     const top3 = hypothesisResult?.top3Domains || [];
 
     return (
-      <div className="page-wrapper content-container animate-in" style={{ paddingTop: '3rem', maxWidth: '1000px', margin: '0 auto' }}>
-        
-        {/* HYPOTHESIS MANDATORY DISCLAIMER CALLOUT */}
-        <div style={{
-          background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(139, 92, 246, 0.08))',
-          border: '2px solid var(--color-accent)',
-          borderRadius: 'var(--radius-lg)',
-          padding: '2rem 2.5rem',
-          marginBottom: '3rem',
-          boxShadow: '0 10px 25px -5px rgba(79, 70, 229, 0.1)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-            <Compass size={24} color="var(--color-accent)" />
-            <span style={{ fontSize: '1.125rem', fontWeight: 800, color: 'var(--color-text)' }}>
-              Starting Hypothesis • Model Version: {hypothesisResult?.mapping_version || 'hypothesis v1'}
-            </span>
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: '#F7F7F4',
+        color: '#17191C',
+        fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif",
+        padding: '3rem 1.5rem 6rem'
+      }}>
+        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+
+          {/* Heading */}
+          <div style={{ marginBottom: '3rem' }}>
+            <div style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: '#E85D3F',
+              marginBottom: '0.5rem'
+            }}>
+              ASSESSMENT DOSSIER // COMPILATION COMPLETE
+            </div>
+            <h1 style={{
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontSize: 'clamp(2.5rem, 5vw, 4rem)',
+              fontWeight: 800,
+              textTransform: 'uppercase',
+              color: '#17191C',
+              margin: '0 0 1rem 0'
+            }}>
+              Your Career Trajectory Hypothesis
+            </h1>
+            <p style={{ color: '#50545B', fontSize: '1.0625rem', margin: 0 }}>
+              Grounded in the U.S. Dept of Labor O*NET RIASEC framework and calibrated topic knowledge levels.
+            </p>
           </div>
-          <p style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--color-accent)', lineHeight: 1.5, margin: '0 0 0.5rem 0' }}>
-            "{hypothesisResult?.note || 'starting hypothesis based on your answers; it adjusts as you explore'}"
-          </p>
-          <p style={{ fontSize: '0.875rem', color: 'var(--color-text-3)', margin: 0 }}>
-            This assessment provides an exploratory baseline, never a single final verdict. Derived from U.S. Department of Labor O*NET occupation vectors.
-          </p>
-        </div>
 
-        {/* TOP 3 RECOMMENDED DOMAINS */}
-        <h2 style={{ fontSize: '2rem', marginBottom: '1.5rem' }}>Top 3 Recommended Domains</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '3.5rem' }}>
-          {top3.map((domain, rankIdx) => (
-            <div key={domain.id} className="glass-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                <span style={{ padding: '0.25rem 0.65rem', borderRadius: '12px', background: 'var(--color-accent-lt)', color: 'var(--color-accent)', fontSize: '0.75rem', fontWeight: 800 }}>
-                  Rank #{rankIdx + 1}
-                </span>
-                <span style={{ fontSize: '1.375rem', fontWeight: 900, color: 'var(--color-accent)' }}>
-                  {domain.score}%
-                </span>
-              </div>
-              <h3 style={{ fontSize: '1.375rem', marginBottom: '0.75rem' }}>{domain.title}</h3>
-              <p style={{ fontSize: '0.875rem', color: 'var(--color-text-2)', lineHeight: 1.6, marginBottom: '1.5rem', flex: 1 }}>
-                {domain.derivation}
-              </p>
-              <div style={{ fontSize: '0.75rem', color: 'var(--color-text-3)', marginBottom: '1.25rem' }}>
-                O*NET SOC: {domain.onet_soc_codes?.join(', ')}
-              </div>
-              <Link to={`/roadmap/${domain.id}`} className="btn-primary" style={{ textAlign: 'center', justifyContent: 'center', padding: '0.75rem' }}>
-                Explore Curriculum <ArrowRight size={16} />
-              </Link>
+          {/* HYPOTHESIS CALLOUT */}
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            border: '2px solid #E85D3F',
+            padding: '2rem 2.5rem',
+            marginBottom: '3rem'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+              <Compass size={20} style={{ color: '#E85D3F' }} />
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 700, color: '#17191C' }}>
+                STARTING HYPOTHESIS · {hypothesisResult?.mapping_version || 'HYPOTHESIS v1'}
+              </span>
             </div>
-          ))}
-        </div>
-
-        {/* TOPIC MASTERY SUMMARY */}
-        <h2 style={{ fontSize: '2rem', marginBottom: '1.5rem' }}>Assessed Topic Mastery</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem', marginBottom: '3.5rem' }}>
-          {Object.entries(masteryData).length > 0 ? (
-            Object.entries(masteryData).map(([topic, rec]) => (
-              <div key={topic} className="glass-card" style={{ padding: '1.75rem' }}>
-                <div style={{ textTransform: 'capitalize', fontWeight: 800, fontSize: '1.25rem', marginBottom: '0.5rem' }}>
-                  {topic}
-                </div>
-                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-                  <span style={{ padding: '0.2rem 0.6rem', borderRadius: '10px', background: 'var(--color-accent-lt)', color: 'var(--color-accent)', fontSize: '0.75rem', fontWeight: 700 }}>
-                    Level {rec.level} / 4
-                  </span>
-                  <span style={{ padding: '0.2rem 0.6rem', borderRadius: '10px', background: 'var(--color-surface)', color: 'var(--color-text-3)', fontSize: '0.75rem', fontWeight: 700 }}>
-                    Confidence: {rec.confidence}
-                  </span>
-                </div>
-                <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)' }}>
-                  Verified Evidence Count: {rec.evidence_count} items
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="glass-card" style={{ padding: '1.75rem' }}>
-              <div style={{ fontWeight: 700 }}>Python Fundamentals</div>
-              <div style={{ fontSize: '0.875rem', color: 'var(--color-text-3)', marginTop: '0.5rem' }}>
-                Level {currentLevel} • Confidence: Medium • 6 verified attempts
-              </div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#17191C', margin: '0 0 0.5rem 0' }}>
+              "{hypothesisResult?.note || 'Starting hypothesis based on your answers; it adjusts as you explore.'}"
             </div>
-          )}
-        </div>
+            <p style={{ fontSize: '0.875rem', color: '#50545B', margin: 0 }}>
+              This provides an exploratory baseline, never a single final verdict.
+            </p>
+          </div>
 
-        {/* DOES THIS FEEL RIGHT? (1-5) VALIDATION FEEDBACK CONTROL */}
-        <div className="glass-card" style={{ padding: '2.5rem', marginBottom: '3rem', border: '1px solid var(--color-border)' }}>
-          <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>
-            Does this feel right? (1-5)
-          </h3>
-          <p style={{ color: 'var(--color-text-3)', fontSize: '0.9375rem', marginBottom: '1.5rem' }}>
-            Your feedback provides direct validation data to continuously recalibrate our heuristic weights.
-          </p>
+          {/* TOP 3 RECOMMENDED DOMAINS */}
+          <h2 style={{
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontSize: '1.75rem',
+            fontWeight: 800,
+            textTransform: 'uppercase',
+            color: '#17191C',
+            marginBottom: '1.5rem'
+          }}>
+            Top 3 Recommended Domains
+          </h2>
 
-          {feedbackSubmitted ? (
-            <div style={{ padding: '1rem 1.25rem', borderRadius: 'var(--radius-md)', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--color-success)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <CheckCircle size={20} /> Thank you! Your feedback has been stored and will refine future career models.
-            </div>
-          ) : (
-            <div>
-              <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                {[1, 2, 3, 4, 5].map(rating => (
-                  <button
-                    key={rating}
-                    type="button"
-                    onClick={() => setFeedbackRating(rating)}
-                    style={{
-                      width: '48px', height: '48px', borderRadius: '12px',
-                      border: feedbackRating === rating ? '2px solid var(--color-accent)' : '1px solid var(--color-border)',
-                      background: feedbackRating === rating ? 'var(--color-accent)' : 'var(--color-surface)',
-                      color: feedbackRating === rating ? '#fff' : 'var(--color-text)',
-                      fontWeight: 800,
-                      fontSize: '1.125rem',
-                      cursor: 'pointer',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      gap: '4px',
-                      transition: 'var(--transition)'
-                    }}
-                  >
-                    {rating} <Star size={12} fill={feedbackRating >= rating ? 'currentColor' : 'none'} />
-                  </button>
-                ))}
-              </div>
-
-              <textarea
-                rows={3}
-                placeholder="Optional: What resonated with you or felt off about these recommendations?"
-                value={feedbackComment}
-                onChange={(e) => setFeedbackComment(e.target.value)}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '3.5rem' }}>
+            {top3.map((domain, rankIdx) => (
+              <div
+                key={domain.id}
                 style={{
-                  width: '100%',
-                  padding: '1rem',
-                  borderRadius: 'var(--radius-md)',
-                  border: '1px solid var(--color-border)',
-                  fontSize: '0.9375rem',
-                  marginBottom: '1.5rem',
-                  fontFamily: 'inherit'
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #D8DAD7',
+                  padding: '2rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
                 }}
-              />
-
-              <button
-                type="button"
-                onClick={handleFeedbackSubmit}
-                disabled={feedbackRating === 0}
-                className="btn-primary"
-                style={{ padding: '0.75rem 2rem' }}
               >
-                Submit Validation Feedback
-              </button>
-            </div>
-          )}
-        </div>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <span style={{
+                      fontFamily: "'DM Mono', monospace",
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      padding: '2px 8px',
+                      backgroundColor: '#F7F7F4',
+                      border: '1px solid #D8DAD7',
+                      color: '#17191C'
+                    }}>
+                      RANK 0{rankIdx + 1}
+                    </span>
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '1.25rem', fontWeight: 800, color: '#E85D3F' }}>
+                      {domain.score}%
+                    </span>
+                  </div>
 
-        {/* Back to Home / Retake */}
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginBottom: '4rem' }}>
-          <Link to="/" className="btn-secondary" style={{ padding: '1rem 2rem' }}>
-            Back to Dashboard
-          </Link>
-          <button
-            onClick={() => {
-              setStep('profile');
-              setQuestionCount(0);
-              setAllAnswerResponses([]);
-              setFeedbackSubmitted(false);
-            }}
-            className="btn-ghost"
-            style={{ padding: '1rem 2rem' }}
-          >
-            <RotateCcw size={16} style={{ marginRight: '6px' }} /> Retake Assessment
-          </button>
+                  <h3 style={{
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: '1.5rem',
+                    fontWeight: 800,
+                    textTransform: 'uppercase',
+                    color: '#17191C',
+                    marginBottom: '0.75rem'
+                  }}>
+                    {domain.title}
+                  </h3>
+
+                  <p style={{ fontSize: '0.875rem', color: '#50545B', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+                    {domain.derivation}
+                  </p>
+                </div>
+
+                <Link
+                  to={`/roadmap/${domain.id}`}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                    padding: '0.75rem 1.25rem',
+                    backgroundColor: '#17191C',
+                    color: '#FFFFFF',
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: '0.9375rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.04em',
+                    textTransform: 'uppercase',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <span>Explore Curriculum</span>
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+            ))}
+          </div>
+
+          {/* TOPIC MASTERY SUMMARY */}
+          <h2 style={{
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontSize: '1.75rem',
+            fontWeight: 800,
+            textTransform: 'uppercase',
+            color: '#17191C',
+            marginBottom: '1.5rem'
+          }}>
+            Assessed Topic Mastery
+          </h2>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem', marginBottom: '3.5rem' }}>
+            {Object.entries(masteryData).length > 0 ? (
+              Object.entries(masteryData).map(([topic, rec]) => (
+                <div key={topic} style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '1.75rem' }}>
+                  <div style={{ textTransform: 'capitalize', fontWeight: 700, fontSize: '1.125rem', color: '#17191C', marginBottom: '0.5rem' }}>
+                    {topic}
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem', fontFamily: "'DM Mono', monospace", fontSize: '0.75rem' }}>
+                    <span style={{ padding: '2px 8px', backgroundColor: '#FFF0EB', color: '#E85D3F', fontWeight: 700, border: '1px solid #E85D3F' }}>
+                      LEVEL {rec.level} / 4
+                    </span>
+                    <span style={{ padding: '2px 8px', backgroundColor: '#F7F7F4', color: '#50545B', border: '1px solid #D8DAD7' }}>
+                      CONFIDENCE: {rec.confidence.toUpperCase()}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: '#646A73' }}>
+                    Verified Evidence: {rec.evidence_count} items
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '1.75rem' }}>
+                <div style={{ fontWeight: 700, color: '#17191C' }}>Python Fundamentals</div>
+                <div style={{ fontSize: '0.875rem', color: '#50545B', marginTop: '0.5rem' }}>
+                  Level {currentLevel} · Confidence: Medium · 6 verified attempts
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* DOES THIS FEEL RIGHT? (1-5) VALIDATION FEEDBACK CONTROL */}
+          <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2.5rem', marginBottom: '3rem' }}>
+            <h3 style={{
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontSize: '1.5rem',
+              fontWeight: 800,
+              textTransform: 'uppercase',
+              color: '#17191C',
+              marginBottom: '0.5rem'
+            }}>
+              Does this feel right? (1-5)
+            </h3>
+            <p style={{ color: '#50545B', fontSize: '0.9375rem', marginBottom: '1.5rem' }}>
+              Your feedback provides direct validation data to continuously recalibrate our heuristic weights.
+            </p>
+
+            {feedbackSubmitted ? (
+              <div style={{
+                padding: '1rem 1.25rem',
+                backgroundColor: '#FFF0EB',
+                border: '1px solid #E85D3F',
+                color: '#17191C',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                <CheckCircle size={18} style={{ color: '#E85D3F' }} />
+                <span>Thank you! Your feedback has been stored and will refine future career models.</span>
+              </div>
+            ) : (
+              <div>
+                <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                  {[1, 2, 3, 4, 5].map(rating => (
+                    <button
+                      key={rating}
+                      type="button"
+                      onClick={() => setFeedbackRating(rating)}
+                      style={{
+                        width: '44px',
+                        height: '44px',
+                        border: feedbackRating === rating ? '2px solid #E85D3F' : '1px solid #D8DAD7',
+                        backgroundColor: feedbackRating === rating ? '#FFF0EB' : '#FFFFFF',
+                        color: feedbackRating === rating ? '#E85D3F' : '#17191C',
+                        fontWeight: 800,
+                        fontSize: '1rem',
+                        fontFamily: "'DM Mono', monospace",
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '2px'
+                      }}
+                    >
+                      <span>{rating}</span>
+                      <Star size={10} fill={feedbackRating >= rating ? 'currentColor' : 'none'} />
+                    </button>
+                  ))}
+                </div>
+
+                <textarea
+                  rows={3}
+                  placeholder="Optional: What resonated with you or felt off about these recommendations?"
+                  value={feedbackComment}
+                  onChange={(e) => setFeedbackComment(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '0.85rem 1rem',
+                    border: '1px solid #D8DAD7',
+                    fontSize: '0.875rem',
+                    fontFamily: 'inherit',
+                    color: '#17191C',
+                    backgroundColor: '#FFFFFF',
+                    marginBottom: '1.25rem',
+                    boxSizing: 'border-box'
+                  }}
+                />
+
+                <button
+                  type="button"
+                  onClick={handleFeedbackSubmit}
+                  disabled={feedbackRating === 0}
+                  style={{
+                    padding: '0.75rem 1.75rem',
+                    backgroundColor: feedbackRating === 0 ? '#D8DAD7' : '#17191C',
+                    color: '#FFFFFF',
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: '1rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.04em',
+                    textTransform: 'uppercase',
+                    border: 'none',
+                    cursor: feedbackRating === 0 ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  Submit Validation Feedback
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Navigation Bottom Links */}
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <Link
+              to="/"
+              style={{
+                padding: '0.875rem 2rem',
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #D8DAD7',
+                color: '#17191C',
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: '1rem',
+                fontWeight: 700,
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                textDecoration: 'none'
+              }}
+            >
+              Back to Dashboard
+            </Link>
+
+            <button
+              onClick={() => {
+                setStep('profile');
+                setQuestionCount(0);
+                setAllAnswerResponses([]);
+                setFeedbackSubmitted(false);
+              }}
+              style={{
+                padding: '0.875rem 2rem',
+                backgroundColor: 'transparent',
+                border: '1px solid transparent',
+                color: '#50545B',
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: '1rem',
+                fontWeight: 700,
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}
+            >
+              <RotateCcw size={15} />
+              <span>Retake Assessment</span>
+            </button>
+          </div>
+
         </div>
       </div>
     );

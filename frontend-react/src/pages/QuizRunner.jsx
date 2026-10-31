@@ -215,257 +215,351 @@ export default function QuizRunner() {
   };
 
   // -------------------------------------------------------------
-  // RENDER STAGE 1: TWO-PATHWAY ONBOARDING
+  // RENDER STAGE 1: TWO-PATHWAY ONBOARDING (VELLUM EDITORIAL)
   // -------------------------------------------------------------
   if (stage === 'intro') {
     return (
-      <div className="page-wrapper content-container animate-in" style={{ maxWidth: '960px', margin: '0 auto', paddingTop: '2rem' }}>
-        
-        {/* Top observatory signpost */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          borderBottom: '1px solid var(--color-border)',
-          paddingBottom: '1rem',
-          marginBottom: '2.5rem',
-          fontFamily: 'var(--font-mono)',
-          fontSize: '0.75rem',
-          color: 'var(--color-text-3)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-ivory)' }}>
-            <Crosshair size={14} style={{ color: 'var(--color-accent)' }} />
-            <span>GRAVITY LAB // CALIBRATION PROTOCOL</span>
-          </div>
-          <div>SEQUENCE: 21-STEP ADAPTIVE</div>
-        </div>
-
-        {/* Header */}
-        <div style={{ marginBottom: '3rem' }}>
-          <div className="mono-tag" style={{ marginBottom: '0.5rem' }}>STUDENT INITIALIZATION</div>
-          <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', margin: '0 0 1rem 0' }}>
-            Choose Your Assessment Pathway
-          </h1>
-          <p style={{ color: 'var(--color-text-2)', fontSize: '1.0625rem', maxWidth: '720px', margin: 0 }}>
-            Select the diagnostic trajectory that reflects your current academic journey. The diagnostic engine adapts its evaluation sequence in real-time.
-          </p>
-        </div>
-
-        {/* 2 DISTINCT PATHWAYS */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '1.5rem',
-          marginBottom: '3rem'
-        }}>
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: '#F7F7F4',
+        color: '#17191C',
+        fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif",
+        padding: '2.5rem 1.5rem 6rem'
+      }}>
+        <div style={{ maxWidth: '920px', margin: '0 auto' }}>
           
-          {/* TRACK 1: BEGINNER / ZERO-KNOWLEDGE */}
-          <div 
-            onClick={() => setSelectedTrack('beginner')}
-            className="observatory-panel"
-            style={{
-              padding: '2.25rem',
-              cursor: 'pointer',
-              borderColor: selectedTrack === 'beginner' ? 'var(--color-accent)' : 'var(--color-border)',
-              background: selectedTrack === 'beginner' ? 'rgba(235, 94, 65, 0.05)' : 'var(--color-card)',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
-              <div className="mono-tag" style={{ color: selectedTrack === 'beginner' ? 'var(--color-accent)' : 'var(--color-text-3)' }}>
-                TRACK 01 // FOUNDATIONS
-              </div>
-              <div style={{
-                width: '18px',
-                height: '18px',
-                border: `2px solid ${selectedTrack === 'beginner' ? 'var(--color-accent)' : 'var(--color-border)'}`,
-                background: selectedTrack === 'beginner' ? 'var(--color-accent)' : 'transparent',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                {selectedTrack === 'beginner' && <Check size={12} style={{ color: '#000' }} />}
-              </div>
+          {/* Top minimal signpost */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderBottom: '1px solid #D8DAD7',
+            paddingBottom: '1.25rem',
+            marginBottom: '3rem',
+            fontFamily: "'DM Mono', monospace",
+            fontSize: '0.8125rem',
+            color: '#646A73'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#17191C' }}>
+              <Link to="/quiz" style={{ color: '#50545B', textDecoration: 'none' }}>Diagnostic Selection</Link>
+              <span style={{ color: '#D8DAD7' }}>/</span>
+              <span style={{ fontWeight: 600 }}>Track Calibration</span>
             </div>
-
-            <h2 style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>
-              Beginner / Exploratory
-            </h2>
-            <p style={{ color: 'var(--color-text-3)', fontSize: '0.9375rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-              Designed for Semesters 1–3 or students with zero prior coding experience. Explores computational thinking, natural problem-solving patterns, and career curiosity.
-            </p>
-
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.75rem',
-              color: 'var(--color-text-2)',
-              borderTop: '1px solid rgba(255,255,255,0.06)',
-              paddingTop: '1rem'
-            }}>
-              <div>• BEBRAS LOGIC & PATTERNS (Difficulty 1-2)</div>
-              <div>• O*NET RIASEC CAREER INTERESTS</div>
-              <div>• GUIDED EXPLORATORY SCENARIOS</div>
-            </div>
+            <div style={{ color: '#E85D3F', fontWeight: 600 }}>SEQUENCE: 21-STEP ADAPTIVE</div>
           </div>
 
-          {/* TRACK 2: PREREQUISITE-AWARE */}
-          <div 
-            onClick={() => setSelectedTrack('prereq')}
-            className="observatory-panel"
-            style={{
-              padding: '2.25rem',
-              cursor: 'pointer',
-              borderColor: selectedTrack === 'prereq' ? 'var(--color-accent)' : 'var(--color-border)',
-              background: selectedTrack === 'prereq' ? 'rgba(235, 94, 65, 0.05)' : 'var(--color-card)',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
-              <div className="mono-tag" style={{ color: selectedTrack === 'prereq' ? 'var(--color-accent)' : 'var(--color-text-3)' }}>
-                TRACK 02 // TECHNICAL SPECIALIST
-              </div>
-              <div style={{
-                width: '18px',
-                height: '18px',
-                border: `2px solid ${selectedTrack === 'prereq' ? 'var(--color-accent)' : 'var(--color-border)'}`,
-                background: selectedTrack === 'prereq' ? 'var(--color-accent)' : 'transparent',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                {selectedTrack === 'prereq' && <Check size={12} style={{ color: '#000' }} />}
-              </div>
-            </div>
-
-            <h2 style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>
-              Prerequisite-Aware
-            </h2>
-            <p style={{ color: 'var(--color-text-3)', fontSize: '0.9375rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-              Designed for Semesters 3–8 with familiarity in C++, Python, or Java. Evaluates systems architecture, algorithmic complexity, database tradeoffs, and code traces.
-            </p>
-
+          {/* Header */}
+          <div style={{ marginBottom: '3.5rem' }}>
             <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-              fontFamily: 'var(--font-mono)',
+              fontFamily: "'DM Mono', monospace",
               fontSize: '0.75rem',
-              color: 'var(--color-text-2)',
-              borderTop: '1px solid rgba(255,255,255,0.06)',
-              paddingTop: '1rem'
+              fontWeight: 600,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              color: '#E85D3F',
+              marginBottom: '0.75rem'
             }}>
-              <div>• SYSTEM CODE TRACE & DSA (Difficulty 2-4)</div>
-              <div>• OCCUPATIONAL SPECIALIZATION MAPPING</div>
-              <div>• REAL-WORLD ARCHITECTURE TRADEOFFS</div>
+              STUDENT INITIALIZATION
             </div>
+            <h1 style={{
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontSize: 'clamp(2.5rem, 5.5vw, 4.25rem)',
+              fontWeight: 800,
+              lineHeight: 0.98,
+              letterSpacing: '-0.02em',
+              textTransform: 'uppercase',
+              color: '#17191C',
+              margin: '0 0 1rem 0'
+            }}>
+              Choose Your Assessment Pathway
+            </h1>
+            <p style={{ color: '#50545B', fontSize: '1.125rem', maxWidth: '720px', margin: 0, lineHeight: 1.6 }}>
+              Select the diagnostic trajectory that reflects your current academic background. The diagnostic engine adapts its evaluation sequence in real-time.
+            </p>
           </div>
 
-        </div>
-
-        {/* Profile Details Form */}
-        <div className="observatory-panel" style={{ padding: '2rem', marginBottom: '3rem' }}>
-          <div className="mono-tag" style={{ marginBottom: '1.25rem' }}>STUDENT METADATA TELEMETRY</div>
-          
+          {/* 2 DISTINCT PATHWAYS */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '1.5rem'
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gap: '1.5rem',
+            marginBottom: '2.5rem'
           }}>
-            {/* Semester */}
-            <div>
-              <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--color-text-3)', marginBottom: '0.5rem' }}>
-                CURRENT SEMESTER
-              </label>
-              <select
-                value={introProfile.semester}
-                onChange={(e) => setIntroProfile({ ...introProfile, semester: Number(e.target.value) })}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 1rem',
-                  background: 'var(--color-bg)',
-                  border: '1px solid var(--color-border)',
-                  color: 'var(--color-ivory)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.875rem'
-                }}
-              >
-                {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
-                  <option key={s} value={s}>Semester {s} (B.Tech CSE)</option>
-                ))}
-              </select>
+            
+            {/* TRACK 1: BEGINNER / ZERO-KNOWLEDGE */}
+            <div 
+              onClick={() => setSelectedTrack('beginner')}
+              style={{
+                backgroundColor: selectedTrack === 'beginner' ? '#FFF0EB' : '#FFFFFF',
+                border: selectedTrack === 'beginner' ? '2px solid #E85D3F' : '1px solid #D8DAD7',
+                padding: '2.25rem',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between'
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
+                  <div style={{
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.08em',
+                    color: selectedTrack === 'beginner' ? '#E85D3F' : '#646A73'
+                  }}>
+                    TRACK 01 // FOUNDATIONS
+                  </div>
+                  <div style={{
+                    width: '18px',
+                    height: '18px',
+                    border: `2px solid ${selectedTrack === 'beginner' ? '#E85D3F' : '#D8DAD7'}`,
+                    backgroundColor: selectedTrack === 'beginner' ? '#E85D3F' : 'transparent',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    {selectedTrack === 'beginner' && <Check size={12} color="#FFFFFF" />}
+                  </div>
+                </div>
+
+                <h2 style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: '1.85rem',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  color: '#17191C',
+                  margin: '0 0 0.75rem 0'
+                }}>
+                  Beginner / Exploratory
+                </h2>
+                <p style={{ color: '#50545B', fontSize: '0.9375rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+                  Designed for Semesters 1–3 or students with zero prior coding experience. Explores computational thinking, natural problem-solving patterns, and career curiosity.
+                </p>
+              </div>
+
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+                fontFamily: "'DM Mono', monospace",
+                fontSize: '0.75rem',
+                color: '#50545B',
+                borderTop: '1px solid #D8DAD7',
+                paddingTop: '1rem'
+              }}>
+                <div>• BEBRAS LOGIC & PATTERNS (Difficulty 1-2)</div>
+                <div>• O*NET RIASEC CAREER INTERESTS</div>
+                <div>• GUIDED EXPLORATORY SCENARIOS</div>
+              </div>
             </div>
 
-            {/* Experience Level */}
-            <div>
-              <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--color-text-3)', marginBottom: '0.5rem' }}>
-                PRIOR PROGRAMMING EXPOSURE
-              </label>
-              <select
-                value={introProfile.experienceLevel}
-                onChange={(e) => setIntroProfile({ ...introProfile, experienceLevel: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 1rem',
-                  background: 'var(--color-bg)',
-                  border: '1px solid var(--color-border)',
-                  color: 'var(--color-ivory)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.875rem'
-                }}
-              >
-                <option value="zero">Zero Prior Coding (Foundational)</option>
-                <option value="beginner">Beginner (Basic conditionals & variables)</option>
-                <option value="intermediate">Intermediate (Loops, functions, projects)</option>
-                <option value="experienced">Advanced (Data structures & design)</option>
-              </select>
+            {/* TRACK 2: PREREQUISITE-AWARE */}
+            <div 
+              onClick={() => setSelectedTrack('prereq')}
+              style={{
+                backgroundColor: selectedTrack === 'prereq' ? '#FFF0EB' : '#FFFFFF',
+                border: selectedTrack === 'prereq' ? '2px solid #E85D3F' : '1px solid #D8DAD7',
+                padding: '2.25rem',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between'
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
+                  <div style={{
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.08em',
+                    color: selectedTrack === 'prereq' ? '#E85D3F' : '#646A73'
+                  }}>
+                    TRACK 02 // TECHNICAL SPECIALIST
+                  </div>
+                  <div style={{
+                    width: '18px',
+                    height: '18px',
+                    border: `2px solid ${selectedTrack === 'prereq' ? '#E85D3F' : '#D8DAD7'}`,
+                    backgroundColor: selectedTrack === 'prereq' ? '#E85D3F' : 'transparent',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    {selectedTrack === 'prereq' && <Check size={12} color="#FFFFFF" />}
+                  </div>
+                </div>
+
+                <h2 style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: '1.85rem',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  color: '#17191C',
+                  margin: '0 0 0.75rem 0'
+                }}>
+                  Prerequisite-Aware
+                </h2>
+                <p style={{ color: '#50545B', fontSize: '0.9375rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+                  Designed for Semesters 3–8 with familiarity in C++, Python, or Java. Evaluates systems architecture, algorithmic complexity, database tradeoffs, and code traces.
+                </p>
+              </div>
+
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+                fontFamily: "'DM Mono', monospace",
+                fontSize: '0.75rem',
+                color: '#50545B',
+                borderTop: '1px solid #D8DAD7',
+                paddingTop: '1rem'
+              }}>
+                <div>• SYSTEM CODE TRACE & DSA (Difficulty 2-4)</div>
+                <div>• OCCUPATIONAL SPECIALIZATION MAPPING</div>
+                <div>• REAL-WORLD ARCHITECTURE TRADEOFFS</div>
+              </div>
             </div>
 
-            {/* Target Area */}
-            <div>
-              <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--color-text-3)', marginBottom: '0.5rem' }}>
-                INITIAL FIELD OF CURIOSITY
-              </label>
-              <select
-                value={introProfile.preferredArea}
-                onChange={(e) => setIntroProfile({ ...introProfile, preferredArea: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 1rem',
-                  background: 'var(--color-bg)',
-                  border: '1px solid var(--color-border)',
-                  color: 'var(--color-ivory)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.875rem'
-                }}
-              >
-                <option value="AI, ML & Data Science">AI, Machine Learning & Data</option>
-                <option value="Full Stack & Cloud Systems">Web, Distributed & Cloud Systems</option>
-                <option value="Cybersecurity & Networks">Cybersecurity & Networking</option>
-                <option value="Open to Discovery">Undecided / Broad Discovery</option>
-              </select>
+          </div>
+
+          {/* Profile Details Form */}
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #D8DAD7',
+            padding: '2rem 2.25rem',
+            marginBottom: '3rem'
+          }}>
+            <div style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: '0.75rem',
+              color: '#646A73',
+              letterSpacing: '0.08em',
+              marginBottom: '1.25rem'
+            }}>
+              STUDENT METADATA CALIBRATION
+            </div>
+            
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gap: '1.5rem'
+            }}>
+              {/* Semester */}
+              <div>
+                <label style={{ display: 'block', fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#17191C', fontWeight: 600, marginBottom: '0.5rem' }}>
+                  CURRENT SEMESTER
+                </label>
+                <select
+                  value={introProfile.semester}
+                  onChange={(e) => setIntroProfile({ ...introProfile, semester: Number(e.target.value) })}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 1rem',
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid #D8DAD7',
+                    color: '#17191C',
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
+                    <option key={s} value={s}>Semester {s} (B.Tech CSE)</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Experience Level */}
+              <div>
+                <label style={{ display: 'block', fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#17191C', fontWeight: 600, marginBottom: '0.5rem' }}>
+                  PRIOR CODING EXPOSURE
+                </label>
+                <select
+                  value={introProfile.experienceLevel}
+                  onChange={(e) => setIntroProfile({ ...introProfile, experienceLevel: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 1rem',
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid #D8DAD7',
+                    color: '#17191C',
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  <option value="zero">Zero Prior Coding (Foundational)</option>
+                  <option value="beginner">Beginner (Basic conditionals & variables)</option>
+                  <option value="intermediate">Intermediate (Loops, functions, projects)</option>
+                  <option value="experienced">Advanced (Data structures & design)</option>
+                </select>
+              </div>
+
+              {/* Target Area */}
+              <div>
+                <label style={{ display: 'block', fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#17191C', fontWeight: 600, marginBottom: '0.5rem' }}>
+                  INITIAL FIELD OF CURIOSITY
+                </label>
+                <select
+                  value={introProfile.preferredArea}
+                  onChange={(e) => setIntroProfile({ ...introProfile, preferredArea: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 1rem',
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid #D8DAD7',
+                    color: '#17191C',
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  <option value="AI, ML & Data Science">AI, Machine Learning & Data</option>
+                  <option value="Full Stack & Cloud Systems">Web, Distributed & Cloud Systems</option>
+                  <option value="Cybersecurity & Networks">Cybersecurity & Networking</option>
+                  <option value="Open to Discovery">Undecided / Broad Discovery</option>
+                </select>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Start button */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <button
-            type="button"
-            onClick={startAdaptiveSession}
-            className="btn-primary"
-            style={{
-              padding: '1.1rem 2.5rem',
-              fontSize: '1.125rem'
-            }}
-          >
-            <span>INITIALIZE ASSESSMENT SEQUENCE</span>
-            <ArrowRight size={18} />
-          </button>
-        </div>
+          {/* Start button */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <button
+              type="button"
+              onClick={startAdaptiveSession}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                backgroundColor: '#17191C',
+                color: '#FFFFFF',
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: '1.125rem',
+                fontWeight: 700,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                padding: '1.125rem 2.5rem',
+                border: '1px solid #17191C',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#E85D3F';
+                e.currentTarget.style.borderColor = '#E85D3F';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#17191C';
+                e.currentTarget.style.borderColor = '#17191C';
+              }}
+            >
+              <span>INITIALIZE ASSESSMENT SEQUENCE</span>
+              <ArrowRight size={18} />
+            </button>
+          </div>
 
+        </div>
       </div>
     );
   }
