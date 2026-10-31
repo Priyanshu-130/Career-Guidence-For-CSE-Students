@@ -1,19 +1,26 @@
 /**
  * Roadmap & API helper utilities for CSE PathFinder
+ *
+ * Phase 5 Integration:
+ * - Domain from interest hypothesis
+ * - Starting depth per course dynamically adjusted from verified topic level
+ * - Tri-component rule-based engine: Interest (35%) + Self-Report (35%) + Technical Readiness (30%)
  */
 
+import { calculateCompositeDomainScore, getMetricLabel } from './configHandler.js';
+
 export const getApiBaseUrl = () => {
-  // 1. Explicit production backend URL via environment variable
-  if (import.meta.env.VITE_API_URL) {
+  if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) {
     return import.meta.env.VITE_API_URL.replace(/\/$/, '');
   }
-  // 2. Local development fallback
-  const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  if (isLocalDev) {
-    return 'http://127.0.0.1:5000';
+  if (typeof window !== 'undefined') {
+    const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    if (isLocalDev) {
+      return 'http://127.0.0.1:5000';
+    }
+    return '';
   }
-  // 3. Same-origin or relative path fallback
-  return '';
+  return 'http://127.0.0.1:5000';
 };
 
 // Subtopics mapping for all 9 CSE domains across all 8 semesters
@@ -114,10 +121,112 @@ export function getSemesterSubtopics(domainId, semesterNum) {
   return domainSubtopics[domainId]?.[semesterNum] || ["General Theory & Research", "Practical Lab Exercises", "Milestone Assessment Quiz"];
 }
 
+/**
+ * Derives Technical Readiness score (0-100) from verified topic levels for a given domain.
+ */
+export function calculateTechnicalReadiness(domainId, verifiedMastery = {}) {
+  // Define core topic weightings per domain
+  const domainTopicWeights = {
+    ai: { python: 0.60, logic: 0.30, sql: 0.10 },
+    data: { sql: 0.50, python: 0.40, logic: 0.10 },
+    web: { python: 0.30, sql: 0.40, java: 0.30 },
+    security: { python: 0.40, sql: 0.30, logic: 0.30 },
+    cloud: { python: 0.40, sql: 0.30, logic: 0.30 },
+    iot: { python: 0.50, logic: 0.50 },
+    robotics: { python: 0.50, logic: 0.50 },
+    vlsi: { logic: 0.70, python: 0.30 },
+    networking: { logic: 0.50, python: 0.30, sql: 0.20 }
+  };
+
+  const weights = domainTopicWeights[domainId] || { python: 0.5, logic: 0.5 };
+  let totalScore = 0;
+  let totalWeight = 0;
+
+  for (const [topic, w] of Object.entries(weights)) {
+    const rec = verifiedMastery[topic];
+    const lvl = rec ? (typeof rec === 'number' ? rec : (rec.level ?? 0)) : 0;
+    // Map Level 0-4 to percentage: 0 -> 20%, 1 -> 40%, 2 -> 65%, 3 -> 85%, 4 -> 100%
+    const score = lvl === 4 ? 100 : (lvl === 3 ? 85 : (lvl === 2 ? 65 : (lvl === 1 ? 40 : 20)));
+    totalScore += score * w;
+    totalWeight += w;
+  }
+
+  return totalWeight > 0 ? Math.round(totalScore / totalWeight) : 50;
+}
+
+/**
+ * Calculates Tri-Component alignment score:
+ * - Interest score: 35%
+ * - Self-reported profile: 35%
+ * - Verified technical readiness: 30%
+ */
+export function calculateTriComponentDomainFit(domainId, interestScore, selfReportScore, verifiedMastery = {}) {
+  const hasMastery = Object.keys(verifiedMastery).length > 0;
+  const techReadiness = hasMastery ? calculateTechnicalReadiness(domainId, verifiedMastery) : null;
+  return calculateCompositeDomainScore(interestScore, selfReportScore, techReadiness);
+}
+
+/**
+ * Generates an 8-semester curriculum customized by interest domain and verified mastery levels.
+ *
+ * Rules:
+ * - Domain is chosen from interest orientation.
+ * - Starting depth per course dynamically adjusts based on verified topic levels.
+ * - E.g. Level 3 Python promotes student to "Accelerated Deep Dive" in foundational courses.
+ */
+export function getCustomizedRoadmap(domain, verifiedMastery = {}, interestScores = {}) {
+  if (!domain) return [];
+
+  const baseCurriculum = getSemesterCurriculum(domain);
+
+  // Determine primary topic for early courses
+  const primaryTopic = domain.id === 'data' ? 'sql' : 'python';
+  const masteryRec = verifiedMastery[primaryTopic];
+  const verifiedLevel = masteryRec ? (typeof masteryRec === 'number' ? masteryRec : (masteryRec.level ?? 1)) : 1;
+
+  return baseCurriculum.map(sem => {
+    let startingDepth = 'standard';
+    let depthBadge = 'Standard (Level 2)';
+    let recommendation = 'Proceed through curriculum milestones.';
+
+    // Personalize Semester 1 and Semester 2 based on verified topic level
+    if (sem.semester === 1 || sem.semester === 2) {
+      if (verifiedLevel >= 4) {
+        startingDepth = 'mastery_exempt';
+        depthBadge = 'Mastery Confirmed (Level 4 Verified)';
+        recommendation = 'Verified advanced mastery. Eligible to test out or lead peer review projects.';
+      } else if (verifiedLevel === 3) {
+        startingDepth = 'accelerated';
+        depthBadge = 'Accelerated Placement (Level 3 Verified)';
+        recommendation = 'Verified intermediate competence. Fast-track past syntax drills to systems architecture.';
+      } else if (verifiedLevel === 2) {
+        startingDepth = 'foundational_applied';
+        depthBadge = 'Foundational Application (Level 2 Verified)';
+        recommendation = 'Solid foundational grasp. Focus on application labs and code tracing.';
+      } else if (verifiedLevel === 1) {
+        startingDepth = 'basic_recall';
+        depthBadge = 'Basic Recall (Level 1)';
+        recommendation = 'Basic recall detected. Practice hands-on exercises to build foundational fluency.';
+      } else {
+        startingDepth = 'explainer_first';
+        depthBadge = 'Explainer-First Review (Level 0)';
+        recommendation = 'Introductory placement. Review conceptual explainer cards before coding labs.';
+      }
+    }
+
+    return {
+      ...sem,
+      startingDepth,
+      depthBadge,
+      recommendation,
+      isAccelerated: verifiedLevel >= 3 && (sem.semester === 1 || sem.semester === 2)
+    };
+  });
+}
+
 export function getSemesterCurriculum(domain) {
   if (!domain) return [];
 
-  // Define tailored mini projects for each domain ID
   const miniProjects = {
     ai: {
       title: "Domain Mini-Project: ML Pipeline",
@@ -129,31 +238,31 @@ export function getSemesterCurriculum(domain) {
     },
     web: {
       title: "Domain Mini-Project: Full-Stack MERN App",
-      desc: "Create and deploy a full-stack CRUD application (e.g., chat workspace, inventory tracker) incorporating JWT authentication, responsive React layouts, and MongoDB/SQL storage."
+      desc: "Create and deploy a full-stack CRUD application incorporating JWT authentication, responsive React layouts, and MongoDB/SQL storage."
     },
     security: {
       title: "Domain Mini-Project: Vulnerability Assessment Lab",
-      desc: "Conduct a comprehensive security audit and vulnerability assessment on a containerized environment. Compile an industry-standard pentest report detailing exploits and mitigation patches."
+      desc: "Conduct a comprehensive security audit and vulnerability assessment on a containerized environment."
     },
     cloud: {
       title: "Domain Mini-Project: IaC Multi-Tier Infrastructure",
-      desc: "Provision and deploy a highly-available web app on AWS/Azure using Terraform. Automate deployment with GitHub Actions and establish basic performance monitoring alerts."
+      desc: "Provision and deploy a highly-available web app on AWS/Azure using Terraform. Automate deployment with GitHub Actions."
     },
     iot: {
       title: "Domain Mini-Project: Smart IoT Hub",
-      desc: "Assemble a smart physical environment node using ESP32 or Arduino. Collect real-time sensor data, transmit it via MQTT, and visualize the stream on a real-time web dashboard."
+      desc: "Assemble a smart physical environment node using ESP32 or Arduino. Collect real-time sensor data and transmit via MQTT."
     },
     robotics: {
       title: "Domain Mini-Project: Autonomous Navigation Control",
-      desc: "Design and program a simulated or physical robot navigation script. Implement sensor feedback (Ultrasonic/IR) and tuning loops (PID controllers) for precise path routing."
+      desc: "Design and program a simulated robot navigation script. Implement sensor feedback and PID tuning loops."
     },
     vlsi: {
       title: "Domain Mini-Project: Custom ALU Processor Block",
-      desc: "Write RTL code for a custom Arithmetic Logic Unit (ALU) in Verilog. Construct a verification testbench to validate operations via waveform simulation tools (ModelSim/Vivado)."
+      desc: "Write RTL code for a custom Arithmetic Logic Unit (ALU) in Verilog with ModelSim testbench verification."
     },
     networking: {
       title: "Domain Mini-Project: Corporate Network Design",
-      desc: "Design and test a secure multi-department campus network using Cisco Packet Tracer. Configure dynamic routing (OSPF), VLAN divisions, DHCP scopes, and firewall rules."
+      desc: "Design and test a secure multi-department campus network using Cisco Packet Tracer. Configure dynamic OSPF routing and VLANs."
     }
   };
 
@@ -164,10 +273,9 @@ export function getSemesterCurriculum(domain) {
 
   const capstoneProject = {
     title: "Capstone Project & Industry Prep",
-    desc: "Architect, build, and deploy a comprehensive, production-grade project in your domain. Document implementation in a portfolio repository and prepare for technical interviews."
+    desc: "Architect, build, and deploy a comprehensive, production-grade project in your domain. Document implementation in a portfolio repository."
   };
 
-  // Semesters layout mapping
   return [
     {
       semester: 1,

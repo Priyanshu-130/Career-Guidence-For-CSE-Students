@@ -1,0 +1,204 @@
+{
+  "mapping_version": "hypothesis v1",
+  "status": "hypothesis",
+  "label": "hypothesis v1",
+  "disclaimer": "starting hypothesis based on your answers; it adjusts as you explore",
+  "presentation_rule": {
+    "display_count": 3,
+    "never_single_verdict": true,
+    "user_note": "starting hypothesis based on your answers; it adjusts as you explore"
+  },
+  "license_and_terms": {
+    "database": "O*NET 28.0 Database (U.S. Department of Labor / Employment and Training Administration)",
+    "license": "USDOL Developer License / CC BY 4.0",
+    "license_url": "https://www.onetcenter.org/license_developer.html",
+    "terms_verified": true,
+    "trademark_notice": "O*NET® is a trademark of the U.S. Department of Labor, Employment and Training Administration (USDOL/ETA).",
+    "attribution": "This product includes information from the O*NET 28.0 Database by the U.S. Department of Labor, Employment and Training Administration (USDOL/ETA). Used under the USDOL Developer License. O*NET® is a trademark of USDOL/ETA. Antigravity/PathFinder has modified all or some of this information. USDOL/ETA has not approved, endorsed, or tested this modified product.",
+    "derivation_basis": "The RIASEC profiles are derived heuristic baselines mapped to O*NET Standard Occupational Classification (SOC) occupations related to Computer Science and Engineering subfields. Starting weights represent an initial educational hypothesis, never an immutable verdict."
+  },
+  "behavior_adjustment_cap": {
+    "max_percentage": 20,
+    "max_decimal": 0.20,
+    "rationale": "Behavior adjustment is capped at most +/-20% so it adjusts the hypothesis without overriding it."
+  },
+  "feedback_control": {
+    "prompt": "Does this feel right? (1-5)",
+    "scale": [1, 2, 3, 4, 5],
+    "purpose": "Validation data for recalibrating weights later"
+  },
+  "domains": [
+    {
+      "id": "0",
+      "key": "ai_ml",
+      "title": "AI, ML & Deep Learning",
+      "onet_soc_codes": ["15-2051.00", "15-1221.00"],
+      "onet_occupations": [
+        "Data Scientists",
+        "Computer and Information Research Scientists"
+      ],
+      "derivation": "O*NET profiles for 15-2051.00 and 15-1221.00 show dominant Investigative scores (mathematical modeling, hypothesis formulation, algorithm design), followed by Realistic (GPU acceleration, compute pipelines) and Conventional (rigorous dataset auditing, benchmark metrics). Artistic and Social are lower in core algorithmic modeling.",
+      "riasec_weights": {
+        "R": 65,
+        "I": 95,
+        "A": 35,
+        "S": 25,
+        "E": 40,
+        "C": 70
+      }
+    },
+    {
+      "id": "1",
+      "key": "data_science",
+      "title": "Data Science",
+      "onet_soc_codes": ["15-2051.00", "15-2041.00"],
+      "onet_occupations": [
+        "Data Scientists",
+        "Statisticians"
+      ],
+      "derivation": "O*NET data highlights Investigative as paramount (exploratory data analysis, statistical inference), closely followed by Conventional (structured data warehouses, ETL schemas, data governance, regulatory compliance) and Enterprising (business intelligence dashboards, metric-driven decision support).",
+      "riasec_weights": {
+        "R": 45,
+        "I": 92,
+        "A": 30,
+        "S": 35,
+        "E": 65,
+        "C": 88
+      }
+    },
+    {
+      "id": "2",
+      "key": "web_app_game",
+      "title": "Web, App & Game Development",
+      "onet_soc_codes": ["15-1254.00", "15-1255.00", "15-1252.00"],
+      "onet_occupations": [
+        "Web Developers",
+        "Web and Digital Interface Designers",
+        "Software Developers"
+      ],
+      "derivation": "Derived from O*NET 15-1254.00 and 15-1255.00: High Artistic affinity (visual hierarchy, ergonomics, typography, interactive audio-visual assets in games) combined with Realistic (hands-on UI engineering, rendering engines) and Enterprising (user engagement, product management, indie publishing).",
+      "riasec_weights": {
+        "R": 75,
+        "I": 55,
+        "A": 90,
+        "S": 45,
+        "E": 60,
+        "C": 50
+      }
+    },
+    {
+      "id": "3",
+      "key": "cyber_security_blockchain",
+      "title": "Cyber Security & Blockchain",
+      "onet_soc_codes": ["15-1212.00", "15-1299.08"],
+      "onet_occupations": [
+        "Information Security Analysts",
+        "Computer Network Forensics Analysts"
+      ],
+      "derivation": "O*NET 15-1212.00 displays dominant Conventional (compliance audits, cryptographic protocols, security controls, ledger consensus verification) paired with Investigative (forensics, penetration analysis, zero-day threat reverse-engineering) and Realistic (network packet appliances, hardware firewalls).",
+      "riasec_weights": {
+        "R": 70,
+        "I": 88,
+        "A": 20,
+        "S": 30,
+        "E": 45,
+        "C": 92
+      }
+    },
+    {
+      "id": "4",
+      "key": "cloud_computing",
+      "title": "Cloud Computing",
+      "onet_soc_codes": ["15-1244.00", "15-1252.00"],
+      "onet_occupations": [
+        "Network and Computer Systems Administrators",
+        "Software Developers"
+      ],
+      "derivation": "O*NET systems engineering profiles show high Conventional (infrastructure-as-code configuration, SLA uptime monitoring, IAM policies) and Realistic (distributed clusters, hypervisors, VPC networking), along with Enterprising (cloud cost optimization, service migration leadership).",
+      "riasec_weights": {
+        "R": 80,
+        "I": 65,
+        "A": 20,
+        "S": 35,
+        "E": 60,
+        "C": 85
+      }
+    },
+    {
+      "id": "5",
+      "key": "iot_embedded",
+      "title": "IoT & Embedded Systems",
+      "onet_soc_codes": ["17-2072.00", "15-1252.00"],
+      "onet_occupations": [
+        "Electronics Engineers, Except Computer",
+        "Software Developers"
+      ],
+      "derivation": "O*NET 17-2072.00 features strong Realistic emphasis (soldering, breadboards, microcontroller pinouts, real-time operating systems) alongside Investigative (signal processing, power optimization) and Conventional (hardware protocol specs, I2C/SPI timing).",
+      "riasec_weights": {
+        "R": 95,
+        "I": 80,
+        "A": 25,
+        "S": 20,
+        "E": 30,
+        "C": 70
+      }
+    },
+    {
+      "id": "6",
+      "key": "robotics_automation",
+      "title": "Robotics & Automation",
+      "onet_soc_codes": ["17-2199.08", "17-3024.01"],
+      "onet_occupations": [
+        "Robotics Engineers",
+        "Robotics Technicians"
+      ],
+      "derivation": "O*NET 17-2199.08 reflects heavy Realistic involvement (physical actuators, motor drives, mechanical arm assemblies, LiDAR integration) alongside Investigative (inverse kinematics, SLAM algorithms, path planning) and moderate Enterprising (industrial automation project delivery).",
+      "riasec_weights": {
+        "R": 98,
+        "I": 85,
+        "A": 30,
+        "S": 20,
+        "E": 45,
+        "C": 60
+      }
+    },
+    {
+      "id": "7",
+      "key": "vlsi_architecture",
+      "title": "VLSI & Computer Architecture",
+      "onet_soc_codes": ["17-2061.00", "17-2071.00"],
+      "onet_occupations": [
+        "Computer Hardware Engineers",
+        "Electrical Engineers"
+      ],
+      "derivation": "O*NET 17-2061.00 combines deep Investigative inquiry (semiconductor physics, pipelining, timing analysis, cache coherence) with high Realistic skill (FPGA synthesis, ASIC layout verification) and Conventional precision (DRC rules, gate count constraints).",
+      "riasec_weights": {
+        "R": 85,
+        "I": 92,
+        "A": 20,
+        "S": 15,
+        "E": 30,
+        "C": 80
+      }
+    },
+    {
+      "id": "8",
+      "key": "networking_systems",
+      "title": "Networking & Communication Systems",
+      "onet_soc_codes": ["15-1241.00", "15-1244.00"],
+      "onet_occupations": [
+        "Computer Network Architects",
+        "Network and Computer Systems Administrators"
+      ],
+      "derivation": "O*NET 15-1241.00 emphasizes Conventional consistency (standard RFC protocols, BGP routing tables, subnets) and Realistic hardware deployment (cables, optical transceivers, switches) alongside Investigative protocol troubleshooting.",
+      "riasec_weights": {
+        "R": 82,
+        "I": 70,
+        "A": 15,
+        "S": 35,
+        "E": 50,
+        "C": 90
+      }
+    }
+  ]
+}

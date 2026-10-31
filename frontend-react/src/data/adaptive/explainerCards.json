@@ -1,0 +1,164 @@
+{
+  "explainers": [
+    {
+      "id": "exp_py_variables",
+      "topic": "python",
+      "title": "Variables and Dynamic Typing in Python",
+      "summary": "In Python, variables are dynamic references to objects in memory, not fixed memory slots.",
+      "key_takeaways": [
+        "Variables do not require type declaration (e.g. x = 5, x = 'text').",
+        "Assignments evaluate the right-hand expression before rebinding the variable name.",
+        "Tracing x = 3; x = x + 2 evaluates 3 + 2 = 5 and assigns 5 back to x."
+      ],
+      "official_doc_url": "https://docs.python.org/3/tutorial/introduction.html#using-python-as-a-calculator"
+    },
+    {
+      "id": "exp_py_loops",
+      "topic": "python",
+      "title": "Iteration with For Loops and range()",
+      "summary": "The range(start, stop, step) function generates numbers up to, but not including, the stop value.",
+      "key_takeaways": [
+        "range(5) produces: 0, 1, 2, 3, 4 (5 iterations).",
+        "range(2, 6) produces: 2, 3, 4, 5.",
+        "Loop accumulators build cumulative totals by adding to a variable across iterations."
+      ],
+      "official_doc_url": "https://docs.python.org/3/tutorial/controlflow.html#for-statements"
+    },
+    {
+      "id": "exp_py_data_structures",
+      "topic": "python",
+      "title": "Lists vs Sets vs Dictionaries",
+      "summary": "Choosing the right collection type is essential for algorithmic performance and data modeling.",
+      "key_takeaways": [
+        "Lists: Ordered, mutable, allows duplicate items (O(n) lookups).",
+        "Sets: Unordered, unique elements only, fast hash lookups (O(1) average).",
+        "Dictionaries: Key-value hash maps, fast key lookups via dict.get(key, default)."
+      ],
+      "official_doc_url": "https://docs.python.org/3/tutorial/datastructures.html"
+    },
+    {
+      "id": "exp_py_functions",
+      "topic": "python",
+      "title": "Functions, Scope, and Return Values",
+      "summary": "Functions package reusable logic and isolate local variables from global scope.",
+      "key_takeaways": [
+        "Functions without an explicit return statement implicitly return None.",
+        "Local variables created inside a function are not accessible outside.",
+        "Arguments can be positional or keyword-based with default fallbacks."
+      ],
+      "official_doc_url": "https://docs.python.org/3/tutorial/controlflow.html#defining-functions"
+    },
+
+    {
+      "id": "exp_sql_select",
+      "topic": "sql",
+      "title": "Query Structure: SELECT and WHERE",
+      "summary": "SQL queries retrieve tabular data declaratively, specifying what data to retrieve rather than how.",
+      "key_takeaways": [
+        "SELECT specifies columns to project.",
+        "FROM designates the table or view source.",
+        "WHERE filters rows before any grouping or aggregation takes place."
+      ],
+      "official_doc_url": "https://en.wikipedia.org/wiki/Select_(SQL)"
+    },
+    {
+      "id": "exp_sql_aggregates",
+      "topic": "sql",
+      "title": "Aggregations: COUNT, SUM, AVG and GROUP BY",
+      "summary": "Aggregate functions collapse multiple rows into summary metrics per category.",
+      "key_takeaways": [
+        "COUNT(*) counts all rows including NULLs; COUNT(col) counts non-NULL rows.",
+        "GROUP BY bundles rows by categorical columns before calculating aggregates.",
+        "HAVING filters groups after aggregation (contrast with WHERE which filters before)."
+      ],
+      "official_doc_url": "https://en.wikipedia.org/wiki/Aggregate_function"
+    },
+    {
+      "id": "exp_sql_joins",
+      "topic": "sql",
+      "title": "Relational Joins: INNER vs LEFT vs FULL",
+      "summary": "Joins connect related tables across foreign keys and primary keys.",
+      "key_takeaways": [
+        "INNER JOIN: Retains only rows where matching keys exist in both tables.",
+        "LEFT JOIN: Retains all rows from the left table; fills missing right table columns with NULL.",
+        "Avoid Cartesian cross joins by always defining clear ON condition keys."
+      ],
+      "official_doc_url": "https://en.wikipedia.org/wiki/Join_(SQL)"
+    },
+    {
+      "id": "exp_sql_indexes",
+      "topic": "sql",
+      "title": "Keys, Constraints, and Indexes",
+      "summary": "Database schemas enforce integrity through primary keys, foreign keys, and unique indexes.",
+      "key_takeaways": [
+        "PRIMARY KEY uniquely identifies a table record and enforces non-nullability.",
+        "FOREIGN KEY enforces referential integrity across related parent and child tables.",
+        "B-Tree indexes speed up WHERE filtering and JOINs from O(n) table scans to O(log n)."
+      ],
+      "official_doc_url": "https://en.wikipedia.org/wiki/Database_index"
+    },
+
+    {
+      "id": "exp_java_basics",
+      "topic": "java",
+      "title": "Static Typing and Compilation in Java",
+      "summary": "Java is a statically-typed, object-oriented language that compiles into bytecode executed on the JVM.",
+      "key_takeaways": [
+        "Variable types must be declared at compile time (e.g. int, boolean, String).",
+        "Primitive types (int, double, char) hold values directly; Objects hold reference pointers.",
+        "Every executable application starts at public static void main(String[] args)."
+      ],
+      "official_doc_url": "https://docs.oracle.com/javase/tutorial/java/nutsandbolts/index.html"
+    },
+    {
+      "id": "exp_java_oop",
+      "topic": "java",
+      "title": "OOP: Encapsulation, Inheritance, and Polymorphism",
+      "summary": "Java structures software through classes and objects that manage state and behavior.",
+      "key_takeaways": [
+        "Encapsulation: Private fields with public getters/setters protect object integrity.",
+        "Inheritance: 'extends' allows child classes to inherit attributes and methods.",
+        "Polymorphism: Method overriding allows runtime dynamic method dispatch."
+      ],
+      "official_doc_url": "https://docs.oracle.com/javase/tutorial/java/concepts/index.html"
+    },
+    {
+      "id": "exp_java_arrays",
+      "topic": "java",
+      "title": "Fixed Arrays and ArrayList Collections",
+      "summary": "Managing collections of elements in Java with fixed arrays or dynamic lists.",
+      "key_takeaways": [
+        "Native arrays (int[]) have fixed length immutable after allocation.",
+        "Zero-based indexing: first item is [0], last item is [length - 1].",
+        "ArrayList<T> provides dynamic resizing with generic type safety."
+      ],
+      "official_doc_url": "https://docs.oracle.com/javase/tutorial/collections/interfaces/list.html"
+    },
+    {
+      "id": "exp_java_exceptions",
+      "topic": "java",
+      "title": "Exception Handling: Try-Catch-Finally",
+      "summary": "Java differentiates between checked and unchecked exceptions for resilient error recovery.",
+      "key_takeaways": [
+        "Unchecked exceptions (NullPointerException, ArrayIndexOutOfBoundsException) inherit from RuntimeException.",
+        "Checked exceptions (IOException) must be caught or declared in throws signatures.",
+        "The finally block always executes regardless of whether an exception was thrown."
+      ],
+      "official_doc_url": "https://docs.oracle.com/javase/tutorial/essential/exceptions/index.html"
+    },
+
+    {
+      "id": "exp_logic_patterns",
+      "topic": "logic",
+      "title": "Pattern Recognition and Algorithmic Thinking",
+      "summary": "Decomposing problems into systematic sequence, condition, and repetition rules.",
+      "key_takeaways": [
+        "Look for constant differences (arithmetic progressions) or constant ratios (geometric).",
+        "Trace step-by-step state changes using a paper trace table.",
+        "Identify boundary conditions and edge cases (e.g. 0, empty set, negatives)."
+      ],
+      "official_doc_url": "https://www.bebras.org/"
+    }
+  ]
+}
+

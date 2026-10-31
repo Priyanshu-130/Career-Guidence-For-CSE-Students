@@ -9,7 +9,9 @@ import {
   LogOut, 
   User,
   Map,
-  CheckSquare
+  CheckSquare,
+  Sparkles,
+  ShieldCheck
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -17,6 +19,8 @@ export default function Sidebar() {
 
   const menuItems = [
     { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={22} /> },
+    { name: 'Adaptive Ladder', path: '/assess', icon: <Sparkles size={22} /> },
+    { name: 'Admin & Explain', path: '/admin', icon: <ShieldCheck size={22} /> },
     { name: 'Career Finder', path: '/career-finder', icon: <Target size={22} /> },
     { name: 'Explore Domains', path: '/domains', icon: <Compass size={22} /> },
     { name: 'Track Progress', path: '/progress', icon: <CheckSquare size={22} /> },
@@ -36,65 +40,63 @@ export default function Sidebar() {
           <Compass size={24} />
         </div>
         <div className="sidebar-text">
-          <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--color-text)', letterSpacing: '-0.05em', lineHeight: 1 }}>PATHFINDER</div>
-          <div style={{ fontSize: '0.625rem', fontWeight: 800, color: 'var(--color-accent)', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '2px' }}>Professional v2.1</div>
+          <div style={{ fontSize: '1.125rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--color-text)' }}>PathFinder</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-3)', fontWeight: 600 }}>CSE Career Engine</div>
         </div>
       </div>
 
-      <nav className="sidebar-nav">
+      {/* Navigation Links */}
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1 }}>
         {menuItems.map((item) => (
-          <NavLink 
-            key={item.path} 
-            to={item.path} 
-            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+          <NavLink
+            key={item.name}
+            to={item.path}
+            className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
           >
-            {item.icon}
-            <span>{item.name}</span>
+            <span className="sidebar-icon">{item.icon}</span>
+            <span className="sidebar-text">{item.name}</span>
           </NavLink>
         ))}
       </nav>
 
-      {/* Profile Summary Footer */}
-      <div style={{ marginTop: 'auto', padding: '1rem 0.75rem' }}>
-        <div style={{ 
-          background: 'rgba(79, 70, 229, 0.04)', 
-          borderRadius: 'var(--radius-lg)', 
-          border: '1px solid var(--color-border)',
-          padding: '1rem 0.75rem',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1rem'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{ 
-              minWidth: '36px', height: '36px', borderRadius: '50%', background: 'var(--color-accent-lt)', 
-              color: 'var(--color-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center'
-            }}>
-              <User size={18} />
+      {/* User Section & Logout */}
+      <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.25rem', marginTop: 'auto' }}>
+        {user ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 1rem' }}>
+              <div style={{ 
+                width: '36px', height: '36px', borderRadius: '50%', background: 'var(--color-accent-lt)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-accent)',
+                fontWeight: 700, fontSize: '0.875rem'
+              }}>
+                {user.name ? user.name.charAt(0).toUpperCase() : <User size={18} />}
+              </div>
+              <div className="sidebar-text" style={{ overflow: 'hidden' }}>
+                <div style={{ fontSize: '0.875rem', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {user.name || 'Student'}
+                </div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--color-text-3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {user.email}
+                </div>
+              </div>
             </div>
-            <div className="sidebar-text" style={{ overflow: 'hidden' }}>
-              <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--color-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.name}</div>
-              <div style={{ fontSize: '0.65rem', color: 'var(--color-text-3)' }}>{user?.year} • {user?.branch}</div>
-            </div>
-          </div>
-          <button onClick={logout} className="sidebar-text logout-btn-side" style={{ 
-            display: 'flex', alignItems: 'center', gap: '0.5rem', 
-            fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-3)',
-            transition: 'var(--transition)',
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer'
-          }}>
-            <LogOut size={14} /> <span>Sign Out</span>
-          </button>
-        </div>
-      </div>
 
-      <style>{`
-        .sidebar-text { opacity: 0; transition: opacity 0.3s; pointer-events: none; }
-        .sidebar:hover .sidebar-text { opacity: 1; pointer-events: auto; }
-        .logout-btn-side:hover { color: var(--color-danger) !important; }
-      `}</style>
+            <button
+              onClick={logout}
+              className="sidebar-link"
+              style={{ width: '100%', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left' }}
+            >
+              <span className="sidebar-icon"><LogOut size={20} color="var(--color-danger)" /></span>
+              <span className="sidebar-text" style={{ color: 'var(--color-danger)' }}>Logout</span>
+            </button>
+          </div>
+        ) : (
+          <NavLink to="/login" className="sidebar-link">
+            <span className="sidebar-icon"><User size={20} /></span>
+            <span className="sidebar-text">Sign In</span>
+          </NavLink>
+        )}
+      </div>
     </aside>
   );
 }

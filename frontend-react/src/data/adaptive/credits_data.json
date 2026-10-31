@@ -1,0 +1,60 @@
+{
+  "credits": [
+    {
+      "source": "Bebras Community & Computational Thinking Foundations",
+      "license": "CC-BY-SA 4.0",
+      "source_url": "https://www.bebras.org/",
+      "attribution_text": "Adapted from Bebras International Challenge on Informatics and Computational Thinking.",
+      "item_count": 3
+    },
+    {
+      "source": "Code.org Computer Science Principles",
+      "license": "CC BY-NC-SA 4.0",
+      "source_url": "https://code.org/educate/csp",
+      "attribution_text": "Adapted from Code.org CS Principles: Variables and Sequencing.",
+      "item_count": 1
+    },
+    {
+      "source": "Code.org Computer Science Fundamentals",
+      "license": "CC BY-NC-SA 4.0",
+      "source_url": "https://code.org/curriculum/docs/k-5/complete.pdf",
+      "attribution_text": "Adapted from Code.org K-5 Computational Concepts: Loops and Repetition.",
+      "item_count": 1
+    },
+    {
+      "source": "O*NET Career Exploration Tools (USDOL/ETA)",
+      "license": "USDOL Developer License",
+      "source_url": "https://www.onetcenter.org/tools.html",
+      "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
+      "item_count": 19
+    },
+    {
+      "source": "Bebras International Challenge on Informatics and Computational Thinking",
+      "license": "CC-BY-SA 4.0",
+      "source_url": "https://www.bebras.org/",
+      "attribution_text": "Adapted under CC-BY-SA 4.0 from Bebras international task archives. Tasks inspire computational thinking without requiring prior programming syntax.",
+      "item_count": 18
+    },
+    {
+      "source": "CSE PathFinder Curated Knowledge Bank",
+      "license": "CC-BY-SA 4.0",
+      "source_url": "https://docs.python.org/3/tutorial/",
+      "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
+      "item_count": 20
+    },
+    {
+      "source": "CSE PathFinder Curated Knowledge Bank",
+      "license": "CC-BY-SA 4.0",
+      "source_url": "https://en.wikipedia.org/wiki/SQL",
+      "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
+      "item_count": 20
+    },
+    {
+      "source": "CSE PathFinder Curated Knowledge Bank",
+      "license": "CC-BY-SA 4.0",
+      "source_url": "https://docs.oracle.com/javase/tutorial/",
+      "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
+      "item_count": 20
+    }
+  ]
+}

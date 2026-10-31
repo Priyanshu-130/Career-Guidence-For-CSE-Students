@@ -15,6 +15,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import CareerFinder from './pages/CareerFinder';
 import Progress from './pages/Progress';
+import AdaptiveAssessment from './pages/AdaptiveAssessment';
+import AdminDashboard from './pages/AdminDashboard';
 
 function ProtectedLayout({ children }) {
   const { user } = useAuth();
@@ -44,6 +46,8 @@ function App() {
           <Route path="/roadmap/:id" element={<ProtectedLayout><Roadmap /></ProtectedLayout>} />
           <Route path="/quiz" element={<ProtectedLayout><QuizSelection /></ProtectedLayout>} />
           <Route path="/quiz/:track" element={<ProtectedLayout><QuizRunner /></ProtectedLayout>} />
+          <Route path="/assess" element={<ProtectedLayout><AdaptiveAssessment /></ProtectedLayout>} />
+          <Route path="/admin" element={<ProtectedLayout><AdminDashboard /></ProtectedLayout>} />
           <Route path="/results" element={<ProtectedLayout><Results /></ProtectedLayout>} />
           <Route path="/career-finder" element={<ProtectedLayout><CareerFinder /></ProtectedLayout>} />
           <Route path="/progress" element={<ProtectedLayout><Progress /></ProtectedLayout>} />
@@ -56,4 +60,3 @@ function App() {
 }
 
 export default App;
-

@@ -1,20 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Compass, BookOpen, Clock, Activity, FileText, ChevronRight, User, Loader2, Target, Sparkles, Trophy, Zap, MousePointer2 } from 'lucide-react';
+import { 
+  Sparkles, 
+  TrendingUp, 
+  Clock, 
+  Target, 
+  ArrowRight, 
+  ChevronRight, 
+  BookOpen, 
+  Compass, 
+  Zap, 
+  Layers,
+  FileText,
+  Loader2
+} from 'lucide-react';
 import { getApiBaseUrl } from '../utils/roadmapHelper';
 
 export default function Home() {
   const { user } = useAuth();
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
-
-  const greeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Good Morning";
-    if (hour < 17) return "Good Afternoon";
-    return "Good Evening";
-  };
 
   useEffect(() => {
     if (user?.email && !user.isGuest) {
@@ -36,6 +42,13 @@ export default function Home() {
     }
   }, [user]);
 
+  const greeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  };
+
   return (
     <div className="page-wrapper content-container" style={{ paddingTop: '1rem' }}>
       
@@ -45,7 +58,7 @@ export default function Home() {
           <Sparkles size={14} style={{ marginRight: '6px' }} /> Engineering Intelligence Hub
         </div>
         <h1 style={{ fontSize: '3.5rem', marginBottom: '0.5rem', lineHeight: 1 }}>
-          {greeting()}, <span className="text-gradient">{user?.name.split(' ')[0]}!</span>
+          {greeting()}, <span className="text-gradient">{user?.name ? user.name.split(' ')[0] : 'Engineer'}!</span>
         </h1>
         <p style={{ color: 'var(--color-text-3)', fontSize: '1.125rem', maxWidth: '600px' }}>
           Your specialized trajectory is currently <span style={{ color: 'var(--color-accent)', fontWeight: 800 }}>{history.length > 0 ? 'Optimal' : 'Pending Diagnosis'}</span>. Explore your matched domains below.
@@ -53,32 +66,33 @@ export default function Home() {
       </header>
 
       {/* Hero Stats Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginBottom: '4rem' }}>
-        <div className="glass-card" style={{ padding: '2rem', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-          <div style={{ padding: '1rem', background: 'rgba(99, 102, 241, 0.1)', color: 'var(--color-accent)', borderRadius: '16px' }}>
-            <Activity size={24} />
-          </div>
-          <div>
-            <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-text-3)', textTransform: 'uppercase' }}>Assessments</div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 900 }}>{history.length}</div>
-          </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem', marginBottom: '4rem' }}>
+        <div className="glass-card" style={{ padding: '2rem' }}>
+          <div style={{ color: 'var(--color-accent)', marginBottom: '1.25rem' }}><Layers size={24} /></div>
+          <div style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.25rem' }}>9</div>
+          <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-text-3)' }}>Mapped CSE Career Paths</div>
         </div>
-        <div className="glass-card" style={{ padding: '2rem', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-          <div style={{ padding: '1rem', background: 'rgba(168, 85, 247, 0.1)', color: 'var(--color-purple)', borderRadius: '16px' }}>
-            <Trophy size={24} />
+
+        <div className="glass-card" style={{ padding: '2rem' }}>
+          <div style={{ color: 'var(--color-purple)', marginBottom: '1.25rem' }}><TrendingUp size={24} /></div>
+          <div style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.25rem' }}>
+            {history.length > 0 ? `${Math.round(history[0].confidence_score)}%` : '94%'}
           </div>
-          <div>
-            <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-text-3)', textTransform: 'uppercase' }}>Specializations</div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 900 }}>{new Set(history.map(h => h.recommended_domain)).size}</div>
-          </div>
+          <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-text-3)' }}>Top Alignment Match</div>
         </div>
-        <Link to="/career-finder" className="glass-card" style={{ padding: '2rem', display: 'flex', alignItems: 'center', gap: '1.5rem', background: 'var(--color-accent)', color: '#fff', border: 'none' }}>
-          <div style={{ padding: '1rem', background: 'rgba(255, 255, 255, 0.2)', color: '#fff', borderRadius: '16px' }}>
-            <Zap size={24} />
-          </div>
-          <div style={{ flexGrow: 1 }}>
-            <div style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.8, textTransform: 'uppercase' }}>Diagnostic</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 900 }}>Quick Start</div>
+
+        <Link to="/assess" className="glass-card" style={{ 
+          padding: '2rem', 
+          background: 'linear-gradient(135deg, var(--color-accent), var(--color-purple))',
+          color: '#fff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          textDecoration: 'none'
+        }}>
+          <div>
+            <div style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.8, textTransform: 'uppercase' }}>Next-Gen Engine</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 900 }}>Adaptive Assessment</div>
           </div>
           <ChevronRight size={24} />
         </Link>
@@ -114,7 +128,7 @@ export default function Home() {
                     </div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--color-success)' }}>{item.confidence_score}%</div>
+                    <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--color-success)' }}>{Math.round(item.confidence_score)}%</div>
                     <div style={{ fontSize: '0.6rem', fontWeight: 800, color: 'var(--color-text-3)', textTransform: 'uppercase' }}>Match</div>
                   </div>
                   <ChevronRight size={18} style={{ opacity: 0.2 }} />
@@ -128,9 +142,13 @@ export default function Home() {
           <div className="glass-card" style={{ padding: '2.5rem', background: 'radial-gradient(circle at top right, rgba(99, 102, 241, 0.1), transparent 70%), var(--color-card)' }}>
              <h3 style={{ fontSize: '1.25rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '1rem' }}>Quick Actions</h3>
              <div style={{ display: 'grid', gap: '1rem' }}>
+                <Link to="/assess" className="btn-primary" style={{ justifyContent: 'flex-start', padding: '1.25rem' }}>
+                  <Sparkles size={20} />
+                  <span>Start Adaptive Assessment</span>
+                </Link>
                 <Link to="/quiz" className="btn-ghost" style={{ justifyContent: 'flex-start', padding: '1.25rem' }}>
                   <Target size={20} style={{ color: 'var(--color-accent)' }} /> 
-                  <span>Take Full Diagnostic</span>
+                  <span>Static Track Quizzes</span>
                 </Link>
                 <Link to="/domains" className="btn-ghost" style={{ justifyContent: 'flex-start', padding: '1.25rem' }}>
                   <BookOpen size={20} style={{ color: 'var(--color-purple)' }} /> 
@@ -138,21 +156,10 @@ export default function Home() {
                 </Link>
              </div>
           </div>
-
-          <div style={{ 
-            padding: '2rem', borderRadius: 'var(--radius-lg)', 
-            background: 'rgba(255,255,255,0.02)', border: '1px solid var(--color-border)',
-            textAlign: 'center'
-          }}>
-             <MousePointer2 size={32} style={{ color: 'var(--color-accent)', margin: '0 auto 1.5rem', opacity: 0.5 }} />
-             <h4 style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>Interactive Insights</h4>
-             <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)', lineHeight: 1.6 }}>
-               All trajectory reports are synchronized with real-world industry demand metrics.
-             </p>
-          </div>
         </aside>
 
       </div>
+
     </div>
   );
 }

@@ -1,16 +1,36 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft, Flag, Book, CheckCircle2, ChevronRight, Sparkles, Terminal, ArrowRight } from 'lucide-react';
+import { ChevronLeft, Flag, Book, CheckCircle2, ChevronRight, Sparkles, Terminal, ArrowRight, Zap } from 'lucide-react';
 import domainsData from '../data/domains.json';
-import { getSemesterCurriculum } from '../utils/roadmapHelper';
+import { getCustomizedRoadmap } from '../utils/roadmapHelper';
+import { getMastery } from '../services/apiService';
+import { useAuth } from '../context/AuthContext';
 
 export default function Roadmap() {
   const { id } = useParams();
+  const { user } = useAuth();
   const domain = domainsData.find(d => d.id === id);
+
+  const [verifiedMastery, setVerifiedMastery] = useState({});
+
+  useEffect(() => {
+    const loadMastery = async () => {
+      const email = user?.email || 'guest_student@pathfinder.edu';
+      try {
+        const res = await getMastery(email);
+        if (res.current_mastery) {
+          setVerifiedMastery(res.current_mastery);
+        }
+      } catch (e) {
+        console.error('Failed to load mastery for roadmap customization:', e);
+      }
+    };
+    loadMastery();
+  }, [user]);
 
   if (!domain) return <div className="page-wrapper">Roadmap not found</div>;
 
-  const semesters = getSemesterCurriculum(domain);
+  const semesters = getCustomizedRoadmap(domain, verifiedMastery);
 
   return (
     <div className="page-wrapper content-container animate-in">
@@ -23,12 +43,20 @@ export default function Roadmap() {
         <ChevronLeft size={16} /> Back to Domain Insights
       </Link>
 
-      <div style={{ marginBottom: '5rem' }}>
-        <div className="page-label" style={{ marginBottom: '1rem' }}><Sparkles size={14} style={{ marginRight: '6px' }} /> Technical Roadmap</div>
+      <div style={{ marginBottom: '4rem' }}>
+        <div className="page-label" style={{ marginBottom: '1rem' }}>
+          <Sparkles size={14} style={{ marginRight: '6px' }} /> Personalized Technical Roadmap
+        </div>
         <h1 style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>{domain.title} <span className="text-gradient">Curriculum.</span></h1>
-        <p style={{ fontSize: '1.25rem', color: 'var(--color-text-3)', maxWidth: '700px' }}>
-          A strategic 8-semester progression plan designed to take you from foundational logic to industry-ready mastery in {domain.title}.
+        <p style={{ fontSize: '1.25rem', color: 'var(--color-text-3)', maxWidth: '750px' }}>
+          Personalized 8-semester progression plan with starting depths tailored to your verified topic mastery levels.
         </p>
+
+        {Object.keys(verifiedMastery).length > 0 && (
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', borderRadius: '20px', background: 'var(--color-accent-lt)', border: '1px solid var(--color-accent)', marginTop: '1rem', fontSize: '0.8125rem', color: 'var(--color-accent)', fontWeight: 700 }}>
+            <Zap size={14} /> Adaptive Starting Depth Active based on Verified Topic Mastery
+          </div>
+        )}
       </div>
 
       <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: '4rem' }}>
@@ -52,9 +80,24 @@ export default function Roadmap() {
              </div>
 
              <div>
-                <div style={{ marginBottom: '1.5rem' }}>
-                  <div style={{ fontSize: '0.7rem', fontWeight: 800, color: sem.color, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.25rem' }}>{sem.subtitle}</div>
-                  <h3 style={{ fontSize: '1.75rem' }}>{sem.title}</h3>
+                <div style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div>
+                    <div style={{ fontSize: '0.7rem', fontWeight: 800, color: sem.color, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.25rem' }}>{sem.subtitle}</div>
+                    <h3 style={{ fontSize: '1.75rem', margin: 0 }}>{sem.title}</h3>
+                  </div>
+                  {sem.depthBadge && (
+                    <span style={{
+                      padding: '0.35rem 0.85rem',
+                      borderRadius: '20px',
+                      background: sem.isAccelerated ? 'rgba(16, 185, 129, 0.1)' : 'var(--color-surface)',
+                      border: sem.isAccelerated ? '1px solid var(--color-success)' : '1px solid var(--color-border)',
+                      color: sem.isAccelerated ? 'var(--color-success)' : 'var(--color-text-2)',
+                      fontSize: '0.75rem',
+                      fontWeight: 800
+                    }}>
+                      {sem.depthBadge}
+                    </span>
+                  )}
                 </div>
 
                 <div style={{ display: 'grid', gap: '1rem' }}>
@@ -65,6 +108,13 @@ export default function Roadmap() {
                     <div style={{ flexGrow: 1 }}>
                       <div style={{ fontWeight: 700, color: 'var(--color-text)', fontSize: '1rem', marginBottom: '0.25rem' }}>{sem.course.title}</div>
                       <p style={{ fontSize: '0.875rem', color: 'var(--color-text-3)', lineHeight: 1.5, margin: '0 0 0.75rem 0' }}>{sem.course.desc}</p>
+                      
+                      {sem.recommendation && (
+                        <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-2)', background: 'var(--color-surface)', padding: '0.65rem 0.85rem', borderRadius: 'var(--radius-sm)', marginBottom: '0.75rem', borderLeft: `3px solid ${sem.color}` }}>
+                          <strong>Starting Guidance:</strong> {sem.recommendation}
+                        </div>
+                      )}
+
                       <div style={{ fontSize: '0.7rem', color: sem.color, display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                          <CheckCircle2 size={12} /> {sem.semester === 4 ? 'Applied Milestone' : sem.semester === 8 ? 'Capstone Milestone' : 'Core Competency'}
                       </div>
@@ -103,24 +153,6 @@ export default function Roadmap() {
           ))}
         </div>
       </section>
-
-      <div className="glass-card" style={{ marginTop: '8rem', padding: '4rem 3rem', textAlign: 'center', borderStyle: 'dashed', borderColor: 'rgba(255,255,255,0.1)' }}>
-        <Flag size={48} style={{ margin: '0 auto 1.5rem', color: 'var(--color-success)' }} />
-        <h3 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Ready to track your progress?</h3>
-        <p style={{ color: 'var(--color-text-3)', maxWidth: '500px', margin: '0 auto 2.5rem', fontSize: '1.125rem' }}>
-          This semester roadmap can be saved to your progress dashboard. You can mark courses, add notes, and log your learning milestones.
-        </p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
-          <Link to={`/domain/${domain.id}`} className="btn-primary" style={{ padding: '1.25rem 3rem', fontSize: '1.125rem' }}>Initialize Learning Modules <ArrowRight size={20} /></Link>
-          <Link to="/progress" className="btn-secondary" style={{ 
-            padding: '1.25rem 3rem', fontSize: '1.125rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', 
-            background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', 
-            textDecoration: 'none', fontWeight: 600, color: 'var(--color-text)', transition: 'var(--transition)'
-          }}>
-            Track Your Progress <CheckCircle2 size={18} color="var(--color-success)" style={{ marginLeft: '4px' }} />
-          </Link>
-        </div>
-      </div>
 
     </div>
   );

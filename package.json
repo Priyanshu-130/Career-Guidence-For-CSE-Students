@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "cd frontend-react && npm run dev",
-    "build": "cd frontend-react && npm run build"
+    "build": "cd frontend-react && npm run build",
+    "test": "cd frontend-react && npm run test"
   }
 }

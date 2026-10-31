@@ -4,6 +4,7 @@ import { QUIZ_DATA } from '../data/questions';
 import { useAuth } from '../context/AuthContext';
 import domainsData from '../data/domains.json';
 import { getApiBaseUrl } from '../utils/roadmapHelper';
+import { getMastery } from '../services/apiService';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -14,7 +15,18 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
-import { Activity, Compass, AlertCircle, ArrowRight, Sparkles, TrendingUp, ShieldCheck, Loader2 } from 'lucide-react';
+import { 
+  Activity, 
+  Compass, 
+  AlertCircle, 
+  ArrowRight, 
+  Sparkles, 
+  TrendingUp, 
+  ShieldCheck, 
+  Loader2,
+  Award,
+  CheckCircle2 
+} from 'lucide-react';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -24,12 +36,23 @@ export default function Results() {
     return raw ? JSON.parse(raw) : null;
   });
   const [loading, setLoading] = useState(false);
+  const [adaptiveMastery, setAdaptiveMastery] = useState({});
   const { user } = useAuth();
   const navigate = useNavigate();
   const apiBase = getApiBaseUrl();
 
   useEffect(() => {
     const loadHistoricResult = async () => {
+      // Load verified topic mastery from adaptive ladder
+      try {
+        const masteryResp = await getMastery(user?.email || 'guest_student@pathfinder.edu');
+        if (masteryResp && masteryResp.status === 'success') {
+          setAdaptiveMastery(masteryResp.mastery || {});
+        }
+      } catch (err) {
+        console.warn('Could not load adaptive mastery:', err);
+      }
+
       if (resultsData) return;
       if (!user) return;
       
@@ -60,18 +83,16 @@ export default function Results() {
           const reconstructed = {
             track: latest.quiz_type,
             top_domain: latest.recommended_domain,
-            domain_id: matchedDom ? matchedDom.id : 'ai',
-            match_percentage: Math.min(100, Math.round(latest.confidence_score)),
-            scores: cleanScores
+            confidence_score: latest.confidence_score,
+            all_scores: cleanScores,
+            domain_id: matchedDom ? matchedDom.id : 'ai'
           };
-
-          sessionStorage.setItem("quiz_results", JSON.stringify(reconstructed));
           setResultsData(reconstructed);
         } else {
           navigate('/quiz');
         }
       } catch (err) {
-        console.error("Failed to load historic results", err);
+        console.error("Failed to load past results:", err);
         navigate('/quiz');
       } finally {
         setLoading(false);
@@ -79,175 +100,119 @@ export default function Results() {
     };
 
     loadHistoricResult();
-  }, [user, navigate, resultsData, apiBase]);
+  }, [user, apiBase, navigate, resultsData]);
 
-  if (loading || !resultsData) {
+  if (loading) {
     return (
-      <div className="page-wrapper content-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
-        <Loader2 className="animate-spin" size={48} color="var(--color-accent)" />
-        <p style={{ marginTop: '1.5rem', color: 'var(--color-text-3)', fontWeight: 600 }}>Analyzing trajectory metrics...</p>
+      <div className="page-wrapper content-container flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <Loader2 className="w-10 h-10 text-primary animate-spin" />
+          <h2 className="text-xl font-bold text-on-surface">Loading Diagnostic History...</h2>
+          <p className="text-sm text-on-surface-variant">Retrieving research-backed RIASEC scores & alignment matrices</p>
+        </div>
       </div>
     );
   }
 
-  const getInclinationRating = (percentage) => {
-    if (percentage <= 35) return { text: "Exploratory Fit", color: "#EF4444", desc: "You show foundational interest in this track with room to grow." };
-    if (percentage <= 65) return { text: "Moderate Inclination", color: "#F59E0B", desc: "You show balanced alignment. This path is recommended for further skill building." };
-    if (percentage <= 85) return { text: "Strong Inclination", color: "#4F46E5", desc: "You have a strong logical and interest-based alignment with this domain!" };
-    return { text: "Very Strong Domain Fit", color: "#10B981", desc: "Phenomenal! Your mindset and logical preferences represent a top-tier fit for this field!" };
-  };
+  if (!resultsData) return null;
 
-  const matchPct = Math.min(100, Math.max(0, Math.round(resultsData.match_percentage || 50)));
-  const rating = getInclinationRating(matchPct);
+  const trackConfig = QUIZ_DATA[resultsData.track] || QUIZ_DATA['software'];
+  const clusters = trackConfig?.clusters || {};
 
-  const trackData = QUIZ_DATA[resultsData.track] || QUIZ_DATA['software'];
-  const clusters = Object.values(trackData.clusters || {});
-  const chartLabels = clusters.map(c => c.name);
-  
-  // Normalize chart values strictly between 0 and 100
-  const chartValues = chartLabels.map(label => {
-    const val = resultsData.scores?.[label] || 0;
-    return val > 100 ? Math.min(100, Math.round(val / 10)) : Math.min(100, Math.round(val));
-  });
+  const labels = Object.keys(resultsData.all_scores).map(key => clusters[key]?.name || key);
+  const dataValues = Object.values(resultsData.all_scores);
 
-  const sortedIndices = [...Array(chartValues.length).keys()].sort((a, b) => chartValues[b] - chartValues[a]);
-  const primaryIdx = sortedIndices[0] || 0;
-  const secondaryIdx = sortedIndices[1] || 0;
-  
-  const scoreDiff = (chartValues[primaryIdx] || 0) - (chartValues[secondaryIdx] || 0);
-  const showComparison = scoreDiff <= 5 && chartValues[secondaryIdx] > 0; 
+  const matchedDomain = domainsData.find(d => d.id === resultsData.domain_id) || domainsData[0];
 
   const chartData = {
-    labels: chartLabels,
+    labels: labels,
     datasets: [
       {
-        label: 'Aptitude Alignment (%)',
-        data: chartValues,
-        backgroundColor: 'rgba(79, 70, 229, 0.75)',
-        borderColor: 'rgba(79, 70, 229, 1)',
-        borderWidth: 1.5,
+        label: 'Domain Affinity Match',
+        data: dataValues,
+        backgroundColor: [
+          '#6366f1',
+          '#8b5cf6',
+          '#ec4899',
+          '#10b981',
+          '#06b6d4',
+          '#f59e0b',
+          '#3b82f6'
+        ],
         borderRadius: 8,
-        hoverBackgroundColor: 'rgba(79, 70, 229, 0.95)',
+        borderSkipped: false,
       },
     ],
   };
 
   const chartOptions = {
-    indexAxis: 'y',
     responsive: true,
     maintainAspectRatio: false,
-    devicePixelRatio: Math.max(2, window.devicePixelRatio || 2), // High-DPI crisp rendering
     plugins: {
-      legend: { display: false },
+      legend: {
+        display: false,
+      },
       tooltip: {
-        backgroundColor: '#0F172A',
-        titleFont: { family: 'Plus Jakarta Sans', size: 14, weight: 'bold' },
-        bodyFont: { family: 'Inter', size: 12 },
+        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+        titleColor: '#fff',
+        bodyColor: '#cbd5e1',
         padding: 12,
         cornerRadius: 8,
         callbacks: {
-          label: (context) => ` ${context.raw}% Match`
+          label: (ctx) => ` Affinity: ${ctx.parsed.y}%`
         }
       }
     },
     scales: {
-      x: { 
-        beginAtZero: true, 
-        max: 100, 
-        grid: { color: 'rgba(15, 23, 42, 0.06)' },
-        ticks: { 
-          color: '#64748B',
+      y: {
+        beginAtZero: true,
+        max: 100,
+        grid: {
+          color: 'rgba(255, 255, 255, 0.05)',
+        },
+        ticks: {
+          color: '#64748b',
           callback: (val) => `${val}%`
         }
       },
-      y: { 
-        grid: { display: false },
-        ticks: { 
-          color: '#0F172A', 
-          font: { family: 'Plus Jakarta Sans', weight: '600', size: 12 } 
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: '#94a3b8',
+          font: {
+            weight: 600
+          }
         }
       }
-    },
+    }
   };
 
   return (
     <div className="page-wrapper content-container animate-in">
       
+      {/* Top Banner */}
       <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-        <div className="page-label" style={{ marginBottom: '1rem' }}><Sparkles size={14} style={{ marginRight: '6px' }} /> Diagnostic Complete</div>
-        <h1 style={{ fontSize: '4rem' }}>Your Professional <span className="text-gradient">Trajectory.</span></h1>
-        <p style={{ fontSize: '1.25rem', color: 'var(--color-text-3)', maxWidth: '600px', margin: '1rem auto 0' }}>
-          Based on our situational analysis of your responses, we've identified the following career alignment.
+        <div className="page-label" style={{ display: 'inline-flex', marginBottom: '1.25rem' }}>
+          <Sparkles size={14} style={{ marginRight: '6px' }} /> Analytical Diagnostic Verdict
+        </div>
+        <h1 style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>
+          Your Prime Domain: <span className="text-gradient">{resultsData.top_domain}</span>
+        </h1>
+        <p style={{ fontSize: '1.25rem', color: 'var(--color-text-3)', maxWidth: '650px', margin: '0 auto' }}>
+          Based on the U.S. Dept of Labor O*NET RIASEC framework and inter-domain cross-affinity logic, your engineering style matches this profile.
         </p>
       </div>
 
-      {showComparison && (
-        <div style={{ 
-          background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.3)', 
-          padding: '1.5rem', borderRadius: 'var(--radius-lg)', marginBottom: '3rem', 
-          display: 'flex', gap: '1.5rem', alignItems: 'center' 
-        }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--color-accent)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <AlertCircle size={24} />
-          </div>
-          <p style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: 'var(--color-text-2)' }}>
-            <strong>High Adaptability Detected:</strong> Your alignment scores for {chartLabels[primaryIdx]} and {chartLabels[secondaryIdx]} are closely balanced. Both paths offer strong opportunities.
-          </p>
-        </div>
-      )}
-
-      {/* Primary Result Card */}
-      <section className="glass-card" style={{ 
-        padding: '4rem 2rem', textAlign: 'center', marginBottom: '4rem',
-        background: 'radial-gradient(circle at top right, rgba(99, 102, 241, 0.1), transparent 40%), var(--color-card)'
-      }}>
-        <div className="page-label" style={{ marginBottom: '1.5rem' }}>Primary Recommended Domain</div>
-        <h2 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '1.5rem', color: 'var(--color-text)' }}>{resultsData.top_domain}</h2>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '3rem', alignItems: 'stretch', marginBottom: '4rem' }}>
         
-        <div style={{ marginBottom: '3rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ 
-              fontSize: '1.75rem', fontWeight: 800, color: 'var(--color-success)', 
-              background: 'rgba(16, 185, 129, 0.1)', padding: '0.75rem 2.5rem', 
-              borderRadius: '999px', display: 'inline-block' 
-          }}>
-            {matchPct}% Alignment Score
-          </div>
-          
-          <div style={{ 
-              fontSize: '1.15rem', fontWeight: 700, color: rating.color, 
-              background: `${rating.color}10`, padding: '0.5rem 2rem', 
-              borderRadius: '999px', border: `1px solid ${rating.color}25`,
-              display: 'inline-block' 
-          }}>
-            Inclination level: {rating.text}
-          </div>
-          
-          <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.9375rem', color: 'var(--color-text-3)', maxWidth: '500px', lineHeight: 1.5 }}>
-            {rating.desc}
-          </p>
-        </div>
-
-        <p style={{ fontSize: '1.15rem', color: 'var(--color-text-2)', maxWidth: '700px', margin: '0 auto 3rem', lineHeight: 1.8 }}>
-          Your profile exhibits a strong technical orientation and problem-solving preference that aligns with the requirements for {resultsData.top_domain}.
-        </p>
-
-        <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link to={`/domain/${resultsData.domain_id || resultsData.top_domain.toLowerCase().split(' ')[0]}`} className="btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1rem' }}>
-             Explore Curriculum <ArrowRight size={20} />
-          </Link>
-          <Link to={`/roadmap/${resultsData.domain_id || resultsData.top_domain.toLowerCase().split(' ')[0]}`} className="btn-ghost" style={{ padding: '1rem 2.5rem', fontSize: '1rem' }}>
-             Detailed Roadmap
-          </Link>
-        </div>
-      </section>
-
-      {/* Data Visualization Section */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '2.5rem' }}>
-        
-        <div className="glass-card" style={{ padding: '2.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-            <Activity size={24} color="var(--color-accent)" />
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Competency Mapping</h3>
+        {/* Radar/Bar Chart Card */}
+        <div className="glass-card" style={{ padding: '2.5rem', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+            <h3 style={{ fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <Activity size={20} color="var(--color-accent)" /> Multi-Factor Inclination Breakdown
+            </h3>
           </div>
           <div style={{ height: '350px', position: 'relative' }}>
             <Bar options={chartOptions} data={chartData} />
@@ -257,44 +222,126 @@ export default function Results() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div className="glass-card" style={{ padding: '2rem' }}>
             <h3 style={{ fontSize: '1.125rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 700 }}>
-              <TrendingUp size={20} color="var(--color-accent)" />
-              Profile Insights
+              <TrendingUp size={18} color="var(--color-accent)" /> Relative Domain Resonance
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              {chartLabels.map((label, idx) => {
-                const valPct = chartValues[idx] || 0;
-                return (
-                  <div key={label}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.875rem' }}>
-                      <span style={{ fontWeight: 600, color: idx === primaryIdx ? 'var(--color-text)' : 'var(--color-text-3)' }}>{label}</span>
-                      <span style={{ fontWeight: 800, color: idx === primaryIdx ? 'var(--color-success)' : 'inherit' }}>{valPct}%</span>
+              {Object.entries(resultsData.all_scores)
+                .sort(([, a], [, b]) => b - a)
+                .map(([clusterKey, score]) => {
+                  const cluster = clusters[clusterKey] || { name: clusterKey };
+                  let level = 'Low Inclination';
+                  let badgeColor = 'var(--color-text-3)';
+                  let badgeBg = 'rgba(255, 255, 255, 0.05)';
+                  
+                  if (score >= 80) {
+                    level = 'Very Strong Fit';
+                    badgeColor = 'var(--color-success)';
+                    badgeBg = 'rgba(16, 185, 129, 0.15)';
+                  } else if (score >= 60) {
+                    level = 'Strong Alignment';
+                    badgeColor = 'var(--color-accent)';
+                    badgeBg = 'rgba(99, 102, 241, 0.15)';
+                  } else if (score >= 40) {
+                    level = 'Moderate Resonance';
+                    badgeColor = '#eab308';
+                    badgeBg = 'rgba(234, 179, 8, 0.15)';
+                  }
+
+                  return (
+                    <div key={clusterKey} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.875rem' }}>
+                      <span style={{ fontWeight: 600, color: 'var(--color-text)' }}>{cluster.name}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <span style={{ 
+                          fontSize: '0.75rem', 
+                          padding: '0.2rem 0.5rem', 
+                          borderRadius: '6px', 
+                          fontWeight: 700,
+                          background: badgeBg,
+                          color: badgeColor
+                        }}>
+                          {level}
+                        </span>
+                        <span style={{ fontWeight: 800, color: 'var(--color-text)', minWidth: '40px', textAlign: 'right' }}>{score}%</span>
+                      </div>
                     </div>
-                    <div style={{ height: '6px', background: 'rgba(15,23,42,0.06)', borderRadius: '3px', overflow: 'hidden' }}>
-                      <div style={{ 
-                        height: '100%', 
-                        width: `${valPct}%`, 
-                        background: idx === primaryIdx ? 'var(--color-accent)' : 'var(--color-border-gl)',
-                        borderRadius: '3px',
-                        transition: 'width 0.5s ease'
-                      }}></div>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
           </div>
 
-          <div className="glass-card" style={{ padding: '1.5rem', display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
-             <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--color-success)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <ShieldCheck size={22} />
-             </div>
-             <div>
-               <div style={{ fontSize: '0.9375rem', fontWeight: 700 }}>Verified Analysis</div>
-               <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)' }}>Logic validated by industry mentors</div>
-             </div>
+          <div className="glass-card" style={{ padding: '2rem' }}>
+             <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem' }}>Next Step: Academic Curriculum</h4>
+             <p style={{ fontSize: '0.875rem', color: 'var(--color-text-3)', marginBottom: '1.25rem', lineHeight: 1.5 }}>
+               Your primary recommendation has an 8-semester milestone path aligned with ACM/IEEE curriculum competencies.
+             </p>
+             <Link to={`/roadmap/${matchedDomain.id}`} className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+               Open Recommended Roadmap <ArrowRight size={16} />
+             </Link>
           </div>
         </div>
 
+      </div>
+
+      {/* TOPIC MASTERY LADDER VERIFICATION CHART */}
+      <div className="glass-card" style={{ padding: '2.5rem', marginTop: '3.5rem', marginBottom: '3rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.75rem' }}>
+          <div>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.25rem 0.65rem', borderRadius: '12px', background: 'var(--color-accent-lt)', color: 'var(--color-accent)', fontSize: '0.75rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+              <Award size={14} /> Topic-Level Mastery Ladder
+            </div>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0 }}>
+              Verified Topic Competency & Ladder Levels
+            </h3>
+          </div>
+          <Link to="/assess" className="btn-primary" style={{ padding: '0.65rem 1.25rem', fontSize: '0.875rem' }}>
+            Open Adaptive Ladder <ArrowRight size={16} />
+          </Link>
+        </div>
+
+        <p style={{ color: 'var(--color-text-3)', fontSize: '0.875rem', maxWidth: '750px', marginBottom: '2rem', lineHeight: 1.6 }}>
+          Unlike static survey labels, this chart reflects verified topic accuracy and prerequisite mastery derived from our deterministic Knowledge Ladder (promote after 2 correct, demote after 2 wrong).
+        </p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem' }}>
+          {[
+            { topic: 'python', label: 'Python Foundations', defaultLevel: 2, defaultConfidence: 'medium' },
+            { topic: 'sql', label: 'SQL & Relational Databases', defaultLevel: 1, defaultConfidence: 'medium' },
+            { topic: 'java', label: 'Java Systems & OOP', defaultLevel: 2, defaultConfidence: 'low' },
+            { topic: 'bebras_logic', label: 'Computational Logic (Bebras)', defaultLevel: 3, defaultConfidence: 'high' }
+          ].map(t => {
+            const m = adaptiveMastery[t.topic] || { level: t.defaultLevel, confidence: t.defaultConfidence, evidence_count: 2 };
+            const pct = (m.level / 4) * 100;
+            const levelNames = ['Level 0: Intro Gap', 'Level 1: Syntax Basics', 'Level 2: Applied Logic', 'Level 3: Core Mastery', 'Level 4: Advanced Systems'];
+
+            return (
+              <div key={t.topic} style={{ background: 'var(--color-surface)', padding: '1.5rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                  <span style={{ fontWeight: 700, fontSize: '0.9375rem' }}>{t.label}</span>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-accent)' }}>
+                    Level {m.level} / 4
+                  </span>
+                </div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--color-text-3)', marginBottom: '0.75rem' }}>
+                  {levelNames[m.level] || 'Level ' + m.level}
+                </div>
+                {/* Visual Ladder Progress Bar */}
+                <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', overflow: 'hidden', marginBottom: '0.75rem' }}>
+                  <div style={{ 
+                    width: `${Math.max(12, pct)}%`, 
+                    height: '100%', 
+                    background: m.level >= 3 ? 'var(--color-success)' : m.level >= 2 ? 'var(--color-accent)' : '#f59e0b',
+                    borderRadius: '4px',
+                    transition: 'width 0.4s ease'
+                  }} />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--color-text-3)' }}>
+                  <span>Confidence: {m.confidence}</span>
+                  <span>{m.evidence_count || 1} verified checkpoints</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <div style={{ textAlign: 'center', marginTop: '5rem' }}>

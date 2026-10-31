@@ -1,0 +1,163 @@
+{
+  "rules_version": "1.0.0",
+  "name": "Topic-Level Adaptive Assessment Rules",
+  "description": "Deterministic rule-based configuration for topic placement, knowledge laddering, and separate interest/knowledge signal tracking.",
+  "starting_levels": {
+    "self_report_mapping": {
+      "none": {
+        "default": 0,
+        "with_strong_logic": 1,
+        "with_weak_logic": 0
+      },
+      "basic": 2,
+      "intermediate": 3,
+      "advanced": 4
+    },
+    "default_source": "self_report",
+    "default_confidence": "low"
+  },
+  "starter_diagnostic": {
+    "logic_threshold_strong": 0.60,
+    "min_questions": 3,
+    "outcomes": {
+      "strong_logic": {
+        "zero_exposure_level": 1,
+        "note": "Zero exposure + strong logic aptitude allows skipping raw syntax explainer into Level 1."
+      },
+      "weak_logic": {
+        "zero_exposure_level": 0,
+        "note": "Zero exposure + weak logic routes student to basic explainer-first foundation."
+      }
+    }
+  },
+  "quiz_mix": {
+    "0": {
+      "target_percentages": {
+        "interest": 60,
+        "logic": 25,
+        "knowledge": 5,
+        "guided_activity": 10
+      },
+      "explainer_first": true,
+      "min_questions": 6,
+      "max_questions": 12
+    },
+    "1": {
+      "target_percentages": {
+        "interest": 50,
+        "logic": 25,
+        "knowledge": 10,
+        "guided_activity": 15
+      },
+      "explainer_first": false,
+      "min_questions": 6,
+      "max_questions": 12
+    },
+    "2": {
+      "target_percentages": {
+        "interest": 20,
+        "logic": 15,
+        "knowledge": 60,
+        "guided_activity": 5
+      },
+      "explainer_first": false,
+      "min_questions": 6,
+      "max_questions": 12
+    },
+    "3": {
+      "target_percentages": {
+        "interest": 10,
+        "logic": 10,
+        "knowledge": 75,
+        "guided_activity": 5
+      },
+      "explainer_first": false,
+      "min_questions": 6,
+      "max_questions": 12
+    },
+    "basic": {
+      "target_percentages": {
+        "interest": 55,
+        "logic": 25,
+        "knowledge": 5,
+        "guided_activity": 15
+      },
+      "min_questions": 6,
+      "max_questions": 12
+    },
+    "medium": {
+      "target_percentages": {
+        "interest": 20,
+        "logic": 15,
+        "knowledge": 60,
+        "guided_activity": 5
+      },
+      "min_questions": 6,
+      "max_questions": 12
+    },
+    "hard": {
+      "target_percentages": {
+        "interest": 10,
+        "logic": 10,
+        "knowledge": 75,
+        "guided_activity": 5
+      },
+      "min_questions": 6,
+      "max_questions": 12
+    }
+  },
+  "knowledge_ladder": {
+    "consecutive_correct_to_promote": 2,
+    "consecutive_wrong_to_demote": 2,
+    "levels": ["basic", "medium", "hard"],
+    "numeric_levels": [0, 1, 2, 3, 4],
+    "demotion_triggers": {
+      "show_explainer": true,
+      "inject_prerequisite_items": true,
+      "prerequisite_item_count": 1
+    },
+    "mastery_threshold_score": 0.75,
+    "evidence_skip_rule": {
+      "enabled": true,
+      "min_correct_at_level": 3,
+      "reassessment_interval_days": 30
+    },
+    "confidence_transitions": {
+      "low_threshold_answers": 1,
+      "medium_threshold_answers": 2,
+      "high_threshold_answers": 4
+    }
+  },
+  "behavior": {
+    "max_adjustment_percentage": 20,
+    "max_adjustment_ratio": 0.20
+  },
+  "signals": {
+    "knowledge": {
+      "evaluation": "strict_correctness",
+      "scoring": "weighted_by_difficulty"
+    },
+    "interest": {
+      "evaluation": "preference_and_engagement",
+      "sources": [
+        "onet_interest_profiler",
+        "activity_choice",
+        "time_spent_seconds",
+        "voluntary_retry"
+      ]
+    }
+  },
+  "licenses": {
+    "supported_licenses": [
+      "CC BY-ND 4.0",
+      "USDOL Developer License",
+      "CC-BY-SA 4.0",
+      "CC-BY-SA 3.0",
+      "CC BY-NC-SA 4.0",
+      "Open Source / Original Educational Content"
+    ],
+    "disallowed_content_sources": [
+      "CodeHS (no open license confirmed; external link-out only)"
+    ]
+  }
+}
