@@ -1,144 +1,173 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { QUIZ_DATA } from '../data/questions';
 import { getApiBaseUrl } from '../utils/roadmapHelper';
 import { useAuth } from '../context/AuthContext';
-
-// Inter-domain cross-affinity correlation factors for natural graph variation
-const CORRELATION_MATRIX = {
-  'A': { 'A': 1.0, 'B': 0.68, 'C': 0.48, 'D': 0.32, 'E': 0.38, 'F': 0.52, 'G': 0.30 },
-  'B': { 'A': 0.70, 'B': 1.0, 'C': 0.45, 'D': 0.35, 'E': 0.42, 'F': 0.38, 'G': 0.32 },
-  'C': { 'A': 0.45, 'B': 0.42, 'C': 1.0, 'D': 0.40, 'E': 0.55, 'F': 0.45, 'G': 0.35 },
-  'D': { 'A': 0.38, 'B': 0.36, 'C': 0.42, 'D': 1.0, 'E': 0.62, 'F': 0.40, 'G': 0.68 },
-  'E': { 'A': 0.40, 'B': 0.45, 'C': 0.58, 'D': 0.60, 'E': 1.0, 'F': 0.50, 'G': 0.42 },
-  'F': { 'A': 0.55, 'B': 0.40, 'C': 0.42, 'D': 0.38, 'E': 0.48, 'F': 1.0, 'G': 0.30 },
-  'G': { 'A': 0.35, 'B': 0.38, 'C': 0.38, 'D': 0.72, 'E': 0.45, 'F': 0.32, 'G': 1.0 }
-};
+import { getAdaptiveQuestion } from '../data/adaptive/adaptiveRouter';
+import { domainMapping } from '../data/adaptive/adaptiveEngine';
+import domainMappingConfig from '../data/adaptive/domain_mapping_version.json';
+import { 
+  Sparkles, 
+  ArrowRight, 
+  ArrowLeft, 
+  CheckCircle2, 
+  HelpCircle, 
+  RotateCcw, 
+  BookOpen, 
+  TrendingUp, 
+  Compass, 
+  ShieldCheck, 
+  Zap, 
+  Bot,
+  Brain,
+  Award
+} from 'lucide-react';
 
 export default function QuizRunner() {
   const { track } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const [currentIdx, setCurrentIdx] = useState(0);
-  const [answers, setAnswers] = useState({});
+  // Wizard state: 'intro' | 'quiz' | 'submitting'
+  const [stage, setStage] = useState('intro');
+
+  // Step 1: Student Intro Profile
+  const [introProfile, setIntroProfile] = useState({
+    semester: 3,
+    experienceLevel: 'beginner', // 'zero' | 'beginner' | 'intermediate' | 'experienced'
+    preferredArea: 'AI, ML & Data Science',
+    codingConfidence: 'Exploring foundations'
+  });
+
+  // Step 2: Adaptive Quiz Running State
+  const TOTAL_ADAPTIVE_QUESTIONS = 10;
+  const [currentStep, setCurrentStep] = useState(1);
+  const [currentQuestion, setCurrentQuestion] = useState(null);
+  const [agentReasoning, setAgentReasoning] = useState('');
   const [selectedOption, setSelectedOption] = useState(null);
+  const [answers, setAnswers] = useState({});
+  const [askedIds, setAskedIds] = useState([]);
+  const [currentLadderLevel, setCurrentLadderLevel] = useState(2);
   const [loading, setLoading] = useState(false);
+  const [questionStartTime, setQuestionStartTime] = useState(Date.now());
 
-  const data = QUIZ_DATA[track] || QUIZ_DATA['software'];
+  // Initial question load upon entering quiz stage
+  const startAdaptiveSession = () => {
+    // Set baseline ladder level from intro
+    let startLvl = 2;
+    if (introProfile.experienceLevel === 'zero') startLvl = 1;
+    else if (introProfile.experienceLevel === 'intermediate') startLvl = 3;
+    else if (introProfile.experienceLevel === 'experienced') startLvl = 4;
+    setCurrentLadderLevel(startLvl);
 
-  useEffect(() => {
-    if (!data) {
-      navigate('/quiz');
-    }
-  }, [data, navigate]);
-
-  useEffect(() => {
-    setSelectedOption(answers[currentIdx] || null);
-  }, [currentIdx, answers]);
-
-  if (!data) return null;
-
-  const questions = data.questions || [];
-  const currentQ = questions[currentIdx] || { q: '', options: {} };
-  const progress = Math.round(((currentIdx + 1) / questions.length) * 100);
-
-  const sections = data.sections || ['Orientation', 'Interests', 'Aptitude', 'Thinking Style', 'Applied Scenarios'];
-  const questionsPerSection = questions.length / sections.length;
-  const sectionIdx = Math.min(sections.length - 1, Math.floor(currentIdx / questionsPerSection));
-  const currentSection = sections[sectionIdx];
-
-  const handleSelect = (key) => {
-    setSelectedOption(key);
-    setAnswers(prev => ({ ...prev, [currentIdx]: key }));
-  };
-
-  const handleSkip = () => {
-    setAnswers(prev => {
-      const copy = { ...prev };
-      delete copy[currentIdx];
-      return copy;
+    const initial = getAdaptiveQuestion({
+      stepNumber: 1,
+      previousAnswers: {},
+      studentIntro: introProfile,
+      askedQuestionIds: [],
+      currentLadderLevel: startLvl
     });
-    setSelectedOption(null);
 
-    if (currentIdx < questions.length - 1) {
-      setCurrentIdx(prev => prev + 1);
-    } else {
-      handleSubmit();
+    if (initial) {
+      setCurrentQuestion(initial.question);
+      setAgentReasoning(initial.reasoning);
+      setAskedIds([initial.question.id]);
+      setQuestionStartTime(Date.now());
+      setStage('quiz');
     }
   };
 
-  const handleNext = () => {
-    if (currentIdx < questions.length - 1) {
-      setCurrentIdx(prev => prev + 1);
-    } else {
-      handleSubmit();
-    }
+  const handleSelectOption = (optText) => {
+    setSelectedOption(optText);
   };
 
-  const handleSubmit = async () => {
-    setLoading(true);
-    const finalAnswers = { ...answers };
-    if (selectedOption) {
-      finalAnswers[currentIdx] = selectedOption;
-    }
+  const handleNextQuestion = () => {
+    if (!selectedOption) return;
 
-    const scores = {};
-    if (data.clusters) {
-      Object.keys(data.clusters).forEach(key => scores[key] = 0);
-    }
-    
-    let answeredCount = 0;
-    Object.entries(finalAnswers).forEach(([qIdx, optionKey]) => {
-      if (optionKey && scores[optionKey] !== undefined) {
-        scores[optionKey] += 1;
-        answeredCount += 1;
+    const timeTaken = Math.round((Date.now() - questionStartTime) / 1000);
+    const isDontKnow = selectedOption.includes("I don't know");
+    const isCorrect = currentQuestion.category === 'interest' 
+      ? true 
+      : (!isDontKnow && selectedOption === currentQuestion.answer);
+
+    const updatedAnswers = {
+      ...answers,
+      [currentQuestion.id]: {
+        questionId: currentQuestion.id,
+        category: currentQuestion.category,
+        topic: currentQuestion.topic,
+        difficulty: currentQuestion.difficulty,
+        answer: selectedOption,
+        isCorrect,
+        isDontKnow,
+        timeTaken,
+        riasec: currentQuestion.riasec || null
       }
-    });
+    };
+    setAnswers(updatedAnswers);
 
-    const totalCount = Math.max(1, answeredCount > 0 ? answeredCount : questions.length);
-
-    let maxVal = -1;
-    let topCluster = Object.keys(data.clusters || {})[0] || 'A';
-    Object.entries(scores).forEach(([key, val]) => {
-      if (val > maxVal) {
-        maxVal = val;
-        topCluster = key;
-      }
-    });
-
-    const primaryRawPct = (maxVal / totalCount) * 100;
-    const processScores = {};
-
-    if (data.clusters) {
-      const keys = Object.keys(data.clusters);
-      keys.forEach((key, idx) => {
-        const name = data.clusters[key]?.name || key;
-        const rawPct = (scores[key] / totalCount) * 100;
-        
-        if (key === topCluster) {
-          processScores[name] = Math.min(95, Math.max(75, Math.round(primaryRawPct > 40 ? primaryRawPct : 85)));
-        } else {
-          const corr = CORRELATION_MATRIX[topCluster]?.[key] || 0.40;
-          const baseOffset = 18 + (idx * 7) % 14;
-          const calculatedScore = Math.round((rawPct * 0.4) + (primaryRawPct * corr * 0.45) + baseOffset);
-          processScores[name] = Math.min(80, Math.max(18, calculatedScore));
-        }
+    if (currentStep < TOTAL_ADAPTIVE_QUESTIONS) {
+      const nextStepNum = currentStep + 1;
+      const nextResult = getAdaptiveQuestion({
+        stepNumber: nextStepNum,
+        previousAnswers: updatedAnswers,
+        studentIntro: introProfile,
+        askedQuestionIds: askedIds,
+        currentLadderLevel: currentLadderLevel
       });
-    }
 
-    const topClusterObj = data.clusters?.[topCluster] || { name: 'Software Track', id: 'software' };
-    const finalTopScore = processScores[topClusterObj.name] || 85;
+      if (nextResult) {
+        setCurrentQuestion(nextResult.question);
+        setAgentReasoning(nextResult.reasoning);
+        setCurrentLadderLevel(nextResult.targetDifficulty);
+        setAskedIds(prev => [...prev, nextResult.question.id]);
+        setSelectedOption(null);
+        setCurrentStep(nextStepNum);
+        setQuestionStartTime(Date.now());
+      }
+    } else {
+      finalizeAndSubmitResults(updatedAnswers);
+    }
+  };
+
+  const finalizeAndSubmitResults = async (finalAnswers) => {
+    setLoading(true);
+
+    // 1. Calculate RIASEC Vector from Interest Questions
+    const riasecScores = { R: 40, I: 50, A: 40, S: 40, E: 40, C: 40 };
+    Object.values(finalAnswers).forEach(ans => {
+      if (ans.category === 'interest' && ans.riasec) {
+        const opt = ans.answer || '';
+        let weight = 60;
+        if (opt.includes('(5)') || opt.includes('Strongly Like')) weight = 90;
+        else if (opt.includes('(4)') || opt.includes('Like')) weight = 75;
+        else if (opt.includes('(2)') || opt.includes('Dislike')) weight = 30;
+        else if (opt.includes('(1)')) weight = 15;
+        riasecScores[ans.riasec] = Math.min(100, Math.round((riasecScores[ans.riasec] + weight) / 2));
+      }
+    });
+
+    // 2. Derive Domain Recommendations using pure O*NET Euclidean formula
+    const hypothesis = domainMapping(riasecScores, null, domainMappingConfig);
+    const topDomain = hypothesis.top3Domains[0] || { title: 'AI, ML & Deep Learning', score: 85, id: 'ai' };
+
+    // Format scores object for Results page
+    const processScores = {};
+    hypothesis.allDomains.forEach(d => {
+      processScores[d.title] = Math.round(d.score);
+    });
 
     const resultsData = {
-      track: track,
-      top_domain: topClusterObj.name,
-      domain_id: topClusterObj.id,
-      match_percentage: finalTopScore,
+      track: track || 'software',
+      top_domain: topDomain.title,
+      domain_id: topDomain.id,
+      match_percentage: topDomain.score,
       scores: processScores,
-      raw_scores: scores
+      all_scores: processScores,
+      raw_scores: riasecScores,
+      hypothesis
     };
 
+    // Save to server if authenticated
     if (user && !user.isGuest) {
       try {
         const apiUrl = getApiBaseUrl() + "/api/submit-result";
@@ -147,11 +176,10 @@ export default function QuizRunner() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             student_email: user.email,
-            quiz_type: track,
-            recommended_domain: resultsData.top_domain,
-            domain_id: resultsData.domain_id,
-            confidence_score: resultsData.match_percentage,
-            all_scores: resultsData.scores
+            quiz_type: track || 'software',
+            recommended_domain: topDomain.title,
+            confidence_score: topDomain.score,
+            all_scores: processScores
           })
         });
       } catch (err) {
@@ -163,82 +191,192 @@ export default function QuizRunner() {
     navigate('/results');
   };
 
-  const isLastQuestion = currentIdx === questions.length - 1;
-  const estMins = Math.ceil((questions.length - currentIdx) * 0.4);
+  // -------------------------------------------------------------
+  // RENDER STAGE 1: INTRO PROFILE ONBOARDING
+  // -------------------------------------------------------------
+  if (stage === 'intro') {
+    return (
+      <div className="min-h-screen bg-background text-on-surface flex flex-col items-center justify-center py-12 px-4 animate-in">
+        <div className="max-w-xl w-full bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6 sm:p-10 shadow-lg">
+          
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold w-fit mb-4">
+            <Bot size={15} /> Adaptive Assessment Agent
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-on-surface mb-2">
+            Personalize Your Diagnostic
+          </h1>
+          <p className="text-sm text-on-surface-variant mb-6 leading-relaxed">
+            Our assessment agent dynamically chooses questions for you based on your introductory background:
+            <strong> O*NET career interests</strong>, <strong>Bebras computational puzzles</strong>, and <strong>Code.org engineering activities</strong>.
+          </p>
+
+          <div className="flex flex-col gap-5 mb-8">
+            {/* Semester */}
+            <div>
+              <label className="block text-xs font-bold text-on-surface uppercase tracking-wider mb-2">
+                Current Semester
+              </label>
+              <select
+                value={introProfile.semester}
+                onChange={(e) => setIntroProfile({ ...introProfile, semester: Number(e.target.value) })}
+                className="w-full p-3.5 rounded-xl border border-outline-variant/40 bg-surface-container text-on-surface text-sm font-semibold focus:outline-none focus:border-primary"
+              >
+                {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
+                  <option key={s} value={s}>Semester {s} (B.Tech CSE)</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Experience Level */}
+            <div>
+              <label className="block text-xs font-bold text-on-surface uppercase tracking-wider mb-2">
+                Programming Exposure
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { id: 'zero', label: 'Zero Prior Coding', desc: 'Explainer & logic first' },
+                  { id: 'beginner', label: 'Beginner', desc: 'Know basic variables/loops' },
+                  { id: 'intermediate', label: 'Intermediate', desc: 'Built scripts & projects' },
+                  { id: 'experienced', label: 'Advanced', desc: 'Strong DSA & frameworks' }
+                ].map(lvl => (
+                  <button
+                    key={lvl.id}
+                    type="button"
+                    onClick={() => setIntroProfile({ ...introProfile, experienceLevel: lvl.id })}
+                    className={`p-3.5 text-left rounded-xl border transition-all ${
+                      introProfile.experienceLevel === lvl.id
+                        ? 'border-primary bg-primary/10 text-primary font-bold'
+                        : 'border-outline-variant/30 hover:bg-surface-container text-on-surface'
+                    }`}
+                  >
+                    <div className="text-sm font-bold">{lvl.label}</div>
+                    <div className="text-xs text-on-surface-variant opacity-80">{lvl.desc}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Target Area of Interest */}
+            <div>
+              <label className="block text-xs font-bold text-on-surface uppercase tracking-wider mb-2">
+                Curious Career Specialization
+              </label>
+              <select
+                value={introProfile.preferredArea}
+                onChange={(e) => setIntroProfile({ ...introProfile, preferredArea: e.target.value })}
+                className="w-full p-3.5 rounded-xl border border-outline-variant/40 bg-surface-container text-on-surface text-sm font-semibold focus:outline-none focus:border-primary"
+              >
+                <option value="AI, ML & Data Science">Artificial Intelligence & Data Science</option>
+                <option value="Full Stack & Cloud Systems">Web Development, APIs & Cloud Systems</option>
+                <option value="Cybersecurity & Networks">Cybersecurity, Networking & Systems</option>
+                <option value="Open to Discovery">Undecided / Exploring Broad Options</option>
+              </select>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={startAdaptiveSession}
+            className="w-full py-4 rounded-xl bg-primary text-on-primary font-bold text-base hover:bg-primary-container shadow-md transition-all flex items-center justify-center gap-2"
+          >
+            <span>Launch Personalized Assessment</span>
+            <ArrowRight size={18} />
+          </button>
+
+        </div>
+      </div>
+    );
+  }
+
+  // -------------------------------------------------------------
+  // RENDER STAGE 2: ADAPTIVE QUESTION RUNNER
+  // -------------------------------------------------------------
+  if (!currentQuestion) return null;
+
+  const progressPct = Math.round((currentStep / TOTAL_ADAPTIVE_QUESTIONS) * 100);
 
   return (
-    <div className="min-h-screen bg-background text-on-surface flex flex-col pb-16">
+    <div className="min-h-screen bg-background text-on-surface flex flex-col pb-16 animate-in">
       
       {/* Top Header Stepper */}
       <header className="sticky top-0 z-20 bg-background/95 backdrop-blur border-b border-outline-variant/30 py-4 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 flex items-center justify-between">
-          
           <button 
             type="button"
             onClick={() => navigate('/quiz')}
             className="flex items-center gap-1.5 text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors"
           >
-            <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-            <span>Exit Assessment</span>
+            <ArrowLeft size={16} /> Exit
           </button>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 bg-primary/10 text-primary rounded-full">
-              {track.toUpperCase()} TRACK
+          <div className="flex items-center gap-3">
+            <span className="text-xs uppercase tracking-wider font-extrabold text-primary">
+              {currentQuestion.category.replace('_', ' ')}
             </span>
-            <span className="text-xs font-semibold text-on-surface-variant">
-              Question {currentIdx + 1} of {questions.length}
+            <span className="text-xs font-bold text-on-surface-variant">
+              Q{currentStep} of {TOTAL_ADAPTIVE_QUESTIONS}
             </span>
           </div>
 
+          <div className="text-xs font-semibold px-2.5 py-1 rounded-full bg-surface-container border border-outline-variant/40 text-on-surface-variant">
+            Level {currentQuestion.difficulty || 1} / 4
+          </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="w-full bg-surface-container-high h-1.5 mt-3">
+        {/* Progress bar */}
+        <div className="w-full bg-surface-container h-1 mt-3">
           <div 
-            className="h-full bg-primary transition-all duration-300 ease-out"
-            style={{ width: `${progress}%` }}
-          ></div>
+            className="bg-primary h-1 transition-all duration-300"
+            style={{ width: `${progressPct}%` }}
+          />
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-3xl w-full mx-auto px-4 pt-8">
+      {/* Main Container */}
+      <main className="max-w-3xl mx-auto px-4 pt-8 w-full flex-1 flex flex-col justify-center">
         
-        {/* Section Indicator */}
-        <div className="mb-6 flex items-center justify-between text-xs font-medium text-on-surface-variant">
-          <span className="uppercase tracking-wider font-semibold text-primary">
-            {currentSection} ({sectionIdx + 1}/{sections.length})
-          </span>
-          <span>~{estMins} min{estMins > 1 ? 's' : ''} remaining</span>
-        </div>
-
-        {/* Question Card */}
-        <div className="bg-surface-container-lowest rounded-2xl p-6 sm:p-8 shadow-sm border border-outline-variant/30 mb-8">
-          <div className="inline-block px-3 py-1 bg-surface-container text-xs font-semibold text-secondary rounded-lg mb-3">
-            {currentQ.category || currentSection}
+        {/* Agent Routing Reasoning Pill */}
+        {agentReasoning && (
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-primary/10 border border-primary/20 text-primary text-xs font-medium mb-6">
+            <Bot size={16} className="flex-shrink-0" />
+            <span>{agentReasoning}</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-on-surface leading-snug">
-            {currentQ.q}
-          </h2>
-          <p className="text-xs text-on-surface-variant mt-2">
-            Select an option below or click 'Skip Question' to continue.
-          </p>
+        )}
+
+        {/* Source Citation Badge */}
+        <div className="flex items-center gap-2 text-xs text-on-surface-variant font-medium mb-3">
+          <ShieldCheck size={14} className="text-primary" />
+          <span>Verified Source: {currentQuestion.source}</span>
+          <span className="opacity-40">•</span>
+          <span className="font-mono text-[10px] bg-surface-container px-2 py-0.5 rounded">
+            {currentQuestion.license}
+          </span>
         </div>
 
-        {/* Clean Option List */}
+        {/* Question Text */}
+        <div className="mb-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-on-surface leading-relaxed whitespace-pre-line">
+            {currentQuestion.questionText}
+          </h2>
+        </div>
+
+        {/* Options List */}
         <div className="flex flex-col gap-3 mb-10">
-          {Object.entries(currentQ.options).map(([key, text]) => {
-            const isChecked = selectedOption === key;
+          {currentQuestion.options.map((optText, optIdx) => {
+            const isChecked = selectedOption === optText;
+            const isIdk = optText.includes("I don't know");
 
             return (
               <button
-                key={key}
+                key={optIdx}
                 type="button"
-                onClick={() => handleSelect(key)}
+                onClick={() => handleSelectOption(optText)}
                 className={`w-full text-left p-4 sm:p-5 rounded-xl border transition-all duration-150 flex items-center justify-between gap-4 ${
                   isChecked
                     ? 'bg-primary text-on-primary border-primary shadow-md'
+                    : isIdk
+                    ? 'bg-surface-container/60 text-on-surface-variant border-dashed border-outline-variant/40 hover:border-primary/50'
                     : 'bg-surface-container-lowest text-on-surface border-outline-variant/30 hover:border-primary/50 hover:bg-surface-container-low'
                 }`}
               >
@@ -246,62 +384,38 @@ export default function QuizRunner() {
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-extrabold flex-shrink-0 ${
                     isChecked ? 'bg-white/20 text-white' : 'bg-surface-container text-secondary'
                   }`}>
-                    {key}
+                    {String.fromCharCode(65 + optIdx)}
                   </div>
                   <span className="text-sm sm:text-base font-medium leading-relaxed">
-                    {text}
+                    {optText}
                   </span>
                 </div>
 
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
                   isChecked ? 'bg-white text-primary' : 'border border-outline-variant/40 text-transparent'
                 }`}>
-                  <span className="material-symbols-outlined text-[16px] font-bold">check</span>
+                  <CheckCircle2 size={16} />
                 </div>
               </button>
             );
           })}
         </div>
 
-        {/* Footer Navigation Buttons */}
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          
+        {/* Navigation / Next Button */}
+        <div className="flex items-center justify-end gap-4">
           <button
             type="button"
-            onClick={() => setCurrentIdx(prev => Math.max(0, prev - 1))}
-            disabled={currentIdx === 0}
-            className="px-5 py-3 rounded-xl border border-outline-variant/30 font-semibold text-sm text-on-surface hover:bg-surface-container disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            disabled={!selectedOption || loading}
+            onClick={handleNextQuestion}
+            className="px-8 py-3.5 rounded-xl bg-primary text-on-primary font-bold text-sm hover:bg-primary-container shadow-md transition-all flex items-center gap-2 disabled:opacity-40 disabled:pointer-events-none"
           >
-            Previous
+            <span>{currentStep === TOTAL_ADAPTIVE_QUESTIONS ? (loading ? 'Analyzing...' : 'Complete & View Results') : 'Next Question'}</span>
+            <ArrowRight size={18} />
           </button>
-
-          <div className="flex items-center gap-3">
-            {/* Skip Question Button */}
-            <button
-              type="button"
-              onClick={handleSkip}
-              className="px-5 py-3 rounded-xl border border-outline-variant/40 font-semibold text-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all flex items-center gap-1.5"
-            >
-              <span>Skip Question</span>
-              <span className="material-symbols-outlined text-[16px]">skip_next</span>
-            </button>
-
-            {/* Next / Submit Button */}
-            <button
-              type="button"
-              onClick={handleNext}
-              className="px-7 py-3 rounded-xl bg-primary text-on-primary font-semibold text-sm hover:bg-primary-container shadow-md transition-all flex items-center gap-2"
-            >
-              <span>{isLastQuestion ? (loading ? 'Analyzing...' : 'Complete & View Results') : 'Next Question'}</span>
-              <span className="material-symbols-outlined text-[18px]">
-                {isLastQuestion ? 'analytics' : 'arrow_forward'}
-              </span>
-            </button>
-          </div>
-
         </div>
 
       </main>
+
     </div>
   );
 }

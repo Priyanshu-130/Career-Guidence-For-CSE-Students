@@ -55,6 +55,34 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
       "item_count": 20
+    },
+    {
+      "source": "Code.org Computer Science Principles (Unit 9: Data)",
+      "license": "CC BY-NC-SA 4.0",
+      "source_url": "https://code.org/educate/csp",
+      "attribution_text": "Adapted from Code.org CS Principles Unit 9 Data Exploration curriculum under CC BY-NC-SA 4.0.",
+      "item_count": 1
+    },
+    {
+      "source": "Code.org App Lab Curriculum",
+      "license": "CC BY-NC-SA 4.0",
+      "source_url": "https://code.org/educate/applab",
+      "attribution_text": "Adapted from Code.org App Lab Event-Driven Programming under CC BY-NC-SA 4.0.",
+      "item_count": 1
+    },
+    {
+      "source": "Code.org Computer Science Principles (Unit 10: Cybersecurity)",
+      "license": "CC BY-NC-SA 4.0",
+      "source_url": "https://code.org/educate/csp",
+      "attribution_text": "Adapted from Code.org CS Principles Unit 10 Cybersecurity and the Internet under CC BY-NC-SA 4.0.",
+      "item_count": 1
+    },
+    {
+      "source": "CSE PathFinder Software Engineering Lab",
+      "license": "Educational Open Access",
+      "source_url": "https://codehs.com/curriculum/catalog",
+      "attribution_text": "Original hands-on software engineering laboratory exercise authored by CSE PathFinder Curriculum Team.",
+      "item_count": 2
     }
   ]
 }
