@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CAREER_QUESTIONS, CAREER_PROFILES } from '../data/careerQuestions';
-import { ChevronRight, ChevronLeft, RefreshCw, Sparkles, Target, Zap } from 'lucide-react';
+import { ChevronRight, ChevronLeft, RefreshCw, Sparkles, Target, Zap, Check } from 'lucide-react';
 
 export default function CareerFinder() {
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -44,20 +44,117 @@ export default function CareerFinder() {
 
   if (showResult && finalDomain) {
     return (
-      <div className="page-wrapper content-container animate-in" style={{ textAlign: 'center', paddingTop: '6rem' }}>
-        <div className="glass-card" style={{ padding: '5rem 3rem', background: 'radial-gradient(circle at top, rgba(99, 102, 241, 0.1), transparent), var(--color-card)', maxWidth: '800px', margin: '0 auto' }}>
-          <div className="page-label" style={{ marginBottom: '2rem' }}>Quick Diagnostic Result</div>
-          <div style={{ fontSize: '5rem', marginBottom: '2rem' }}>{finalDomain.icon}</div>
-          <h2 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '1.5rem' }}>{finalDomain.name}</h2>
-          <p style={{ color: 'var(--color-text-2)', fontSize: '1.25rem', lineHeight: 1.8, marginBottom: '4rem', maxWidth: '600px', margin: '0 auto 4rem' }}>
-            {finalDomain.description}
-          </p>
-          
-          <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
-            <Link to={`/domain/${finalDomain.id}`} className="btn-primary" style={{ padding: '1.25rem 3rem' }}>Explore This Path <ChevronRight size={20} /></Link>
-            <button onClick={() => { setShowResult(false); setCurrentIdx(0); setAnswers(new Array(CAREER_QUESTIONS.length).fill(null)); }} className="btn-ghost" style={{ padding: '1.25rem 2rem' }}>
-              <RefreshCw size={18} /> Retake Diagnostic
-            </button>
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: '#F7F7F4',
+        color: '#17191C',
+        fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif",
+        padding: '3rem 1.5rem 6rem'
+      }}>
+        <div style={{ maxWidth: '820px', margin: '0 auto', textAlign: 'center' }}>
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #D8DAD7',
+            padding: '4rem 2.5rem'
+          }}>
+            <div style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: '0.75rem',
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: '#E85D3F',
+              fontWeight: 700,
+              marginBottom: '1.5rem'
+            }}>
+              QUICK DIAGNOSTIC // VERDICT COMPILED
+            </div>
+
+            <div style={{ fontSize: '4.5rem', marginBottom: '1.5rem' }}>{finalDomain.icon}</div>
+            
+            <h1 style={{
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontSize: 'clamp(2.5rem, 5vw, 4rem)',
+              fontWeight: 800,
+              textTransform: 'uppercase',
+              color: '#17191C',
+              margin: '0 0 1rem 0'
+            }}>
+              {finalDomain.name}
+            </h1>
+
+            <p style={{
+              color: '#50545B',
+              fontSize: '1.125rem',
+              lineHeight: 1.7,
+              maxWidth: '620px',
+              margin: '0 auto 3rem auto'
+            }}>
+              {finalDomain.description}
+            </p>
+            
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Link 
+                to={`/domain/${finalDomain.id}`} 
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.65rem',
+                  backgroundColor: '#17191C',
+                  color: '#FFFFFF',
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: '1.125rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  padding: '1rem 2.5rem',
+                  textDecoration: 'none',
+                  border: '1px solid #17191C',
+                  transition: 'all 0.15s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#E85D3F';
+                  e.currentTarget.style.borderColor = '#E85D3F';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#17191C';
+                  e.currentTarget.style.borderColor = '#17191C';
+                }}
+              >
+                <span>EXPLORE THIS PATH</span>
+                <ChevronRight size={18} />
+              </Link>
+
+              <button 
+                onClick={() => { setShowResult(false); setCurrentIdx(0); setAnswers(new Array(CAREER_QUESTIONS.length).fill(null)); }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.65rem',
+                  backgroundColor: '#FFFFFF',
+                  color: '#17191C',
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: '1.125rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  padding: '1rem 2rem',
+                  border: '1px solid #D8DAD7',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#17191C';
+                  e.currentTarget.style.backgroundColor = '#F8F8F6';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#D8DAD7';
+                  e.currentTarget.style.backgroundColor = '#FFFFFF';
+                }}
+              >
+                <RefreshCw size={16} />
+                <span>RETAKE DIAGNOSTIC</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -67,54 +164,181 @@ export default function CareerFinder() {
   const currentQ = CAREER_QUESTIONS[currentIdx];
 
   return (
-    <div style={{ minHeight: 'calc(100vh - var(--nav-h))', display: 'flex', flexDirection: 'column' }}>
-       <div style={{ height: '6px', width: '100%', background: 'rgba(255,255,255,0.03)', position: 'relative' }}>
-        <div style={{ 
-          height: '100%', width: `${progress}%`, background: 'linear-gradient(to right, var(--color-accent), var(--color-purple))',
-          transition: 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-          boxShadow: '0 0 20px rgba(99, 102, 241, 0.4)'
-        }}></div>
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: '#F7F7F4',
+      color: '#17191C',
+      fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif",
+      padding: '2rem 1.5rem 6rem'
+    }}>
+      {/* Top progress track */}
+      <div style={{ maxWidth: '920px', margin: '0 auto 2.5rem auto' }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingBottom: '1rem',
+          borderBottom: '1px solid #D8DAD7',
+          marginBottom: '1rem',
+          fontFamily: "'DM Mono', monospace",
+          fontSize: '0.75rem',
+          color: '#646A73'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#17191C' }}>
+            <Zap size={14} style={{ color: '#E85D3F' }} />
+            <span style={{ fontWeight: 700 }}>RAPID CAREER DIAGNOSTIC</span>
+          </div>
+          <div>
+            QUESTION {currentIdx + 1} OF {CAREER_QUESTIONS.length}
+          </div>
+        </div>
+
+        <div style={{ height: '4px', width: '100%', backgroundColor: '#E8EAE6' }}>
+          <div style={{ 
+            height: '100%', 
+            width: `${progress}%`, 
+            backgroundColor: '#E85D3F',
+            transition: 'width 0.3s ease'
+          }} />
+        </div>
       </div>
 
-      <div className="page-wrapper content-container" style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ maxWidth: '920px', margin: '0 auto' }}>
         
-        <div style={{ textAlign: 'center', marginBottom: '4rem', width: '100%' }} className="animate-in">
-          <div style={{ fontSize: '0.8125rem', fontWeight: 800, color: 'var(--color-accent)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-            <Zap size={14} /> Quick Analysis • Question {currentIdx + 1} of {CAREER_QUESTIONS.length}
+        {/* Question Header */}
+        <div style={{ marginBottom: '3rem' }}>
+          <div style={{
+            fontFamily: "'DM Mono', monospace",
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            color: '#E85D3F',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            marginBottom: '0.5rem'
+          }}>
+            QUESTION 0{currentIdx + 1} // SITUATIONAL PREFERENCE
           </div>
-          <h2 style={{ fontSize: '2.5rem', fontWeight: 700, lineHeight: 1.2, maxWidth: '800px', margin: '0 auto' }}>{currentQ.text}</h2>
+          <h2 style={{
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontSize: 'clamp(2.2rem, 5vw, 3.25rem)',
+            fontWeight: 800,
+            textTransform: 'uppercase',
+            lineHeight: 1.05,
+            color: '#17191C',
+            margin: 0
+          }}>
+            {currentQ.text}
+          </h2>
         </div>
 
-        <div style={{ width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem', maxWidth: '1000px', margin: '0 auto' }}>
-          {currentQ.options.map((opt, idx) => (
-            <button 
-              key={idx}
-              onClick={() => handleSelect(idx)}
-              className="glass-card"
-              style={{ 
-                padding: '2rem', 
-                textAlign: 'left',
-                border: answers[currentIdx] === idx ? '2px solid var(--color-accent)' : '1px solid var(--color-border)',
-                background: answers[currentIdx] === idx ? 'var(--color-accent-lt)' : 'rgba(255,255,255,0.02)',
-                transition: 'var(--transition)'
-              }}
-            >
-              <div style={{ fontWeight: 800, fontSize: '1.25rem', marginBottom: '0.5rem', color: answers[currentIdx] === idx ? '#fff' : 'var(--color-text)' }}>{opt.title}</div>
-              <div style={{ fontSize: '0.9375rem', color: 'var(--color-text-3)', lineHeight: 1.5 }}>{opt.desc}</div>
-            </button>
-          ))}
+        {/* Option Cards */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '1.25rem'
+        }}>
+          {currentQ.options.map((opt, idx) => {
+            const isSelected = answers[currentIdx] === idx;
+            return (
+              <button 
+                key={idx}
+                type="button"
+                onClick={() => handleSelect(idx)}
+                style={{ 
+                  padding: '2rem', 
+                  textAlign: 'left',
+                  border: isSelected ? '2px solid #E85D3F' : '1px solid #D8DAD7',
+                  backgroundColor: isSelected ? '#FFF0EB' : '#FFFFFF',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  gap: '1rem'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSelected) {
+                    e.currentTarget.style.borderColor = '#17191C';
+                    e.currentTarget.style.backgroundColor = '#F8F8F6';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSelected) {
+                    e.currentTarget.style.borderColor = '#D8DAD7';
+                    e.currentTarget.style.backgroundColor = '#FFFFFF';
+                  }
+                }}
+              >
+                <div>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '0.75rem'
+                  }}>
+                    <div style={{
+                      fontWeight: 800,
+                      fontSize: '1.25rem',
+                      fontFamily: "'Barlow Condensed', sans-serif",
+                      textTransform: 'uppercase',
+                      color: '#17191C'
+                    }}>
+                      {opt.title}
+                    </div>
+                    <div style={{
+                      width: '18px',
+                      height: '18px',
+                      border: `2px solid ${isSelected ? '#E85D3F' : '#D8DAD7'}`,
+                      backgroundColor: isSelected ? '#E85D3F' : 'transparent',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}>
+                      {isSelected && <Check size={12} color="#FFFFFF" />}
+                    </div>
+                  </div>
+
+                  <div style={{
+                    fontSize: '0.9375rem',
+                    color: isSelected ? '#17191C' : '#50545B',
+                    lineHeight: 1.6,
+                    fontFamily: "'Manrope', sans-serif"
+                  }}>
+                    {opt.desc}
+                  </div>
+                </div>
+              </button>
+            );
+          })}
         </div>
 
-        <div style={{ marginTop: '5rem', width: '100%', display: 'flex', justifyContent: 'center' }}>
+        {/* Back navigation */}
+        <div style={{ marginTop: '3.5rem', display: 'flex', justifyContent: 'flex-start' }}>
           <button 
-             onClick={() => setCurrentIdx(prev => Math.max(0, prev - 1))}
-             disabled={currentIdx === 0}
-             className="btn-ghost"
-             style={{ opacity: currentIdx === 0 ? 0 : 0.6, border: 'none' }}
+            type="button"
+            onClick={() => setCurrentIdx(prev => Math.max(0, prev - 1))}
+            disabled={currentIdx === 0}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              background: 'transparent',
+              border: 'none',
+              color: '#50545B',
+              cursor: currentIdx === 0 ? 'default' : 'pointer',
+              opacity: currentIdx === 0 ? 0 : 1,
+              fontFamily: "'DM Mono', monospace",
+              fontSize: '0.8125rem',
+              fontWeight: 600,
+              padding: '0.5rem 0'
+            }}
           >
-            <ChevronLeft size={20} /> Go Back
+            <ChevronLeft size={16} />
+            <span>PREVIOUS QUESTION</span>
           </button>
         </div>
+
       </div>
     </div>
   );

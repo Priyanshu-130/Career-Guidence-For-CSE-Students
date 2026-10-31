@@ -12,9 +12,7 @@ import {
   Settings, 
   Database, 
   Brain,
-  Crosshair,
-  ExternalLink,
-  Layers
+  Crosshair
 } from 'lucide-react';
 
 const iconMap = {
@@ -38,209 +36,225 @@ export default function DomainsList() {
   });
 
   return (
-    <div className="page-wrapper content-container animate-in" style={{ paddingBottom: '6rem' }}>
-      
-      {/* 1. TOP TELEMETRY STRIP */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '1rem',
-        padding: '0.75rem 1.25rem',
-        border: '1px solid var(--color-border)',
-        background: 'rgba(16, 21, 36, 0.45)',
-        marginBottom: '3.5rem',
-        fontFamily: 'var(--font-mono)',
-        fontSize: '0.75rem',
-        color: 'var(--color-text-3)'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <Crosshair size={14} style={{ color: 'var(--color-accent)' }} />
-          <span style={{ color: 'var(--color-ivory)', fontWeight: 600 }}>DOMAIN REGISTRY // SPECIALIZATIONS</span>
-          <span style={{ color: 'var(--color-border)' }}>|</span>
-          <span>9 ACCREDITED CSE TRACKS</span>
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: '#F7F7F4',
+      color: '#17191C',
+      fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif",
+      padding: '2.5rem 1.5rem 6rem'
+    }}>
+      <div style={{ maxWidth: '1160px', margin: '0 auto' }}>
+        
+        {/* 1. TOP TELEMETRY STRIP */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '1rem',
+          padding: '0.75rem 1.25rem',
+          border: '1px solid #D8DAD7',
+          backgroundColor: '#FFFFFF',
+          marginBottom: '3.5rem',
+          fontFamily: "'DM Mono', monospace",
+          fontSize: '0.75rem',
+          color: '#646A73'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <Crosshair size={14} style={{ color: '#E85D3F' }} />
+            <span style={{ color: '#17191C', fontWeight: 700 }}>DOMAIN REGISTRY // SPECIALIZATIONS</span>
+            <span style={{ color: '#D8DAD7' }}>|</span>
+            <span>9 ACCREDITED CSE TRACKS</span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+            <span>ACM/IEEE: <span style={{ color: '#2EC4B6', fontWeight: 700 }}>CURRICULUM ALIGNED</span></span>
+            <span>SEMESTERS: <span style={{ color: '#17191C', fontWeight: 600 }}>1 THROUGH 8</span></span>
+          </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-          <span>ACM/IEEE: <span style={{ color: 'var(--color-success)' }}>CURRICULUM ALIGNED</span></span>
-          <span>SEMESTERS: <span style={{ color: 'var(--color-ivory)' }}>1 THROUGH 8</span></span>
+        {/* 2. HEADER */}
+        <div style={{ marginBottom: '3.5rem' }}>
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 600, color: '#E85D3F', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+            DISCIPLINE ARCHIVE
+          </div>
+          <h1 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 'clamp(2.8rem, 6vw, 4.5rem)', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: '0 0 1rem 0' }}>
+            Explore CSE Specializations
+          </h1>
+          <p style={{ color: '#50545B', fontSize: '1.125rem', maxWidth: '720px', margin: 0 }}>
+            Detailed intelligence briefings across software engineering, systems infrastructure, artificial intelligence, and hardware design.
+          </p>
         </div>
-      </div>
 
-      {/* 2. HEADER */}
-      <div style={{ marginBottom: '3.5rem' }}>
-        <div className="mono-tag" style={{ marginBottom: '0.5rem' }}>DISCIPLINE ARCHIVE</div>
-        <h1 style={{ fontSize: 'clamp(2.8rem, 6vw, 5rem)', margin: '0 0 1rem 0' }}>
-          Explore CSE Specializations
-        </h1>
-        <p style={{ color: 'var(--color-text-2)', fontSize: '1.125rem', maxWidth: '720px', margin: 0 }}>
-          Detailed intelligence briefings across software engineering, systems infrastructure, artificial intelligence, and hardware design.
-        </p>
-      </div>
-
-      {/* 3. FILTER CONTROLS */}
-      <div style={{
-        display: 'flex',
-        gap: '0.5rem',
-        marginBottom: '3rem',
-        borderBottom: '1px solid var(--color-border)',
-        paddingBottom: '1rem'
-      }}>
-        {[
-          { id: 'all', label: 'All Specializations [09]' },
-          { id: 'software', label: 'Software & Systems [05]' },
-          { id: 'hardware', label: 'Hardware & Networks [04]' }
-        ].map(tab => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => setFilter(tab.id)}
-            style={{
-              padding: '0.5rem 1.25rem',
-              background: filter === tab.id ? 'var(--color-ivory)' : 'transparent',
-              color: filter === tab.id ? '#06080E' : 'var(--color-text-3)',
-              border: filter === tab.id ? '1px solid var(--color-ivory)' : '1px solid transparent',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.75rem',
-              fontWeight: filter === tab.id ? 700 : 500,
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* 4. DOMAIN ARCHITECTURAL GRID */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-        gap: '2rem'
-      }}>
-        {filteredDomains.map((dom, idx) => {
-          const code = `DOM-0${idx + 1}`;
-          return (
-            <div 
-              key={dom.id}
-              className="observatory-panel"
+        {/* 3. FILTER CONTROLS */}
+        <div style={{
+          display: 'flex',
+          gap: '0.5rem',
+          marginBottom: '3rem',
+          borderBottom: '1px solid #D8DAD7',
+          paddingBottom: '1rem'
+        }}>
+          {[
+            { id: 'all', label: 'All Specializations [09]' },
+            { id: 'software', label: 'Software & Systems [05]' },
+            { id: 'hardware', label: 'Hardware & Networks [04]' }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setFilter(tab.id)}
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                padding: '2.25rem',
-                justifyContent: 'space-between',
-                transition: 'all 0.2s ease'
+                padding: '0.5rem 1.25rem',
+                backgroundColor: filter === tab.id ? '#17191C' : '#FFFFFF',
+                color: filter === tab.id ? '#FFFFFF' : '#50545B',
+                border: filter === tab.id ? '1px solid #17191C' : '1px solid #D8DAD7',
+                fontFamily: "'DM Mono', monospace",
+                fontSize: '0.75rem',
+                fontWeight: filter === tab.id ? 700 : 500,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
               }}
             >
-              <div>
-                {/* Card Header */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <div style={{
-                      width: '40px',
-                      height: '40px',
-                      background: 'rgba(235, 94, 65, 0.08)',
-                      color: 'var(--color-accent)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      border: '1px solid rgba(235, 94, 65, 0.25)'
-                    }}>
-                      {iconMap[dom.id] || <BookOpen size={20} />}
-                    </div>
-                    <div>
-                      <div className="mono-tag" style={{ color: 'var(--color-text-3)' }}>{code}</div>
-                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6875rem', color: 'var(--color-success)' }}>
-                        {dom.category?.toUpperCase()}
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* 4. DOMAIN ARCHITECTURAL GRID */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+          gap: '2rem'
+        }}>
+          {filteredDomains.map((dom, idx) => {
+            const code = `DOM-0${idx + 1}`;
+            return (
+              <div 
+                key={dom.id}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  padding: '2.25rem',
+                  justifyContent: 'space-between',
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #D8DAD7',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.02)',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <div>
+                  {/* Card Header */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <div style={{
+                        width: '44px',
+                        height: '44px',
+                        backgroundColor: '#FFF0EB',
+                        color: '#E85D3F',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: '1px solid #E85D3F'
+                      }}>
+                        {iconMap[dom.id] || <BookOpen size={20} />}
+                      </div>
+                      <div>
+                        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#646A73', fontWeight: 700 }}>
+                          {code}
+                        </div>
+                        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.6875rem', color: '#2EC4B6', fontWeight: 700 }}>
+                          {dom.category?.toUpperCase()}
+                        </div>
                       </div>
                     </div>
+
+                    <span style={{
+                      fontFamily: "'DM Mono', monospace",
+                      fontSize: '0.6875rem',
+                      color: '#50545B',
+                      padding: '3px 8px',
+                      backgroundColor: '#F7F7F4',
+                      border: '1px solid #D8DAD7',
+                      fontWeight: 600
+                    }}>
+                      {dom.insights?.jobDemand || 'High Demand'}
+                    </span>
                   </div>
 
-                  <span style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.6875rem',
-                    color: 'var(--color-text-3)',
-                    padding: '2px 8px',
-                    border: '1px solid var(--color-border)'
-                  }}>
-                    {dom.insights?.jobDemand || 'High Demand'}
-                  </span>
+                  {/* Title & Description */}
+                  <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.85rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.75rem', color: '#17191C' }}>
+                    {dom.title}
+                  </h2>
+                  <p style={{ color: '#50545B', fontSize: '0.9375rem', lineHeight: 1.6, marginBottom: '1.75rem' }}>
+                    {dom.description}
+                  </p>
+
+                  {/* Skills Chips */}
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '2rem' }}>
+                    {(dom.skills || []).slice(0, 4).map(skill => (
+                      <span
+                        key={skill}
+                        style={{
+                          fontFamily: "'DM Mono', monospace",
+                          fontSize: '0.6875rem',
+                          color: '#17191C',
+                          backgroundColor: '#F7F7F4',
+                          padding: '3px 8px',
+                          border: '1px solid #D8DAD7'
+                        }}
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
                 </div>
 
-                {/* Title & Description */}
-                <h2 style={{ fontSize: '1.75rem', marginBottom: '0.75rem', color: 'var(--color-ivory)' }}>
-                  {dom.title}
-                </h2>
-                <p style={{ color: 'var(--color-text-3)', fontSize: '0.9375rem', lineHeight: 1.6, marginBottom: '1.75rem' }}>
-                  {dom.description}
-                </p>
+                {/* Bottom Actions */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingTop: '1.25rem',
+                  borderTop: '1px solid #D8DAD7'
+                }}>
+                  <Link
+                    to={`/domain/${dom.id}`}
+                    style={{
+                      fontFamily: "'Barlow Condensed', sans-serif",
+                      fontSize: '1rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                      color: '#17191C',
+                      textDecoration: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      textTransform: 'uppercase'
+                    }}
+                  >
+                    <span>Domain Intelligence</span>
+                    <ArrowRight size={14} style={{ color: '#E85D3F' }} />
+                  </Link>
 
-                {/* Skills Chips */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '2rem' }}>
-                  {(dom.skills || []).slice(0, 4).map(skill => (
-                    <span
-                      key={skill}
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '0.6875rem',
-                        color: 'var(--color-text-2)',
-                        background: 'rgba(255, 255, 255, 0.03)',
-                        padding: '3px 8px',
-                        border: '1px solid rgba(255, 255, 255, 0.06)'
-                      }}
-                    >
-                      {skill}
-                    </span>
-                  ))}
+                  <Link
+                    to={`/roadmap/${dom.id}`}
+                    style={{
+                      fontFamily: "'DM Mono', monospace",
+                      fontSize: '0.75rem',
+                      color: '#646A73',
+                      textDecoration: 'none'
+                    }}
+                  >
+                    [8-SEM ROADMAP]
+                  </Link>
                 </div>
+
               </div>
+            );
+          })}
+        </div>
 
-              {/* Bottom Actions */}
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                paddingTop: '1.25rem',
-                borderTop: '1px solid var(--color-border)'
-              }}>
-                <Link
-                  to={`/domain/${dom.id}`}
-                  style={{
-                    fontFamily: 'var(--font-display)',
-                    fontSize: '1rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.06em',
-                    color: 'var(--color-ivory)',
-                    textDecoration: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    textTransform: 'uppercase'
-                  }}
-                >
-                  <span>Domain Intelligence</span>
-                  <ArrowRight size={14} style={{ color: 'var(--color-accent)' }} />
-                </Link>
-
-                <Link
-                  to={`/roadmap/${dom.id}`}
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.75rem',
-                    color: 'var(--color-text-3)',
-                    textDecoration: 'none'
-                  }}
-                >
-                  [8-SEM ROADMAP]
-                </Link>
-              </div>
-
-            </div>
-          );
-        })}
       </div>
-
     </div>
   );
 }

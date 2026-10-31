@@ -328,7 +328,7 @@ export default function Progress() {
               }}
             >
               {domainsData.map((d) => (
-                <option key={d.id} value={d.id} style={{ background: 'var(--color-bg)', color: 'var(--color-text)' }}>
+                <option key={d.id} value={d.id} style={{ backgroundColor: '#FFFFFF', color: '#17191C' }}>
                   {d.title} {d.id === recommendedDomainId ? '(Recommended)' : ''}
                 </option>
               ))}

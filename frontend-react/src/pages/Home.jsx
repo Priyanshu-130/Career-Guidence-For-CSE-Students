@@ -2,19 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
-  Sparkles, 
   ArrowRight, 
   Compass, 
   Layers, 
   Zap, 
-  Shield, 
   Terminal, 
-  Cpu, 
-  Globe, 
-  Database,
-  ExternalLink,
-  Activity,
-  Crosshair
+  Activity, 
+  Crosshair, 
+  ExternalLink
 } from 'lucide-react';
 import { getApiBaseUrl } from '../utils/roadmapHelper';
 
@@ -46,111 +41,111 @@ export default function Home() {
 
   // Constellation domain nodes
   const domainNodes = [
-    { id: 'ai', name: 'AI & Machine Learning', code: 'DOM-01', x: 20, y: 35, color: '#EB5E41', tag: 'High Growth', sub: 'Deep Learning, PyTorch, LLMs' },
+    { id: 'ai', name: 'AI & Machine Learning', code: 'DOM-01', x: 20, y: 35, color: '#E85D3F', tag: 'High Growth', sub: 'Deep Learning, PyTorch, LLMs' },
     { id: 'systems', name: 'Systems & Operating Kernels', code: 'DOM-02', x: 75, y: 25, color: '#2EC4B6', tag: 'Core Foundational', sub: 'C++, Rust, Concurrency' },
-    { id: 'security', name: 'Cybersecurity & Cryptography', code: 'DOM-03', x: 82, y: 70, color: '#E5A93C', tag: 'Critical Defense', sub: 'Zero-Trust, Reverse Eng' },
-    { id: 'cloud', name: 'Cloud & Distributed Systems', code: 'DOM-04', x: 38, y: 80, color: '#38BDF8', tag: 'Infrastructure', sub: 'Kubernetes, Kafka, Go' },
-    { id: 'data', name: 'Data Engineering & Science', code: 'DOM-05', x: 55, y: 45, color: '#F3EFE6', tag: 'Analytical', sub: 'Spark, SQL, Analytics' },
-    { id: 'web', name: 'Full Stack & Web Architecture', code: 'DOM-06', x: 18, y: 68, color: '#B5BED0', tag: 'Product Eng', sub: 'React, Node.js, GraphQL' }
+    { id: 'security', name: 'Cybersecurity & Cryptography', code: 'DOM-03', x: 82, y: 70, color: '#D97706', tag: 'Critical Defense', sub: 'Zero-Trust, Reverse Eng' },
+    { id: 'cloud', name: 'Cloud & Distributed Systems', code: 'DOM-04', x: 38, y: 80, color: '#0284C7', tag: 'Infrastructure', sub: 'Kubernetes, Kafka, Go' },
+    { id: 'data', name: 'Data Engineering & Science', code: 'DOM-05', x: 55, y: 45, color: '#FFFFFF', tag: 'Analytical', sub: 'Spark, SQL, Analytics' },
+    { id: 'web', name: 'Full Stack & Web Architecture', code: 'DOM-06', x: 18, y: 68, color: '#94A3B8', tag: 'Product Eng', sub: 'React, Node.js, GraphQL' }
   ];
 
   const activeNodeInfo = domainNodes.find(d => d.id === activeDomainNode) || domainNodes[0];
 
   return (
-    <div className="page-wrapper content-container animate-in" style={{ paddingBottom: '6rem' }}>
-      
-      {/* 1. TOP TECHNICAL TELEMETRY STRIP */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '1rem',
-        padding: '0.75rem 1.25rem',
-        border: '1px solid var(--color-border)',
-        background: 'rgba(16, 21, 36, 0.45)',
-        marginBottom: '3.5rem',
-        fontFamily: 'var(--font-mono)',
-        fontSize: '0.75rem',
-        color: 'var(--color-text-3)',
-        letterSpacing: '0.08em'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <span style={{ 
-            display: 'inline-block', 
-            width: '8px', 
-            height: '8px', 
-            background: 'var(--color-accent)', 
-            boxShadow: '0 0 8px var(--color-accent)' 
-          }} />
-          <span style={{ color: 'var(--color-ivory)', fontWeight: 600 }}>OBSERVATORY // TELEMETRY: ACTIVE</span>
-          <span style={{ color: 'var(--color-border)' }}>|</span>
-          <span>STATION: CSE-AST-2026</span>
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: '#F7F7F4',
+      color: '#17191C',
+      fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif",
+      padding: '2.5rem 1.5rem 6rem'
+    }}>
+      <div style={{ maxWidth: '1160px', margin: '0 auto' }}>
+        
+        {/* 1. TOP TECHNICAL TELEMETRY STRIP */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '1rem',
+          padding: '0.75rem 1.25rem',
+          border: '1px solid #D8DAD7',
+          backgroundColor: '#FFFFFF',
+          marginBottom: '3.5rem',
+          fontFamily: "'DM Mono', monospace",
+          fontSize: '0.75rem',
+          color: '#646A73',
+          letterSpacing: '0.04em'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <span style={{ 
+              display: 'inline-block', 
+              width: '8px', 
+              height: '8px', 
+              borderRadius: '50%',
+              backgroundColor: '#E85D3F'
+            }} />
+            <span style={{ color: '#17191C', fontWeight: 700 }}>DIAGNOSTIC ENGINE: ACTIVE</span>
+            <span style={{ color: '#D8DAD7' }}>|</span>
+            <span>STATION: CSE-AST-2026</span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+            <span>ENGINE: <span style={{ color: '#17191C', fontWeight: 600 }}>ADAPTIVE-TRIFOCAL</span></span>
+            <span>BANK: <span style={{ color: '#2EC4B6', fontWeight: 700 }}>109 VERIFIED ITEMS</span></span>
+            <span>LATENCY: <span style={{ color: '#17191C' }}>14ms</span></span>
+          </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-          <span>ENGINE: <span style={{ color: 'var(--color-ivory)' }}>ADAPTIVE-TRIFOCAL</span></span>
-          <span>BANK: <span style={{ color: 'var(--color-success)' }}>109 VERIFIED ITEMS</span></span>
-          <span>LATENCY: <span style={{ color: 'var(--color-ivory)' }}>14ms</span></span>
-        </div>
-      </div>
-
-      {/* 2. GRAND HERO SECTION */}
-      <section style={{ marginBottom: '5rem', position: 'relative' }}>
-        <div style={{ maxWidth: '1000px' }}>
+        {/* 2. GRAND HERO SECTION */}
+        <section style={{ marginBottom: '5rem', maxWidth: '960px' }}>
           
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.5rem',
             padding: '0.35rem 0.85rem',
-            background: 'rgba(235, 94, 65, 0.08)',
-            border: '1px solid rgba(235, 94, 65, 0.3)',
-            color: 'var(--color-accent)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '0.6875rem',
-            letterSpacing: '0.14em',
+            backgroundColor: '#FFF0EB',
+            border: '1px solid #E85D3F',
+            color: '#E85D3F',
+            fontFamily: "'DM Mono', monospace",
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            marginBottom: '1.75rem'
+            marginBottom: '1.5rem'
           }}>
             <Crosshair size={13} />
             <span>ACADEMIC TRAJECTORY ACCELERATOR</span>
           </div>
 
-          {/* Main Heading per specification */}
+          {/* Main Heading: High-contrast Jet Black */}
           <h1 style={{
-            fontSize: 'clamp(3.8rem, 8.5vw, 7.5rem)',
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontSize: 'clamp(3.5rem, 8vw, 6.5rem)',
             fontWeight: 800,
-            lineHeight: 0.92,
+            lineHeight: 0.95,
             letterSpacing: '-0.02em',
             textTransform: 'uppercase',
-            color: 'var(--color-ivory)',
-            margin: '0 0 1.75rem 0',
-            fontFamily: 'var(--font-display)'
+            color: '#17191C',
+            margin: '0 0 1.5rem 0'
           }}>
             FIND YOUR<br />
-            <span style={{ 
-              color: 'transparent', 
-              WebkitTextStroke: '2px var(--color-ivory)',
-              display: 'inline-block' 
-            }}>
-              DIRECTION.
-            </span>
+            DIRECTION.
           </h1>
 
-          {/* Supporting Text per specification */}
+          {/* Supporting Text: High-contrast Dark Slate */}
           <p style={{
-            fontFamily: 'var(--font-body)',
             fontSize: 'clamp(1.125rem, 2vw, 1.35rem)',
             lineHeight: 1.6,
-            color: 'var(--color-text-2)',
+            color: '#50545B',
             maxWidth: '680px',
-            marginBottom: '2.75rem'
+            margin: '0 0 2.5rem 0'
           }}>
             Your CSE journey is not a predefined path. Discover your strengths, explore domains, and build a roadmap that matches your potential.
           </p>
 
-          {/* Call to Actions per specification */}
+          {/* Call to Actions */}
           <div style={{
             display: 'flex',
             flexWrap: 'wrap',
@@ -159,17 +154,30 @@ export default function Home() {
           }}>
             <Link 
               to="/quiz" 
-              className="btn-primary"
               style={{
-                background: 'var(--color-ivory)',
-                color: '#06080E',
-                border: '1px solid var(--color-ivory)',
-                padding: '1.1rem 2.5rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.75rem',
+                backgroundColor: '#17191C',
+                color: '#FFFFFF',
+                fontFamily: "'Barlow Condensed', sans-serif",
                 fontSize: '1.125rem',
-                fontFamily: 'var(--font-display)',
                 fontWeight: 700,
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase'
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                padding: '1.125rem 2.5rem',
+                textDecoration: 'none',
+                border: '1px solid #17191C',
+                transition: 'all 0.15s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#E85D3F';
+                e.currentTarget.style.borderColor = '#E85D3F';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#17191C';
+                e.currentTarget.style.borderColor = '#17191C';
               }}
             >
               <span>Discover My Path</span>
@@ -178,14 +186,30 @@ export default function Home() {
 
             <Link 
               to="/domains" 
-              className="btn-secondary"
               style={{
-                border: '1px solid rgba(255, 255, 255, 0.18)',
-                padding: '1.1rem 2.25rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.75rem',
+                backgroundColor: '#FFFFFF',
+                color: '#17191C',
+                fontFamily: "'Barlow Condensed', sans-serif",
                 fontSize: '1.125rem',
-                fontFamily: 'var(--font-display)',
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase'
+                fontWeight: 700,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                padding: '1.125rem 2.25rem',
+                textDecoration: 'none',
+                border: '1px solid #D8DAD7',
+                transition: 'all 0.15s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = '#17191C';
+                e.currentTarget.style.backgroundColor = '#F7F7F4';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = '#D8DAD7';
+                e.currentTarget.style.backgroundColor = '#FFFFFF';
               }}
             >
               <span>Explore Domains</span>
@@ -194,283 +218,373 @@ export default function Home() {
             <Link 
               to="/assess"
               style={{
-                fontFamily: 'var(--font-mono)',
+                fontFamily: "'DM Mono', monospace",
                 fontSize: '0.8125rem',
-                color: 'var(--color-text-3)',
+                color: '#50545B',
                 textDecoration: 'none',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.4rem',
-                padding: '0.75rem 1rem',
-                border: '1px dashed rgba(255,255,255,0.12)'
+                gap: '0.5rem',
+                padding: '0.85rem 1.25rem',
+                border: '1px dashed #D8DAD7',
+                backgroundColor: '#FFFFFF',
+                transition: 'all 0.15s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = '#E85D3F';
+                e.currentTarget.style.color = '#E85D3F';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = '#D8DAD7';
+                e.currentTarget.style.color = '#50545B';
               }}
             >
-              <Terminal size={14} style={{ color: 'var(--color-accent)' }} />
+              <Terminal size={14} style={{ color: '#E85D3F' }} />
               <span>OR TEST TOPIC LADDER [L1-L4] →</span>
             </Link>
           </div>
 
-        </div>
-      </section>
+        </section>
 
-      {/* 3. INTERACTIVE DOMAIN CONSTELLATION MAP */}
-      <section style={{ marginBottom: '5rem' }}>
-        <div className="observatory-panel" style={{ padding: '2.5rem', position: 'relative', overflow: 'hidden' }}>
-          
+        {/* 3. INTERACTIVE DOMAIN CONSTELLATION MAP */}
+        <section style={{ marginBottom: '5rem' }}>
           <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            flexWrap: 'wrap',
-            gap: '1rem',
-            marginBottom: '2rem'
-          }}>
-            <div>
-              <div className="mono-tag" style={{ marginBottom: '0.35rem' }}>
-                TOPOLOGICAL DOMAIN SPACE // INTERACTIVE MAP
-              </div>
-              <h2 style={{ fontSize: '2rem', margin: 0 }}>
-                CSE Domain Constellation
-              </h2>
-            </div>
-            
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--color-text-3)', textAlign: 'right' }}>
-              <div>COORDINATES: [0x7F · 0x1A]</div>
-              <div style={{ color: 'var(--color-accent)' }}>SELECTED: {activeNodeInfo.name}</div>
-            </div>
-          </div>
-
-          {/* Interactive visual canvas mockup */}
-          <div style={{
-            position: 'relative',
-            height: '360px',
-            width: '100%',
-            background: 'radial-gradient(ellipse at 50% 50%, rgba(16, 21, 36, 0.8) 0%, rgba(6, 8, 14, 0.95) 100%)',
-            border: '1px solid rgba(255, 255, 255, 0.06)',
-            marginBottom: '1.75rem',
-            overflow: 'hidden'
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #D8DAD7',
+            padding: '2.5rem'
           }}>
             
-            {/* SVG Lines connecting nodes */}
-            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
-              <defs>
-                <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(235, 94, 65, 0.4)" />
-                  <stop offset="100%" stopColor="rgba(46, 196, 182, 0.4)" />
-                </linearGradient>
-              </defs>
-              <line x1="20%" y1="35%" x2="55%" y2="45%" stroke="rgba(255,255,255,0.12)" strokeWidth="1" strokeDasharray="4 4" />
-              <line x1="55%" y1="45%" x2="75%" y2="25%" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-              <line x1="75%" y1="25%" x2="82%" y2="70%" stroke="rgba(255,255,255,0.12)" strokeWidth="1" strokeDasharray="4 4" />
-              <line x1="82%" y1="70%" x2="38%" y2="80%" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-              <line x1="38%" y1="80%" x2="18%" y2="68%" stroke="rgba(255,255,255,0.12)" strokeWidth="1" strokeDasharray="4 4" />
-              <line x1="18%" y1="68%" x2="20%" y2="35%" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-              <line x1="20%" y1="35%" x2="38%" y2="80%" stroke="url(#lineGrad)" strokeWidth="1.5" />
-            </svg>
-
-            {/* Nodes */}
-            {domainNodes.map((node) => {
-              const isSelected = activeDomainNode === node.id;
-              return (
-                <div
-                  key={node.id}
-                  onClick={() => setActiveDomainNode(node.id)}
-                  style={{
-                    position: 'absolute',
-                    left: `${node.x}%`,
-                    top: `${node.y}%`,
-                    transform: 'translate(-50%, -50%)',
-                    cursor: 'pointer',
-                    zIndex: 2,
-                    textAlign: 'center'
-                  }}
-                >
-                  <div style={{
-                    width: isSelected ? '20px' : '12px',
-                    height: isSelected ? '20px' : '12px',
-                    background: isSelected ? node.color : '#101524',
-                    border: `2px solid ${node.color}`,
-                    margin: '0 auto',
-                    transition: 'all 0.25s ease',
-                    boxShadow: isSelected ? `0 0 16px ${node.color}` : 'none'
-                  }} />
-                  <div style={{
-                    marginTop: '8px',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.6875rem',
-                    letterSpacing: '0.05em',
-                    color: isSelected ? 'var(--color-ivory)' : 'var(--color-text-3)',
-                    background: isSelected ? 'rgba(16, 21, 36, 0.9)' : 'transparent',
-                    padding: '2px 6px',
-                    whiteSpace: 'nowrap',
-                    border: isSelected ? `1px solid ${node.color}` : 'none'
-                  }}>
-                    {node.code} · {node.name.split(' ')[0]}
-                  </div>
-                </div>
-              );
-            })}
-
-          </div>
-
-          {/* Active Node Detail Card */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '1.5rem',
-            padding: '1.25rem 1.5rem',
-            background: 'rgba(255, 255, 255, 0.02)',
-            border: '1px solid rgba(255, 255, 255, 0.06)'
-          }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.35rem' }}>
-                <span className="mono-tag" style={{ color: activeNodeInfo.color }}>{activeNodeInfo.code}</span>
-                <h3 style={{ fontSize: '1.25rem', margin: 0, color: 'var(--color-ivory)' }}>{activeNodeInfo.name}</h3>
-                <span style={{ 
-                  fontFamily: 'var(--font-mono)', 
-                  fontSize: '0.6875rem', 
-                  padding: '2px 8px', 
-                  background: 'rgba(255,255,255,0.06)', 
-                  color: 'var(--color-text-2)' 
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              flexWrap: 'wrap',
+              gap: '1rem',
+              marginBottom: '2rem'
+            }}>
+              <div>
+                <div style={{
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  color: '#E85D3F',
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  marginBottom: '0.35rem'
                 }}>
-                  {activeNodeInfo.tag}
-                </span>
+                  TOPOLOGICAL DOMAIN SPACE // INTERACTIVE MAP
+                </div>
+                <h2 style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: '2rem',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  color: '#17191C',
+                  margin: 0
+                }}>
+                  CSE Domain Constellation
+                </h2>
               </div>
-              <div style={{ color: 'var(--color-text-3)', fontSize: '0.875rem' }}>
-                Core Competencies: <span style={{ color: 'var(--color-text-2)' }}>{activeNodeInfo.sub}</span>
+              
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#646A73', textAlign: 'right' }}>
+                <div>COORDINATES: [0x7F · 0x1A]</div>
+                <div style={{ color: '#E85D3F', fontWeight: 600 }}>SELECTED: {activeNodeInfo.name}</div>
               </div>
             </div>
 
-            <Link
-              to={`/domain/${activeNodeInfo.id}`}
-              className="btn-secondary"
-              style={{
-                padding: '0.65rem 1.25rem',
-                fontSize: '0.875rem',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}
-            >
-              <span>Inspect Specialization</span>
-              <ExternalLink size={14} />
-            </Link>
-          </div>
+            {/* Dark Technical Radar Canvas: High Contrast Text & Nodes */}
+            <div style={{
+              position: 'relative',
+              height: '360px',
+              width: '100%',
+              backgroundColor: '#20252B',
+              border: '1px solid #343C4E',
+              marginBottom: '1.75rem',
+              overflow: 'hidden'
+            }}>
+              
+              {/* SVG Connecting Lines */}
+              <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+                <line x1="20%" y1="35%" x2="55%" y2="45%" stroke="rgba(255,255,255,0.25)" strokeWidth="1" strokeDasharray="4 4" />
+                <line x1="55%" y1="45%" x2="75%" y2="25%" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
+                <line x1="75%" y1="25%" x2="82%" y2="70%" stroke="rgba(255,255,255,0.25)" strokeWidth="1" strokeDasharray="4 4" />
+                <line x1="82%" y1="70%" x2="38%" y2="80%" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
+                <line x1="38%" y1="80%" x2="18%" y2="68%" stroke="rgba(255,255,255,0.25)" strokeWidth="1" strokeDasharray="4 4" />
+                <line x1="18%" y1="68%" x2="20%" y2="35%" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
+                <line x1="20%" y1="35%" x2="38%" y2="80%" stroke="#E85D3F" strokeWidth="2" />
+              </svg>
 
-        </div>
-      </section>
+              {/* Nodes */}
+              {domainNodes.map((node) => {
+                const isSelected = activeDomainNode === node.id;
+                return (
+                  <div
+                    key={node.id}
+                    onClick={() => setActiveDomainNode(node.id)}
+                    style={{
+                      position: 'absolute',
+                      left: `${node.x}%`,
+                      top: `${node.y}%`,
+                      transform: 'translate(-50%, -50%)',
+                      cursor: 'pointer',
+                      zIndex: 2,
+                      textAlign: 'center'
+                    }}
+                  >
+                    <div style={{
+                      width: isSelected ? '20px' : '12px',
+                      height: isSelected ? '20px' : '12px',
+                      backgroundColor: isSelected ? node.color : '#20252B',
+                      border: `2px solid ${node.color}`,
+                      margin: '0 auto',
+                      transition: 'all 0.2s ease',
+                      boxShadow: isSelected ? `0 0 14px ${node.color}` : 'none'
+                    }} />
+                    <div style={{
+                      marginTop: '8px',
+                      fontFamily: "'DM Mono', monospace",
+                      fontSize: '0.6875rem',
+                      fontWeight: 600,
+                      color: '#FFFFFF',
+                      backgroundColor: isSelected ? '#17191C' : 'rgba(32, 37, 43, 0.85)',
+                      padding: '2px 8px',
+                      whiteSpace: 'nowrap',
+                      border: `1px solid ${isSelected ? node.color : 'rgba(255, 255, 255, 0.15)'}`
+                    }}>
+                      {node.code} · {node.name.split(' ')[0]}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
 
-      {/* 4. TECHNICAL ARCHITECTURE MATRIX (4 GRID PANELS) */}
-      <section style={{ marginBottom: '5rem' }}>
-        <div style={{ marginBottom: '2rem' }}>
-          <div className="mono-tag" style={{ marginBottom: '0.35rem' }}>SYSTEM PLATFORM ARCHITECTURE</div>
-          <h2 style={{ fontSize: '2.5rem', margin: 0 }}>Scientific Diagnostic Modules</h2>
-        </div>
-
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '1.5rem'
-        }}>
-          
-          <div className="observatory-panel" style={{ padding: '2rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-              <div className="mono-tag">MOD-01</div>
-              <Compass size={22} style={{ color: 'var(--color-accent)' }} />
-            </div>
-            <h3 style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>O*NET Career Profiling</h3>
-            <p style={{ color: 'var(--color-text-3)', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-              Calibrated items from the U.S. Dept of Labor O*NET Interest Profiler mapping your natural affinity to RIASEC occupational dimensions.
-            </p>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--color-accent)' }}>
-              OUTPUT: DOMAIN WEIGHT MATRIX
-            </div>
-          </div>
-
-          <div className="observatory-panel" style={{ padding: '2rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-              <div className="mono-tag">MOD-02</div>
-              <Zap size={22} style={{ color: 'var(--color-amber)' }} />
-            </div>
-            <h3 style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>Bebras Logic Tasks</h3>
-            <p style={{ color: 'var(--color-text-3)', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-              Language-agnostic computational thinking tasks assessing graph traversal, binary state analysis, and algorithmic pattern recognition.
-            </p>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--color-amber)' }}>
-              OUTPUT: COGNITIVE APTITUDE SCORE
-            </div>
-          </div>
-
-          <div className="observatory-panel" style={{ padding: '2rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-              <div className="mono-tag">MOD-03</div>
-              <Layers size={22} style={{ color: 'var(--color-success)' }} />
-            </div>
-            <h3 style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>Code.org Guided Labs</h3>
-            <p style={{ color: 'var(--color-text-3)', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-              Scenario-based software engineering simulations covering database queries, system scalability, and security posture tradeoffs.
-            </p>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--color-success)' }}>
-              OUTPUT: PRACTICAL READINESS INDEX
-            </div>
-          </div>
-
-          <div className="observatory-panel" style={{ padding: '2rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-              <div className="mono-tag">MOD-04</div>
-              <Activity size={22} style={{ color: 'var(--color-cyan)' }} />
-            </div>
-            <h3 style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>8-Semester Roadmap</h3>
-            <p style={{ color: 'var(--color-text-3)', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-              Personalized technical progression plan with starting depths dynamically tuned to your evaluated topic mastery levels.
-            </p>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--color-cyan)' }}>
-              OUTPUT: CURRICULUM SYLLABUS
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* 5. ACTIVE STUDENT TELEMETRY BANNER (IF PREVIOUS RESULT EXISTS) */}
-      {history.length > 0 && (
-        <section style={{ marginBottom: '4rem' }}>
-          <div className="observatory-panel" style={{ 
-            padding: '2.5rem', 
-            borderLeft: '4px solid var(--color-accent)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '2rem'
-          }}>
-            <div>
-              <div className="mono-tag" style={{ marginBottom: '0.5rem' }}>
-                RECORDED TELEMETRY // ACTIVE PROFILE
+            {/* Active Node Detail Card */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '1.5rem',
+              padding: '1.5rem',
+              backgroundColor: '#F7F7F4',
+              border: '1px solid #D8DAD7'
+            }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.35rem' }}>
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 700, color: '#E85D3F' }}>
+                    {activeNodeInfo.code}
+                  </span>
+                  <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.35rem', fontWeight: 800, textTransform: 'uppercase', margin: 0, color: '#17191C' }}>
+                    {activeNodeInfo.name}
+                  </h3>
+                  <span style={{ 
+                    fontFamily: "'DM Mono', monospace", 
+                    fontSize: '0.6875rem', 
+                    padding: '2px 8px', 
+                    backgroundColor: '#FFFFFF', 
+                    border: '1px solid #D8DAD7',
+                    color: '#50545B' 
+                  }}>
+                    {activeNodeInfo.tag}
+                  </span>
+                </div>
+                <div style={{ color: '#50545B', fontSize: '0.875rem' }}>
+                  Core Competencies: <span style={{ color: '#17191C', fontWeight: 600 }}>{activeNodeInfo.sub}</span>
+                </div>
               </div>
-              <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>
-                Primary Specialization: <span style={{ color: 'var(--color-accent)' }}>{history[0]?.recommended_domain}</span>
-              </h2>
-              <p style={{ color: 'var(--color-text-2)', maxWidth: '600px', margin: 0, fontSize: '0.9375rem' }}>
-                Diagnostic confidence factor evaluated at {history[0]?.confidence_score || 88}%. Explore your detailed skill radar or review your semester progression milestones.
-              </p>
-            </div>
 
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <Link to="/results" className="btn-primary" style={{ padding: '0.9rem 1.75rem' }}>
-                <span>Inspect Result Telemetry</span>
-                <ArrowRight size={16} />
+              <Link
+                to={`/domain/${activeNodeInfo.id}`}
+                style={{
+                  padding: '0.75rem 1.25rem',
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #D8DAD7',
+                  color: '#17191C',
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: '0.9375rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.04em',
+                  textTransform: 'uppercase',
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  transition: 'all 0.15s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#17191C';
+                  e.currentTarget.style.backgroundColor = '#FFF0EB';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#D8DAD7';
+                  e.currentTarget.style.backgroundColor = '#FFFFFF';
+                }}
+              >
+                <span>Inspect Specialization</span>
+                <ExternalLink size={14} />
               </Link>
-              <Link to="/domains" className="btn-secondary" style={{ padding: '0.9rem 1.75rem' }}>
-                <span>Compare Disciplines</span>
-              </Link>
             </div>
+
           </div>
         </section>
-      )}
 
+        {/* 4. SCIENTIFIC DIAGNOSTIC MODULES (4 GRID PANELS) */}
+        <section style={{ marginBottom: '5rem' }}>
+          <div style={{ marginBottom: '2rem' }}>
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 600, color: '#E85D3F', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+              SYSTEM PLATFORM ARCHITECTURE
+            </div>
+            <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '2.5rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: 0 }}>
+              Scientific Diagnostic Modules
+            </h2>
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gap: '1.5rem'
+          }}>
+            
+            <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 700, color: '#646A73' }}>MOD-01</span>
+                <Compass size={22} style={{ color: '#E85D3F' }} />
+              </div>
+              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: '0 0 0.75rem 0' }}>
+                O*NET Career Profiling
+              </h3>
+              <p style={{ color: '#50545B', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+                Calibrated items from the U.S. Dept of Labor O*NET Interest Profiler mapping your natural affinity to RIASEC occupational dimensions.
+              </p>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#E85D3F', fontWeight: 700 }}>
+                OUTPUT: DOMAIN WEIGHT MATRIX
+              </div>
+            </div>
+
+            <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 700, color: '#646A73' }}>MOD-02</span>
+                <Zap size={22} style={{ color: '#D97706' }} />
+              </div>
+              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: '0 0 0.75rem 0' }}>
+                Bebras Logic Tasks
+              </h3>
+              <p style={{ color: '#50545B', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+                Language-agnostic computational thinking tasks assessing graph traversal, binary state analysis, and algorithmic pattern recognition.
+              </p>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#D97706', fontWeight: 700 }}>
+                OUTPUT: COGNITIVE APTITUDE SCORE
+              </div>
+            </div>
+
+            <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 700, color: '#646A73' }}>MOD-03</span>
+                <Layers size={22} style={{ color: '#2EC4B6' }} />
+              </div>
+              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: '0 0 0.75rem 0' }}>
+                Code.org Guided Labs
+              </h3>
+              <p style={{ color: '#50545B', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+                Scenario-based software engineering simulations covering database queries, system scalability, and security posture tradeoffs.
+              </p>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#2EC4B6', fontWeight: 700 }}>
+                OUTPUT: PRACTICAL READINESS INDEX
+              </div>
+            </div>
+
+            <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 700, color: '#646A73' }}>MOD-04</span>
+                <Activity size={22} style={{ color: '#0284C7' }} />
+              </div>
+              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: '0 0 0.75rem 0' }}>
+                8-Semester Roadmap
+              </h3>
+              <p style={{ color: '#50545B', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+                Personalized technical progression plan with starting depths dynamically tuned to your evaluated topic mastery levels.
+              </p>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#0284C7', fontWeight: 700 }}>
+                OUTPUT: CURRICULUM SYLLABUS
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* 5. ACTIVE STUDENT TELEMETRY BANNER (IF RECORDED) */}
+        {history.length > 0 && (
+          <section style={{ marginBottom: '4rem' }}>
+            <div style={{ 
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #D8DAD7',
+              borderLeft: '4px solid #E85D3F',
+              padding: '2.5rem', 
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '2rem'
+            }}>
+              <div>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#E85D3F', fontWeight: 700, marginBottom: '0.5rem' }}>
+                  RECORDED TELEMETRY // ACTIVE PROFILE
+                </div>
+                <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '2rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: '0 0 0.5rem 0' }}>
+                  Primary Specialization: <span style={{ color: '#E85D3F' }}>{history[0]?.recommended_domain}</span>
+                </h2>
+                <p style={{ color: '#50545B', maxWidth: '600px', margin: 0, fontSize: '0.9375rem' }}>
+                  Diagnostic confidence factor evaluated at {history[0]?.confidence_score || 88}%. Explore your detailed skill radar or review your semester progression milestones.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <Link
+                  to="/results"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '0.9rem 1.75rem',
+                    backgroundColor: '#17191C',
+                    color: '#FFFFFF',
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: '1rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.04em',
+                    textTransform: 'uppercase',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <span>Inspect Result Telemetry</span>
+                  <ArrowRight size={16} />
+                </Link>
+                <Link
+                  to="/domains"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '0.9rem 1.75rem',
+                    backgroundColor: '#FFFFFF',
+                    color: '#17191C',
+                    border: '1px solid #D8DAD7',
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: '1rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.04em',
+                    textTransform: 'uppercase',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <span>Compare Disciplines</span>
+                </Link>
+              </div>
+            </div>
+          </section>
+        )}
+
+      </div>
     </div>
   );
 }

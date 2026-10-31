@@ -565,7 +565,7 @@ export default function QuizRunner() {
   }
 
   // -------------------------------------------------------------
-  // RENDER STAGE 2: EXPERIMENTAL CONTROL QUESTION INTERFACE
+  // RENDER STAGE 2: EXPERIMENTAL CONTROL QUESTION INTERFACE (VELLUM)
   // -------------------------------------------------------------
   if (!currentQuestion) return null;
 
@@ -577,244 +577,293 @@ export default function QuizRunner() {
   }
 
   return (
-    <div className="page-wrapper content-container animate-in" style={{ maxWidth: '960px', margin: '0 auto', paddingTop: '1.5rem', paddingBottom: '6rem' }}>
-      
-      {/* 1. TOP EXPERIMENTAL CONTROL BAR */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '1rem',
-        padding: '0.75rem 1.25rem',
-        border: '1px solid var(--color-border)',
-        background: 'rgba(16, 21, 36, 0.45)',
-        marginBottom: '2.5rem',
-        fontFamily: 'var(--font-mono)',
-        fontSize: '0.75rem',
-        letterSpacing: '0.08em'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <button 
-            type="button"
-            onClick={() => navigate('/quiz')}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: 'var(--color-text-3)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.25rem',
-              padding: 0,
-              fontFamily: 'inherit',
-              fontSize: 'inherit'
-            }}
-          >
-            <ArrowLeft size={14} />
-            <span>EXIT LAB</span>
-          </button>
-          <span style={{ color: 'var(--color-border)' }}>|</span>
-          <span style={{ color: 'var(--color-accent)', fontWeight: 600 }}>{currentPhase}</span>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <span style={{ color: 'var(--color-ivory)', fontWeight: 700 }}>
-            STEP [{String(currentStep).padStart(2, '0')} / {String(TOTAL_QUESTIONS).padStart(2, '0')}]
-          </span>
-          <span style={{ color: 'var(--color-border)' }}>|</span>
-          <span style={{ color: 'var(--color-text-3)' }}>
-            DIFFICULTY: LEVEL 0{currentQuestion.difficulty || 1}
-          </span>
-        </div>
-      </div>
-
-      {/* 2. MINIMAL STEP PROGRESSION TICK */}
-      <div style={{
-        display: 'flex',
-        gap: '4px',
-        marginBottom: '2.5rem'
-      }}>
-        {Array.from({ length: TOTAL_QUESTIONS }).map((_, idx) => {
-          const stepNum = idx + 1;
-          const isPassed = stepNum < currentStep;
-          const isCurrent = stepNum === currentStep;
-          return (
-            <div 
-              key={idx}
-              style={{
-                flex: 1,
-                height: isCurrent ? '4px' : '2px',
-                background: isPassed 
-                  ? 'var(--color-accent)' 
-                  : isCurrent 
-                  ? 'var(--color-ivory)' 
-                  : 'rgba(255, 255, 255, 0.08)',
-                transition: 'all 0.2s ease'
-              }}
-            />
-          );
-        })}
-      </div>
-
-      {/* 3. AGENT REASONING TELEMETRY READOUT */}
-      {agentReasoning && (
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: '#F7F7F4',
+      color: '#17191C',
+      fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif",
+      padding: '2rem 1.5rem 6rem'
+    }}>
+      <div style={{ maxWidth: '920px', margin: '0 auto' }}>
+        
+        {/* 1. TOP EXPERIMENTAL CONTROL BAR */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '0.75rem',
-          padding: '0.75rem 1rem',
-          background: 'rgba(235, 94, 65, 0.06)',
-          borderLeft: '3px solid var(--color-accent)',
-          fontFamily: 'var(--font-mono)',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '1rem',
+          padding: '0.85rem 1.25rem',
+          border: '1px solid #D8DAD7',
+          backgroundColor: '#FFFFFF',
+          marginBottom: '2rem',
+          fontFamily: "'DM Mono', monospace",
           fontSize: '0.75rem',
-          color: 'var(--color-text-2)',
+          color: '#646A73'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <button 
+              type="button"
+              onClick={() => navigate('/quiz')}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#50545B',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+                padding: 0,
+                fontFamily: 'inherit',
+                fontSize: 'inherit',
+                fontWeight: 600
+              }}
+            >
+              <ArrowLeft size={14} />
+              <span>EXIT LAB</span>
+            </button>
+            <span style={{ color: '#D8DAD7' }}>|</span>
+            <span style={{ color: '#E85D3F', fontWeight: 700 }}>{currentPhase}</span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+            <span style={{ color: '#17191C', fontWeight: 700 }}>
+              STEP [{String(currentStep).padStart(2, '0')} / {String(TOTAL_QUESTIONS).padStart(2, '0')}]
+            </span>
+            <span style={{ color: '#D8DAD7' }}>|</span>
+            <span style={{ color: '#50545B' }}>
+              DIFFICULTY: LEVEL 0{currentQuestion.difficulty || 1}
+            </span>
+          </div>
+        </div>
+
+        {/* 2. MINIMAL STEP PROGRESSION TICK */}
+        <div style={{
+          display: 'flex',
+          gap: '4px',
           marginBottom: '2rem'
         }}>
-          <Terminal size={14} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />
-          <span>ROUTER REASONING: {agentReasoning}</span>
-        </div>
-      )}
-
-      {/* 4. MAIN QUESTION CONTROL PANEL */}
-      <div className="observatory-panel" style={{ padding: '2.5rem', marginBottom: '2.5rem' }}>
-        
-        {/* Source citation */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem',
-          fontFamily: 'var(--font-mono)',
-          fontSize: '0.6875rem',
-          color: 'var(--color-text-3)',
-          marginBottom: '1.5rem'
-        }}>
-          <ShieldCheck size={14} style={{ color: 'var(--color-success)' }} />
-          <span>VERIFIED SOURCE: {currentQuestion.source}</span>
-          <span>·</span>
-          <span>{currentQuestion.license}</span>
-        </div>
-
-        {/* Question Text */}
-        <h2 style={{
-          fontSize: 'clamp(1.5rem, 3vw, 2.125rem)',
-          fontWeight: 700,
-          color: 'var(--color-ivory)',
-          lineHeight: 1.4,
-          marginBottom: '2.5rem',
-          whiteSpace: 'pre-line'
-        }}>
-          {currentQuestion.questionText}
-        </h2>
-
-        {/* Options Grid */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {currentQuestion.options.map((optText, optIdx) => {
-            const isChecked = selectedOption === optText;
-            const isIdk = optText.includes("I don't know");
-            const letter = String.fromCharCode(65 + optIdx);
-
+          {Array.from({ length: TOTAL_QUESTIONS }).map((_, idx) => {
+            const stepNum = idx + 1;
+            const isPassed = stepNum < currentStep;
+            const isCurrent = stepNum === currentStep;
             return (
-              <div
-                key={optIdx}
-                onClick={() => handleSelectOption(optText)}
+              <div 
+                key={idx}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '1.25rem 1.5rem',
-                  border: isChecked 
-                    ? '1px solid var(--color-ivory)' 
-                    : isIdk 
-                    ? '1px dashed rgba(255, 255, 255, 0.15)' 
-                    : '1px solid var(--color-border)',
-                  background: isChecked 
-                    ? 'var(--color-ivory)' 
-                    : isIdk 
-                    ? 'rgba(16, 21, 36, 0.3)' 
-                    : 'rgba(16, 21, 36, 0.65)',
-                  color: isChecked ? '#06080E' : 'var(--color-ivory)',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease'
+                  flex: 1,
+                  height: isCurrent ? '4px' : '2px',
+                  backgroundColor: isPassed 
+                    ? '#E85D3F' 
+                    : isCurrent 
+                    ? '#17191C' 
+                    : '#D8DAD7',
+                  transition: 'all 0.2s ease'
                 }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-                  <div style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.8125rem',
-                    fontWeight: 700,
-                    width: '28px',
-                    height: '28px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: isChecked ? '1px solid #06080E' : '1px solid var(--color-border)',
-                    background: isChecked ? '#06080E' : 'transparent',
-                    color: isChecked ? 'var(--color-ivory)' : 'var(--color-accent)'
-                  }}>
-                    {letter}
-                  </div>
-                  <span style={{ 
-                    fontFamily: 'var(--font-body)', 
-                    fontSize: '1rem',
-                    fontWeight: isChecked ? 600 : 400,
-                    lineHeight: 1.5
-                  }}>
-                    {optText}
-                  </span>
-                </div>
-
-                <div style={{
-                  width: '16px',
-                  height: '16px',
-                  border: `1px solid ${isChecked ? '#06080E' : 'rgba(255, 255, 255, 0.2)'}`,
-                  background: isChecked ? '#06080E' : 'transparent',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0
-                }}>
-                  {isChecked && <Check size={12} style={{ color: 'var(--color-ivory)' }} />}
-                </div>
-              </div>
+              />
             );
           })}
         </div>
 
-      </div>
+        {/* 3. AGENT REASONING TELEMETRY READOUT */}
+        {agentReasoning && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            padding: '0.75rem 1rem',
+            backgroundColor: '#FFF0EB',
+            borderLeft: '3px solid #E85D3F',
+            border: '1px solid #D8DAD7',
+            fontFamily: "'DM Mono', monospace",
+            fontSize: '0.75rem',
+            color: '#17191C',
+            marginBottom: '2rem'
+          }}>
+            <Terminal size={14} style={{ color: '#E85D3F', flexShrink: 0 }} />
+            <span>ROUTER REASONING: {agentReasoning}</span>
+          </div>
+        )}
 
-      {/* 5. BOTTOM NAVIGATION BAR */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '1rem'
-      }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--color-text-3)' }}>
-          SELECTION: {selectedOption ? 'REGISTERED' : 'PENDING INPUT'}
+        {/* 4. MAIN QUESTION CONTROL PANEL */}
+        <div style={{
+          backgroundColor: '#FFFFFF',
+          border: '1px solid #D8DAD7',
+          padding: 'clamp(2rem, 4vw, 3rem)',
+          marginBottom: '2.5rem'
+        }}>
+          
+          {/* Source citation */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            fontFamily: "'DM Mono', monospace",
+            fontSize: '0.75rem',
+            color: '#646A73',
+            marginBottom: '1.5rem'
+          }}>
+            <ShieldCheck size={14} style={{ color: '#2EC4B6' }} />
+            <span>VERIFIED SOURCE: {currentQuestion.source}</span>
+            <span>·</span>
+            <span>{currentQuestion.license}</span>
+          </div>
+
+          {/* Question Text: Jet Black */}
+          <h2 style={{
+            fontFamily: "'Manrope', sans-serif",
+            fontSize: 'clamp(1.35rem, 2.5vw, 1.85rem)',
+            fontWeight: 700,
+            color: '#17191C',
+            lineHeight: 1.5,
+            marginBottom: '2.5rem',
+            whiteSpace: 'pre-line'
+          }}>
+            {currentQuestion.questionText}
+          </h2>
+
+          {/* Options Grid */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+            {currentQuestion.options.map((optText, optIdx) => {
+              const isChecked = selectedOption === optText;
+              const isIdk = optText.includes("I don't know");
+              const letter = isIdk ? '?' : String.fromCharCode(65 + optIdx);
+
+              return (
+                <div
+                  key={optIdx}
+                  onClick={() => handleSelectOption(optText)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '1.25rem 1.5rem',
+                    border: isChecked 
+                      ? '2px solid #E85D3F' 
+                      : isIdk 
+                      ? '1px dashed #D8DAD7' 
+                      : '1px solid #D8DAD7',
+                    backgroundColor: isChecked 
+                      ? '#FFF0EB' 
+                      : isIdk 
+                      ? '#F7F7F4' 
+                      : '#FFFFFF',
+                    color: isIdk ? '#646A73' : '#17191C',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isChecked) {
+                      e.currentTarget.style.borderColor = '#17191C';
+                      e.currentTarget.style.backgroundColor = '#F8F8F6';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isChecked) {
+                      e.currentTarget.style.borderColor = isIdk ? '#D8DAD7' : '#D8DAD7';
+                      e.currentTarget.style.backgroundColor = isIdk ? '#F7F7F4' : '#FFFFFF';
+                    }
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                    <div style={{
+                      fontFamily: "'DM Mono', monospace",
+                      fontSize: '0.8125rem',
+                      fontWeight: 700,
+                      width: '28px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: isChecked ? '1px solid #E85D3F' : '1px solid #D8DAD7',
+                      backgroundColor: isChecked ? '#E85D3F' : (isIdk ? 'transparent' : '#F7F7F4'),
+                      color: isChecked ? '#FFFFFF' : (isIdk ? '#646A73' : '#17191C')
+                    }}>
+                      {letter}
+                    </div>
+                    <span style={{ 
+                      fontFamily: "'Manrope', sans-serif", 
+                      fontSize: '1rem',
+                      fontWeight: isChecked ? 700 : 500,
+                      lineHeight: 1.5
+                    }}>
+                      {optText}
+                    </span>
+                  </div>
+
+                  <div style={{
+                    width: '18px',
+                    height: '18px',
+                    border: `1px solid ${isChecked ? '#E85D3F' : '#D8DAD7'}`,
+                    backgroundColor: isChecked ? '#E85D3F' : 'transparent',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0
+                  }}>
+                    {isChecked && <Check size={12} color="#FFFFFF" />}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
         </div>
 
-        <button
-          type="button"
-          disabled={!selectedOption || loading}
-          onClick={handleNextQuestion}
-          className="btn-primary"
-          style={{
-            padding: '1rem 2.25rem',
-            opacity: (!selectedOption || loading) ? 0.35 : 1,
-            pointerEvents: (!selectedOption || loading) ? 'none' : 'auto'
-          }}
-        >
-          <span>
-            {currentStep === TOTAL_QUESTIONS 
-              ? (loading ? 'PROCESSING TELEMETRY...' : 'COMPLETE & VIEW OBSERVATORY REPORT') 
-              : 'NEXT TASK'}
-          </span>
-          <ArrowRight size={18} />
-        </button>
-      </div>
+        {/* 5. BOTTOM NAVIGATION BAR */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '1rem'
+        }}>
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#646A73' }}>
+            SELECTION: {selectedOption ? 'REGISTERED' : 'PENDING INPUT'}
+          </div>
 
+          <button
+            type="button"
+            disabled={!selectedOption || loading}
+            onClick={handleNextQuestion}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              backgroundColor: '#17191C',
+              color: '#FFFFFF',
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontSize: '1.125rem',
+              fontWeight: 700,
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+              padding: '1rem 2.5rem',
+              border: '1px solid #17191C',
+              cursor: (!selectedOption || loading) ? 'not-allowed' : 'pointer',
+              opacity: (!selectedOption || loading) ? 0.4 : 1,
+              transition: 'all 0.15s ease'
+            }}
+            onMouseEnter={(e) => {
+              if (selectedOption && !loading) {
+                e.currentTarget.style.backgroundColor = '#E85D3F';
+                e.currentTarget.style.borderColor = '#E85D3F';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#17191C';
+              e.currentTarget.style.borderColor = '#17191C';
+            }}
+          >
+            <span>
+              {currentStep === TOTAL_QUESTIONS 
+                ? (loading ? 'PROCESSING TELEMETRY...' : 'COMPLETE & VIEW OBSERVATORY REPORT') 
+                : 'NEXT TASK'}
+            </span>
+            <ArrowRight size={18} />
+          </button>
+        </div>
+
+      </div>
     </div>
   );
 }

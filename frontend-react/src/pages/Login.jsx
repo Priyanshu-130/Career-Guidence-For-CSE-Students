@@ -61,54 +61,49 @@ export default function Login() {
           background: 'radial-gradient(circle, rgba(79, 70, 229, 0.08) 0%, transparent 70%)', 
           filter: 'blur(60px)' 
         }}></div>
-        <div style={{ 
-          position: 'absolute', bottom: '10%', right: '10%', width: '300px', height: '300px', 
-          background: 'radial-gradient(circle, rgba(139, 92, 246, 0.06) 0%, transparent 70%)', 
-          filter: 'blur(60px)' 
-        }}></div>
 
         <div style={{ position: 'relative', zIndex: 1 }} className="animate-in">
           <div style={{ 
-            width: '64px', height: '64px', background: 'linear-gradient(135deg, var(--color-secondary) 0%, var(--color-accent) 50%, var(--color-purple) 100%)', 
-            borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', 
-            color: '#fff', marginBottom: '2.5rem', boxShadow: '0 8px 20px rgba(79, 70, 229, 0.25)'
+            width: '64px', height: '64px', background: '#17191C', 
+            borderRadius: '0px', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+            color: '#fff', marginBottom: '2.5rem'
           }}>
             <Compass size={32} />
           </div>
           
-          <h1 style={{ fontSize: '4.5rem', fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 1, marginBottom: '2rem', color: 'var(--color-text)' }}>
-            Engineer Your <span className="text-gradient">Potential.</span>
+          <h1 style={{ fontSize: '4.5rem', fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 1, marginBottom: '2rem', color: '#17191C', fontFamily: "'Barlow Condensed', sans-serif", textTransform: 'uppercase' }}>
+            Engineer Your <span style={{ color: '#E85D3F' }}>Potential.</span>
           </h1>
 
-          <p style={{ fontSize: '1.25rem', color: 'var(--color-text-3)', maxWidth: '500px', lineHeight: 1.7, marginBottom: '4rem' }}>
+          <p style={{ fontSize: '1.25rem', color: '#50545B', maxWidth: '500px', lineHeight: 1.7, marginBottom: '4rem' }}>
             The professional diagnostic platform for CSE students to identify their ideal career trajectory using situational logic.
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'flex-start' }}>
-              <div style={{ padding: '0.75rem', background: 'var(--color-accent-lt)', borderRadius: '12px', color: 'var(--color-accent)' }}>
+              <div style={{ padding: '0.75rem', background: '#FFF0EB', border: '1px solid #E85D3F', color: '#E85D3F' }}>
                 <Zap size={24} />
               </div>
               <div>
-                <h4 style={{ fontSize: '1.125rem', marginBottom: '0.25rem', color: 'var(--color-text)' }}>Precision Diagnostics</h4>
-                <p style={{ color: 'var(--color-text-3)', fontSize: '0.9375rem' }}>Evaluate interest, aptitude, and orientation across 9 domains.</p>
+                <h4 style={{ fontSize: '1.125rem', marginBottom: '0.25rem', color: '#17191C', fontFamily: "'Barlow Condensed', sans-serif", textTransform: 'uppercase' }}>Precision Diagnostics</h4>
+                <p style={{ color: '#50545B', fontSize: '0.9375rem', margin: 0 }}>Evaluate interest, aptitude, and orientation across 9 domains.</p>
               </div>
             </div>
 
             <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'flex-start' }}>
-              <div style={{ padding: '0.75rem', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '12px', color: 'var(--color-success)' }}>
+              <div style={{ padding: '0.75rem', background: '#F0FDF4', border: '1px solid #2EC4B6', color: '#2EC4B6' }}>
                 <ShieldCheck size={24} />
               </div>
               <div>
-                <h4 style={{ fontSize: '1.125rem', marginBottom: '0.25rem', color: 'var(--color-text)' }}>Persistent Dashboard</h4>
-                <p style={{ color: 'var(--color-text-3)', fontSize: '0.9375rem' }}>Save assessment history and track your semester-by-semester course progress.</p>
+                <h4 style={{ fontSize: '1.125rem', marginBottom: '0.25rem', color: '#17191C', fontFamily: "'Barlow Condensed', sans-serif", textTransform: 'uppercase' }}>Persistent Dashboard</h4>
+                <p style={{ color: '#50545B', fontSize: '0.9375rem', margin: 0 }}>Save assessment history and track your semester-by-semester course progress.</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div style={{ position: 'absolute', bottom: '3rem', left: '6rem', color: 'var(--color-text-3)', fontSize: '0.8125rem', fontWeight: 600, letterSpacing: '0.05em' }}>
-          &copy; 2026 CSE PATHFINDER • VERSION 2.0
+        <div style={{ position: 'absolute', bottom: '3rem', left: '6rem', color: '#646A73', fontSize: '0.8125rem', fontWeight: 600, fontFamily: "'DM Mono', monospace" }}>
+          &copy; 2026 CSE PATHFINDER // VERSION 2.0
         </div>
       </div>
 
@@ -116,8 +111,8 @@ export default function Login() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 2rem' }}>
         <div style={{ width: '100%', maxWidth: '420px' }} className="animate-in">
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-            <h2 style={{ fontSize: '2.25rem', marginBottom: '0.5rem' }}>Welcome Back</h2>
-            <p style={{ color: 'var(--color-text-3)', lineHeight: 1.6 }}>
+            <h2 style={{ fontSize: '2.25rem', marginBottom: '0.5rem', color: '#17191C', fontFamily: "'Barlow Condensed', sans-serif", textTransform: 'uppercase' }}>Welcome Back</h2>
+            <p style={{ color: '#50545B', lineHeight: 1.6 }}>
               Sign in to your CSE Pathfinder account to continue your career journey.
             </p>
           </div>
@@ -125,8 +120,8 @@ export default function Login() {
           <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1.25rem' }}>
             {error && (
               <div style={{ 
-                padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', 
-                color: '#ef4444', borderRadius: '12px', fontSize: '0.875rem'
+                padding: '1rem', background: '#FFF0EB', border: '1px solid #E85D3F', 
+                color: '#E85D3F', fontSize: '0.875rem', fontWeight: 600
               }}>
                 {error}
               </div>
@@ -167,7 +162,7 @@ export default function Login() {
 
           <div style={{ margin: '2rem 0', display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <div style={{ flex: 1, height: '1px', background: 'var(--color-border)' }}></div>
-            <span style={{ fontSize: '0.75rem', color: 'var(--color-text-3)', fontWeight: 700 }}>OR</span>
+            <span style={{ fontSize: '0.75rem', color: '#646A73', fontWeight: 700, fontFamily: "'DM Mono', monospace" }}>OR</span>
             <div style={{ flex: 1, height: '1px', background: 'var(--color-border)' }}></div>
           </div>
 
@@ -180,8 +175,8 @@ export default function Login() {
             <UserCheck size={18} /> Continue as Guest
           </button>
 
-          <p style={{ textAlign: 'center', marginTop: '2.5rem', fontSize: '0.875rem', color: 'var(--color-text-3)' }}>
-            Don't have an account? <Link to="/register" style={{ color: 'var(--color-accent)', fontWeight: 800 }}>Create Profile</Link>
+          <p style={{ textAlign: 'center', marginTop: '2.5rem', fontSize: '0.875rem', color: '#50545B' }}>
+            Don't have an account? <Link to="/register" style={{ color: '#E85D3F', fontWeight: 800 }}>Create Profile</Link>
           </p>
         </div>
       </div>
@@ -189,5 +184,4 @@ export default function Login() {
   );
 }
 
-const iconStyle = { position: 'absolute', left: '1.25rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-3)' };
-
+const iconStyle = { position: 'absolute', left: '1.25rem', top: '50%', transform: 'translateY(-50%)', color: '#646A73' };
