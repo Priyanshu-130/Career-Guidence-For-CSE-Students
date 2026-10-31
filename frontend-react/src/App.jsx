@@ -17,6 +17,7 @@ import CareerFinder from './pages/CareerFinder';
 import Progress from './pages/Progress';
 import AdaptiveAssessment from './pages/AdaptiveAssessment';
 import AdminDashboard from './pages/AdminDashboard';
+import NeuroLinkHero from './components/NeuroLinkHero';
 
 function ProtectedLayout({ children }) {
   const { user } = useAuth();
@@ -37,9 +38,12 @@ function App() {
     <AuthProvider>
       <HashRouter>
         <Routes>
+          {/* Public / Landing routes */}
+          <Route path="/neurolink" element={<NeuroLinkHero />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           
+          {/* Protected Application Routes */}
           <Route path="/" element={<ProtectedLayout><Home /></ProtectedLayout>} />
           <Route path="/domains" element={<ProtectedLayout><DomainsList /></ProtectedLayout>} />
           <Route path="/domain/:id" element={<ProtectedLayout><DomainDetail /></ProtectedLayout>} />
@@ -52,7 +56,7 @@ function App() {
           <Route path="/career-finder" element={<ProtectedLayout><CareerFinder /></ProtectedLayout>} />
           <Route path="/progress" element={<ProtectedLayout><Progress /></ProtectedLayout>} />
 
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </HashRouter>
     </AuthProvider>

@@ -11,7 +11,8 @@ import {
   Map,
   CheckSquare,
   Sparkles,
-  ShieldCheck
+  ShieldCheck,
+  Flame
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -19,6 +20,7 @@ export default function Sidebar() {
 
   const menuItems = [
     { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={22} /> },
+    { name: 'NeuroLink Hero', path: '/neurolink', icon: <Flame size={22} color="#FFB733" /> },
     { name: 'Adaptive Ladder', path: '/assess', icon: <Sparkles size={22} /> },
     { name: 'Admin & Explain', path: '/admin', icon: <ShieldCheck size={22} /> },
     { name: 'Career Finder', path: '/career-finder', icon: <Target size={22} /> },

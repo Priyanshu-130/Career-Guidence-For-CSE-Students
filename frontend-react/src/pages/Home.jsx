@@ -16,6 +16,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { getApiBaseUrl } from '../utils/roadmapHelper';
+import NeuroLinkHero from '../components/NeuroLinkHero';
 
 export default function Home() {
   const { user } = useAuth();
@@ -50,116 +51,95 @@ export default function Home() {
   };
 
   return (
-    <div className="page-wrapper content-container" style={{ paddingTop: '1rem' }}>
-      
-      {/* Dynamic Header */}
-      <header style={{ marginBottom: '4rem' }}>
-        <div className="page-label" style={{ marginBottom: '1.25rem' }}>
-          <Sparkles size={14} style={{ marginRight: '6px' }} /> Engineering Intelligence Hub
-        </div>
-        <h1 style={{ fontSize: '3.5rem', marginBottom: '0.5rem', lineHeight: 1 }}>
-          {greeting()}, <span className="text-gradient">{user?.name ? user.name.split(' ')[0] : 'Engineer'}!</span>
-        </h1>
-        <p style={{ color: 'var(--color-text-3)', fontSize: '1.125rem', maxWidth: '600px' }}>
-          Your specialized trajectory is currently <span style={{ color: 'var(--color-accent)', fontWeight: 800 }}>{history.length > 0 ? 'Optimal' : 'Pending Diagnosis'}</span>. Explore your matched domains below.
-        </p>
-      </header>
+    <div style={{ margin: 0, padding: 0 }}>
+      {/* 1. Full-Viewport NeuroLink Hero Section */}
+      <NeuroLinkHero />
 
-      {/* Hero Stats Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem', marginBottom: '4rem' }}>
-        <div className="glass-card" style={{ padding: '2rem' }}>
-          <div style={{ color: 'var(--color-accent)', marginBottom: '1.25rem' }}><Layers size={24} /></div>
-          <div style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.25rem' }}>9</div>
-          <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-text-3)' }}>Mapped CSE Career Paths</div>
-        </div>
-
-        <div className="glass-card" style={{ padding: '2rem' }}>
-          <div style={{ color: 'var(--color-purple)', marginBottom: '1.25rem' }}><TrendingUp size={24} /></div>
-          <div style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.25rem' }}>
-            {history.length > 0 ? `${Math.round(history[0].confidence_score)}%` : '94%'}
-          </div>
-          <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-text-3)' }}>Top Alignment Match</div>
-        </div>
-
-        <Link to="/assess" className="glass-card" style={{ 
-          padding: '2rem', 
-          background: 'linear-gradient(135deg, var(--color-accent), var(--color-purple))',
-          color: '#fff',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          textDecoration: 'none'
-        }}>
-          <div>
-            <div style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.8, textTransform: 'uppercase' }}>Next-Gen Engine</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 900 }}>Adaptive Assessment</div>
-          </div>
-          <ChevronRight size={24} />
-        </Link>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '3rem', alignItems: 'start' }}>
+      {/* 2. Main Dashboard Content */}
+      <div className="page-wrapper content-container" style={{ paddingTop: '3rem' }}>
         
-        <section>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-            <h2 style={{ fontSize: '1.75rem' }}>Trajectory History</h2>
+        {/* Dynamic Header */}
+        <header style={{ marginBottom: '4rem' }}>
+          <div className="page-label" style={{ marginBottom: '1.25rem' }}>
+            <Sparkles size={14} style={{ marginRight: '6px' }} /> Engineering Intelligence Hub
+          </div>
+          <h1 style={{ fontSize: '3.5rem', marginBottom: '0.5rem', lineHeight: 1 }}>
+            {greeting()}, <span className="text-gradient">{user?.name ? user.name.split(' ')[0] : 'Engineer'}!</span>
+          </h1>
+          <p style={{ color: 'var(--color-text-3)', fontSize: '1.125rem', maxWidth: '600px' }}>
+            Your specialized trajectory is currently <span style={{ color: 'var(--color-accent)', fontWeight: 800 }}>{history.length > 0 ? 'Optimal' : 'Pending Diagnosis'}</span>. Explore your matched domains below.
+          </p>
+        </header>
+
+        {/* Hero Stats Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem', marginBottom: '4rem' }}>
+          <div className="glass-card" style={{ padding: '2rem' }}>
+            <div style={{ color: 'var(--color-accent)', marginBottom: '1.25rem' }}>
+              <Compass size={28} />
+            </div>
+            <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>
+              Primary Trajectory
+            </div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+              {history[0]?.recommended_domain || 'AI & Machine Learning'}
+            </div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--color-text-2)' }}>
+              Confidence Factor: {history[0]?.confidence_score || 88}%
+            </div>
           </div>
 
-          {loadingHistory ? (
-            <div style={{ padding: '4rem', textAlign: 'center' }}>
-              <Loader2 className="animate-spin" size={32} color="var(--color-accent)" style={{ margin: '0 auto' }} />
+          <div className="glass-card" style={{ padding: '2rem' }}>
+            <div style={{ color: 'var(--color-purple)', marginBottom: '1.25rem' }}>
+              <Zap size={28} />
             </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {history.map((item, idx) => (
-                <Link to="/results" key={idx} className="glass-card" style={{ padding: '1.5rem 2rem', display: 'flex', alignItems: 'center', gap: '2rem' }}>
-                  <div style={{ 
-                    width: '56px', height: '56px', borderRadius: '14px', 
-                    background: item.quiz_type === 'software' ? 'var(--color-accent-lt)' : 'var(--color-purple-lt)',
-                    color: item.quiz_type === 'software' ? 'var(--color-accent)' : 'var(--color-purple)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                  }}>
-                    {item.quiz_type === 'software' ? <FileText size={24} /> : <Compass size={24} />}
-                  </div>
-                  <div style={{ flexGrow: 1 }}>
-                    <div style={{ fontSize: '1.125rem', fontWeight: 800 }}>{item.recommended_domain}</div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--color-text-3)', marginTop: '2px' }}>
-                      {new Date(item.timestamp).toLocaleDateString()} • {item.quiz_type.toUpperCase()} TRACK
-                    </div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--color-success)' }}>{Math.round(item.confidence_score)}%</div>
-                    <div style={{ fontSize: '0.6rem', fontWeight: 800, color: 'var(--color-text-3)', textTransform: 'uppercase' }}>Match</div>
-                  </div>
-                  <ChevronRight size={18} style={{ opacity: 0.2 }} />
-                </Link>
-              ))}
+            <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>
+              Learning Pace
             </div>
-          )}
-        </section>
-
-        <aside style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          <div className="glass-card" style={{ padding: '2.5rem', background: 'radial-gradient(circle at top right, rgba(99, 102, 241, 0.1), transparent 70%), var(--color-card)' }}>
-             <h3 style={{ fontSize: '1.25rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '1rem' }}>Quick Actions</h3>
-             <div style={{ display: 'grid', gap: '1rem' }}>
-                <Link to="/assess" className="btn-primary" style={{ justifyContent: 'flex-start', padding: '1.25rem' }}>
-                  <Sparkles size={20} />
-                  <span>Start Adaptive Assessment</span>
-                </Link>
-                <Link to="/quiz" className="btn-ghost" style={{ justifyContent: 'flex-start', padding: '1.25rem' }}>
-                  <Target size={20} style={{ color: 'var(--color-accent)' }} /> 
-                  <span>Static Track Quizzes</span>
-                </Link>
-                <Link to="/domains" className="btn-ghost" style={{ justifyContent: 'flex-start', padding: '1.25rem' }}>
-                  <BookOpen size={20} style={{ color: 'var(--color-purple)' }} /> 
-                  <span>Browse Roadmaps</span>
-                </Link>
-             </div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+              Active Track
+            </div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--color-text-2)' }}>
+              Curriculum Semester 3 Aligned
+            </div>
           </div>
-        </aside>
+
+          <div className="glass-card" style={{ padding: '2rem' }}>
+            <div style={{ color: 'var(--color-success)', marginBottom: '1.25rem' }}>
+              <Layers size={28} />
+            </div>
+            <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>
+              Verified Mastery
+            </div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+              Knowledge Ladder
+            </div>
+            <div style={{ fontSize: '0.875rem', color: 'var(--color-text-2)' }}>
+              Adaptive Assessment Active
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Launch CTA */}
+        <div className="glass-card" style={{ padding: '3rem', marginBottom: '4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
+          <div>
+            <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+              Ready for your Diagnostic Career Evaluation?
+            </h2>
+            <p style={{ color: 'var(--color-text-3)', maxWidth: '600px', lineHeight: 1.6 }}>
+              Take our U.S. Dept of Labor O*NET RIASEC career profiling quiz or test your skill mastery on our topic-level adaptive ladder.
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <Link to="/assess" className="btn-primary" style={{ padding: '0.875rem 1.75rem' }}>
+              Adaptive Ladder <ArrowRight size={18} />
+            </Link>
+            <Link to="/quiz" className="btn-ghost" style={{ padding: '0.875rem 1.75rem' }}>
+              RIASEC Career Quiz
+            </Link>
+          </div>
+        </div>
 
       </div>
-
     </div>
   );
 }
