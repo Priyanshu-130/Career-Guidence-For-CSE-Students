@@ -72,3 +72,4 @@ with open(path, "w", encoding="utf-8") as f:
     json.dump(bank, f, indent=2)
 
 print(f"Added extra Code.org activities. Total questions in bank: {len(qs)}")
+

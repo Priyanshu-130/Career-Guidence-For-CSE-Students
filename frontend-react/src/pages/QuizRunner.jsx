@@ -6,22 +6,18 @@ import { getAdaptiveQuestion, QUIZ_STRUCTURE } from '../data/adaptive/adaptiveRo
 import { domainMapping } from '../data/adaptive/adaptiveEngine';
 import domainMappingConfig from '../data/adaptive/domain_mapping_version.json';
 import { 
-  Sparkles, 
   ArrowRight, 
   ArrowLeft, 
-  CheckCircle2, 
-  HelpCircle, 
-  RotateCcw, 
-  BookOpen, 
-  TrendingUp, 
-  Compass, 
+  Check, 
+  Terminal, 
+  Activity, 
+  Crosshair, 
   ShieldCheck, 
-  Zap, 
-  Bot,
-  Brain,
-  Award,
+  Compass, 
+  Cpu, 
   Layers,
-  Activity
+  Sparkles,
+  HelpCircle
 } from 'lucide-react';
 
 export default function QuizRunner() {
@@ -29,8 +25,11 @@ export default function QuizRunner() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // Wizard state: 'intro' | 'quiz' | 'submitting'
+  // Wizard stage: 'intro' | 'quiz' | 'submitting'
   const [stage, setStage] = useState('intro');
+
+  // Track choice: 'beginner' (Track 1) | 'prereq' (Track 2)
+  const [selectedTrack, setSelectedTrack] = useState('beginner');
 
   // Step 1: Student Intro Profile
   const [introProfile, setIntroProfile] = useState({
@@ -56,15 +55,17 @@ export default function QuizRunner() {
   // Initial question load upon entering quiz stage
   const startAdaptiveSession = () => {
     let startLvl = 2;
-    if (introProfile.experienceLevel === 'zero') startLvl = 1;
-    else if (introProfile.experienceLevel === 'intermediate') startLvl = 3;
-    else if (introProfile.experienceLevel === 'experienced') startLvl = 4;
+    if (selectedTrack === 'beginner') {
+      startLvl = introProfile.experienceLevel === 'zero' ? 1 : 2;
+    } else {
+      startLvl = introProfile.experienceLevel === 'experienced' ? 4 : 3;
+    }
     setCurrentLadderLevel(startLvl);
 
     const initial = getAdaptiveQuestion({
       stepNumber: 1,
       previousAnswers: {},
-      studentIntro: introProfile,
+      studentIntro: { ...introProfile, track: selectedTrack },
       askedQuestionIds: [],
       currentLadderLevel: startLvl
     });
@@ -114,7 +115,7 @@ export default function QuizRunner() {
       const nextResult = getAdaptiveQuestion({
         stepNumber: nextStepNum,
         previousAnswers: updatedAnswers,
-        studentIntro: introProfile,
+        studentIntro: { ...introProfile, track: selectedTrack },
         askedQuestionIds: askedIds,
         currentLadderLevel: currentLadderLevel
       });
@@ -179,7 +180,7 @@ export default function QuizRunner() {
     });
 
     const resultsData = {
-      track: track || 'software',
+      track: selectedTrack,
       top_domain: topDomain.title,
       domain_id: topDomain.id,
       match_percentage: topDomain.score,
@@ -198,7 +199,7 @@ export default function QuizRunner() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             student_email: user.email,
-            quiz_type: track || 'software',
+            quiz_type: selectedTrack,
             recommended_domain: topDomain.title,
             confidence_score: topDomain.score,
             all_scores: processScores
@@ -214,53 +215,182 @@ export default function QuizRunner() {
   };
 
   // -------------------------------------------------------------
-  // RENDER STAGE 1: INTRO PROFILE ONBOARDING
+  // RENDER STAGE 1: TWO-PATHWAY ONBOARDING
   // -------------------------------------------------------------
   if (stage === 'intro') {
     return (
-      <div className="min-h-screen bg-background text-on-surface flex flex-col items-center justify-center py-12 px-4 animate-in">
-        <div className="max-w-xl w-full bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6 sm:p-10 shadow-lg">
-          
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold w-fit mb-4">
-            <Bot size={15} /> 21-Question Adaptive Diagnostic Agent
+      <div className="page-wrapper content-container animate-in" style={{ maxWidth: '960px', margin: '0 auto', paddingTop: '2rem' }}>
+        
+        {/* Top observatory signpost */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: '1px solid var(--color-border)',
+          paddingBottom: '1rem',
+          marginBottom: '2.5rem',
+          fontFamily: 'var(--font-mono)',
+          fontSize: '0.75rem',
+          color: 'var(--color-text-3)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-ivory)' }}>
+            <Crosshair size={14} style={{ color: 'var(--color-accent)' }} />
+            <span>GRAVITY LAB // CALIBRATION PROTOCOL</span>
           </div>
+          <div>SEQUENCE: 21-STEP ADAPTIVE</div>
+        </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-on-surface mb-2">
-            Personalize Your Assessment
+        {/* Header */}
+        <div style={{ marginBottom: '3rem' }}>
+          <div className="mono-tag" style={{ marginBottom: '0.5rem' }}>STUDENT INITIALIZATION</div>
+          <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', margin: '0 0 1rem 0' }}>
+            Choose Your Assessment Pathway
           </h1>
-          <p className="text-sm text-on-surface-variant mb-6 leading-relaxed">
-            Your assessment sequence adapts dynamically across three verified academic components:
+          <p style={{ color: 'var(--color-text-2)', fontSize: '1.0625rem', maxWidth: '720px', margin: 0 }}>
+            Select the diagnostic trajectory that reflects your current academic journey. The diagnostic engine adapts its evaluation sequence in real-time.
           </p>
+        </div>
 
-          {/* Breakdown cards */}
-          <div className="grid grid-cols-3 gap-2.5 mb-6 text-center">
-            <div className="p-3 rounded-xl bg-surface-container border border-outline-variant/30">
-              <div className="text-lg font-black text-primary">6</div>
-              <div className="text-[11px] font-bold text-on-surface">Bebras Puzzles</div>
-              <div className="text-[10px] text-on-surface-variant">Logic & Graph</div>
+        {/* 2 DISTINCT PATHWAYS */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '1.5rem',
+          marginBottom: '3rem'
+        }}>
+          
+          {/* TRACK 1: BEGINNER / ZERO-KNOWLEDGE */}
+          <div 
+            onClick={() => setSelectedTrack('beginner')}
+            className="observatory-panel"
+            style={{
+              padding: '2.25rem',
+              cursor: 'pointer',
+              borderColor: selectedTrack === 'beginner' ? 'var(--color-accent)' : 'var(--color-border)',
+              background: selectedTrack === 'beginner' ? 'rgba(235, 94, 65, 0.05)' : 'var(--color-card)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+              <div className="mono-tag" style={{ color: selectedTrack === 'beginner' ? 'var(--color-accent)' : 'var(--color-text-3)' }}>
+                TRACK 01 // FOUNDATIONS
+              </div>
+              <div style={{
+                width: '18px',
+                height: '18px',
+                border: `2px solid ${selectedTrack === 'beginner' ? 'var(--color-accent)' : 'var(--color-border)'}`,
+                background: selectedTrack === 'beginner' ? 'var(--color-accent)' : 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                {selectedTrack === 'beginner' && <Check size={12} style={{ color: '#000' }} />}
+              </div>
             </div>
-            <div className="p-3 rounded-xl bg-surface-container border border-outline-variant/30">
-              <div className="text-lg font-black text-accent">10</div>
-              <div className="text-[11px] font-bold text-on-surface">O*NET Interests</div>
-              <div className="text-[10px] text-on-surface-variant">RIASEC Profiler</div>
-            </div>
-            <div className="p-3 rounded-xl bg-surface-container border border-outline-variant/30">
-              <div className="text-lg font-black text-success">5</div>
-              <div className="text-[11px] font-bold text-on-surface">Code.org Labs</div>
-              <div className="text-[10px] text-on-surface-variant">Guided Career</div>
+
+            <h2 style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>
+              Beginner / Exploratory
+            </h2>
+            <p style={{ color: 'var(--color-text-3)', fontSize: '0.9375rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+              Designed for Semesters 1–3 or students with zero prior coding experience. Explores computational thinking, natural problem-solving patterns, and career curiosity.
+            </p>
+
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.75rem',
+              color: 'var(--color-text-2)',
+              borderTop: '1px solid rgba(255,255,255,0.06)',
+              paddingTop: '1rem'
+            }}>
+              <div>• BEBRAS LOGIC & PATTERNS (Difficulty 1-2)</div>
+              <div>• O*NET RIASEC CAREER INTERESTS</div>
+              <div>• GUIDED EXPLORATORY SCENARIOS</div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-5 mb-8">
+          {/* TRACK 2: PREREQUISITE-AWARE */}
+          <div 
+            onClick={() => setSelectedTrack('prereq')}
+            className="observatory-panel"
+            style={{
+              padding: '2.25rem',
+              cursor: 'pointer',
+              borderColor: selectedTrack === 'prereq' ? 'var(--color-accent)' : 'var(--color-border)',
+              background: selectedTrack === 'prereq' ? 'rgba(235, 94, 65, 0.05)' : 'var(--color-card)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+              <div className="mono-tag" style={{ color: selectedTrack === 'prereq' ? 'var(--color-accent)' : 'var(--color-text-3)' }}>
+                TRACK 02 // TECHNICAL SPECIALIST
+              </div>
+              <div style={{
+                width: '18px',
+                height: '18px',
+                border: `2px solid ${selectedTrack === 'prereq' ? 'var(--color-accent)' : 'var(--color-border)'}`,
+                background: selectedTrack === 'prereq' ? 'var(--color-accent)' : 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                {selectedTrack === 'prereq' && <Check size={12} style={{ color: '#000' }} />}
+              </div>
+            </div>
+
+            <h2 style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>
+              Prerequisite-Aware
+            </h2>
+            <p style={{ color: 'var(--color-text-3)', fontSize: '0.9375rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+              Designed for Semesters 3–8 with familiarity in C++, Python, or Java. Evaluates systems architecture, algorithmic complexity, database tradeoffs, and code traces.
+            </p>
+
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.75rem',
+              color: 'var(--color-text-2)',
+              borderTop: '1px solid rgba(255,255,255,0.06)',
+              paddingTop: '1rem'
+            }}>
+              <div>• SYSTEM CODE TRACE & DSA (Difficulty 2-4)</div>
+              <div>• OCCUPATIONAL SPECIALIZATION MAPPING</div>
+              <div>• REAL-WORLD ARCHITECTURE TRADEOFFS</div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Profile Details Form */}
+        <div className="observatory-panel" style={{ padding: '2rem', marginBottom: '3rem' }}>
+          <div className="mono-tag" style={{ marginBottom: '1.25rem' }}>STUDENT METADATA TELEMETRY</div>
+          
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: '1.5rem'
+          }}>
             {/* Semester */}
             <div>
-              <label className="block text-xs font-bold text-on-surface uppercase tracking-wider mb-2">
-                Current Semester
+              <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--color-text-3)', marginBottom: '0.5rem' }}>
+                CURRENT SEMESTER
               </label>
               <select
                 value={introProfile.semester}
                 onChange={(e) => setIntroProfile({ ...introProfile, semester: Number(e.target.value) })}
-                className="w-full p-3.5 rounded-xl border border-outline-variant/40 bg-surface-container text-on-surface text-sm font-semibold focus:outline-none focus:border-primary"
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  background: 'var(--color-bg)',
+                  border: '1px solid var(--color-border)',
+                  color: 'var(--color-ivory)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.875rem'
+                }}
               >
                 {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
                   <option key={s} value={s}>Semester {s} (B.Tech CSE)</option>
@@ -270,199 +400,326 @@ export default function QuizRunner() {
 
             {/* Experience Level */}
             <div>
-              <label className="block text-xs font-bold text-on-surface uppercase tracking-wider mb-2">
-                Prior Coding Background
+              <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--color-text-3)', marginBottom: '0.5rem' }}>
+                PRIOR PROGRAMMING EXPOSURE
               </label>
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { id: 'zero', label: 'Zero Prior Coding', desc: 'Explainer & logic first' },
-                  { id: 'beginner', label: 'Beginner', desc: 'Variables & conditions' },
-                  { id: 'intermediate', label: 'Intermediate', desc: 'Built projects & loops' },
-                  { id: 'experienced', label: 'Advanced', desc: 'DSA & software design' }
-                ].map(lvl => (
-                  <button
-                    key={lvl.id}
-                    type="button"
-                    onClick={() => setIntroProfile({ ...introProfile, experienceLevel: lvl.id })}
-                    className={`p-3.5 text-left rounded-xl border transition-all ${
-                      introProfile.experienceLevel === lvl.id
-                        ? 'border-primary bg-primary/10 text-primary font-bold'
-                        : 'border-outline-variant/30 hover:bg-surface-container text-on-surface'
-                    }`}
-                  >
-                    <div className="text-sm font-bold">{lvl.label}</div>
-                    <div className="text-xs text-on-surface-variant opacity-80">{lvl.desc}</div>
-                  </button>
-                ))}
-              </div>
+              <select
+                value={introProfile.experienceLevel}
+                onChange={(e) => setIntroProfile({ ...introProfile, experienceLevel: e.target.value })}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  background: 'var(--color-bg)',
+                  border: '1px solid var(--color-border)',
+                  color: 'var(--color-ivory)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.875rem'
+                }}
+              >
+                <option value="zero">Zero Prior Coding (Foundational)</option>
+                <option value="beginner">Beginner (Basic conditionals & variables)</option>
+                <option value="intermediate">Intermediate (Loops, functions, projects)</option>
+                <option value="experienced">Advanced (Data structures & design)</option>
+              </select>
             </div>
 
-            {/* Target Area of Interest */}
+            {/* Target Area */}
             <div>
-              <label className="block text-xs font-bold text-on-surface uppercase tracking-wider mb-2">
-                Preferred Area for Deep-Dive
+              <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--color-text-3)', marginBottom: '0.5rem' }}>
+                INITIAL FIELD OF CURIOSITY
               </label>
               <select
                 value={introProfile.preferredArea}
                 onChange={(e) => setIntroProfile({ ...introProfile, preferredArea: e.target.value })}
-                className="w-full p-3.5 rounded-xl border border-outline-variant/40 bg-surface-container text-on-surface text-sm font-semibold focus:outline-none focus:border-primary"
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  background: 'var(--color-bg)',
+                  border: '1px solid var(--color-border)',
+                  color: 'var(--color-ivory)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.875rem'
+                }}
               >
-                <option value="AI, ML & Data Science">Artificial Intelligence, ML & Data Science</option>
-                <option value="Full Stack & Cloud Systems">Web Development, APIs & Cloud Systems</option>
-                <option value="Cybersecurity & Networks">Cybersecurity, Networking & Systems</option>
-                <option value="Open to Discovery">Undecided / Exploring Broad Options</option>
+                <option value="AI, ML & Data Science">AI, Machine Learning & Data</option>
+                <option value="Full Stack & Cloud Systems">Web, Distributed & Cloud Systems</option>
+                <option value="Cybersecurity & Networks">Cybersecurity & Networking</option>
+                <option value="Open to Discovery">Undecided / Broad Discovery</option>
               </select>
             </div>
           </div>
+        </div>
 
+        {/* Start button */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <button
             type="button"
             onClick={startAdaptiveSession}
-            className="w-full py-4 rounded-xl bg-primary text-on-primary font-bold text-base hover:bg-primary-container shadow-md transition-all flex items-center justify-center gap-2"
+            className="btn-primary"
+            style={{
+              padding: '1.1rem 2.5rem',
+              fontSize: '1.125rem'
+            }}
           >
-            <span>Start 21-Question Diagnostic</span>
+            <span>INITIALIZE ASSESSMENT SEQUENCE</span>
             <ArrowRight size={18} />
           </button>
-
         </div>
+
       </div>
     );
   }
 
   // -------------------------------------------------------------
-  // RENDER STAGE 2: ADAPTIVE QUESTION RUNNER
+  // RENDER STAGE 2: EXPERIMENTAL CONTROL QUESTION INTERFACE
   // -------------------------------------------------------------
   if (!currentQuestion) return null;
 
-  const progressPct = Math.round((currentStep / TOTAL_QUESTIONS) * 100);
-
-  // Section milestone indicator
-  let currentPhase = 'Phase 1: Bebras Logic';
+  let currentPhase = 'BEBRAS LOGIC';
   if (currentStep > QUIZ_STRUCTURE.LOGIC_COUNT && currentStep <= (QUIZ_STRUCTURE.LOGIC_COUNT + QUIZ_STRUCTURE.INTEREST_COUNT)) {
-    currentPhase = 'Phase 2: O*NET Career Interests';
+    currentPhase = 'O*NET INTEREST PROFILER';
   } else if (currentStep > (QUIZ_STRUCTURE.LOGIC_COUNT + QUIZ_STRUCTURE.INTEREST_COUNT)) {
-    currentPhase = 'Phase 3: Code.org Guided Labs';
+    currentPhase = 'CODE.ORG GUIDED LAB';
   }
 
   return (
-    <div className="min-h-screen bg-background text-on-surface flex flex-col pb-16 animate-in">
+    <div className="page-wrapper content-container animate-in" style={{ maxWidth: '960px', margin: '0 auto', paddingTop: '1.5rem', paddingBottom: '6rem' }}>
       
-      {/* Top Header Stepper */}
-      <header className="sticky top-0 z-20 bg-background/95 backdrop-blur border-b border-outline-variant/30 py-4 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 flex items-center justify-between">
+      {/* 1. TOP EXPERIMENTAL CONTROL BAR */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '1rem',
+        padding: '0.75rem 1.25rem',
+        border: '1px solid var(--color-border)',
+        background: 'rgba(16, 21, 36, 0.45)',
+        marginBottom: '2.5rem',
+        fontFamily: 'var(--font-mono)',
+        fontSize: '0.75rem',
+        letterSpacing: '0.08em'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <button 
             type="button"
             onClick={() => navigate('/quiz')}
-            className="flex items-center gap-1.5 text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--color-text-3)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.25rem',
+              padding: 0,
+              fontFamily: 'inherit',
+              fontSize: 'inherit'
+            }}
           >
-            <ArrowLeft size={16} /> Exit
+            <ArrowLeft size={14} />
+            <span>EXIT LAB</span>
           </button>
-
-          <div className="flex items-center gap-3">
-            <span className="text-xs uppercase tracking-wider font-extrabold text-primary">
-              {currentPhase}
-            </span>
-            <span className="text-xs font-bold text-on-surface-variant">
-              Q{currentStep} of {TOTAL_QUESTIONS}
-            </span>
-          </div>
-
-          <div className="text-xs font-semibold px-2.5 py-1 rounded-full bg-surface-container border border-outline-variant/40 text-on-surface-variant">
-            Level {currentQuestion.difficulty || 1} / 4
-          </div>
+          <span style={{ color: 'var(--color-border)' }}>|</span>
+          <span style={{ color: 'var(--color-accent)', fontWeight: 600 }}>{currentPhase}</span>
         </div>
 
-        {/* Progress bar */}
-        <div className="w-full bg-surface-container h-1 mt-3">
-          <div 
-            className="bg-primary h-1 transition-all duration-300"
-            style={{ width: `${progressPct}%` }}
-          />
-        </div>
-      </header>
-
-      {/* Main Container */}
-      <main className="max-w-3xl mx-auto px-4 pt-8 w-full flex-1 flex flex-col justify-center">
-        
-        {/* Agent Routing Reasoning Pill */}
-        {agentReasoning && (
-          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-primary/10 border border-primary/20 text-primary text-xs font-medium mb-6">
-            <Bot size={16} className="flex-shrink-0" />
-            <span>{agentReasoning}</span>
-          </div>
-        )}
-
-        {/* Source Citation Badge */}
-        <div className="flex items-center gap-2 text-xs text-on-surface-variant font-medium mb-3">
-          <ShieldCheck size={14} className="text-primary" />
-          <span>Verified Source: {currentQuestion.source}</span>
-          <span className="opacity-40">•</span>
-          <span className="font-mono text-[10px] bg-surface-container px-2 py-0.5 rounded">
-            {currentQuestion.license}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+          <span style={{ color: 'var(--color-ivory)', fontWeight: 700 }}>
+            STEP [{String(currentStep).padStart(2, '0')} / {String(TOTAL_QUESTIONS).padStart(2, '0')}]
           </span>
+          <span style={{ color: 'var(--color-border)' }}>|</span>
+          <span style={{ color: 'var(--color-text-3)' }}>
+            DIFFICULTY: LEVEL 0{currentQuestion.difficulty || 1}
+          </span>
+        </div>
+      </div>
+
+      {/* 2. MINIMAL STEP PROGRESSION TICK */}
+      <div style={{
+        display: 'flex',
+        gap: '4px',
+        marginBottom: '2.5rem'
+      }}>
+        {Array.from({ length: TOTAL_QUESTIONS }).map((_, idx) => {
+          const stepNum = idx + 1;
+          const isPassed = stepNum < currentStep;
+          const isCurrent = stepNum === currentStep;
+          return (
+            <div 
+              key={idx}
+              style={{
+                flex: 1,
+                height: isCurrent ? '4px' : '2px',
+                background: isPassed 
+                  ? 'var(--color-accent)' 
+                  : isCurrent 
+                  ? 'var(--color-ivory)' 
+                  : 'rgba(255, 255, 255, 0.08)',
+                transition: 'all 0.2s ease'
+              }}
+            />
+          );
+        })}
+      </div>
+
+      {/* 3. AGENT REASONING TELEMETRY READOUT */}
+      {agentReasoning && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem',
+          padding: '0.75rem 1rem',
+          background: 'rgba(235, 94, 65, 0.06)',
+          borderLeft: '3px solid var(--color-accent)',
+          fontFamily: 'var(--font-mono)',
+          fontSize: '0.75rem',
+          color: 'var(--color-text-2)',
+          marginBottom: '2rem'
+        }}>
+          <Terminal size={14} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />
+          <span>ROUTER REASONING: {agentReasoning}</span>
+        </div>
+      )}
+
+      {/* 4. MAIN QUESTION CONTROL PANEL */}
+      <div className="observatory-panel" style={{ padding: '2.5rem', marginBottom: '2.5rem' }}>
+        
+        {/* Source citation */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          fontFamily: 'var(--font-mono)',
+          fontSize: '0.6875rem',
+          color: 'var(--color-text-3)',
+          marginBottom: '1.5rem'
+        }}>
+          <ShieldCheck size={14} style={{ color: 'var(--color-success)' }} />
+          <span>VERIFIED SOURCE: {currentQuestion.source}</span>
+          <span>·</span>
+          <span>{currentQuestion.license}</span>
         </div>
 
         {/* Question Text */}
-        <div className="mb-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-on-surface leading-relaxed whitespace-pre-line">
-            {currentQuestion.questionText}
-          </h2>
-        </div>
+        <h2 style={{
+          fontSize: 'clamp(1.5rem, 3vw, 2.125rem)',
+          fontWeight: 700,
+          color: 'var(--color-ivory)',
+          lineHeight: 1.4,
+          marginBottom: '2.5rem',
+          whiteSpace: 'pre-line'
+        }}>
+          {currentQuestion.questionText}
+        </h2>
 
-        {/* Options List */}
-        <div className="flex flex-col gap-3 mb-10">
+        {/* Options Grid */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {currentQuestion.options.map((optText, optIdx) => {
             const isChecked = selectedOption === optText;
             const isIdk = optText.includes("I don't know");
+            const letter = String.fromCharCode(65 + optIdx);
 
             return (
-              <button
+              <div
                 key={optIdx}
-                type="button"
                 onClick={() => handleSelectOption(optText)}
-                className={`w-full text-left p-4 sm:p-5 rounded-xl border transition-all duration-150 flex items-center justify-between gap-4 ${
-                  isChecked
-                    ? 'bg-primary text-on-primary border-primary shadow-md'
-                    : isIdk
-                    ? 'bg-surface-container/60 text-on-surface-variant border-dashed border-outline-variant/40 hover:border-primary/50'
-                    : 'bg-surface-container-lowest text-on-surface border-outline-variant/30 hover:border-primary/50 hover:bg-surface-container-low'
-                }`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '1.25rem 1.5rem',
+                  border: isChecked 
+                    ? '1px solid var(--color-ivory)' 
+                    : isIdk 
+                    ? '1px dashed rgba(255, 255, 255, 0.15)' 
+                    : '1px solid var(--color-border)',
+                  background: isChecked 
+                    ? 'var(--color-ivory)' 
+                    : isIdk 
+                    ? 'rgba(16, 21, 36, 0.3)' 
+                    : 'rgba(16, 21, 36, 0.65)',
+                  color: isChecked ? '#06080E' : 'var(--color-ivory)',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
               >
-                <div className="flex items-center gap-3.5">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-extrabold flex-shrink-0 ${
-                    isChecked ? 'bg-white/20 text-white' : 'bg-surface-container text-secondary'
-                  }`}>
-                    {String.fromCharCode(65 + optIdx)}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                  <div style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.8125rem',
+                    fontWeight: 700,
+                    width: '28px',
+                    height: '28px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: isChecked ? '1px solid #06080E' : '1px solid var(--color-border)',
+                    background: isChecked ? '#06080E' : 'transparent',
+                    color: isChecked ? 'var(--color-ivory)' : 'var(--color-accent)'
+                  }}>
+                    {letter}
                   </div>
-                  <span className="text-sm sm:text-base font-medium leading-relaxed">
+                  <span style={{ 
+                    fontFamily: 'var(--font-body)', 
+                    fontSize: '1rem',
+                    fontWeight: isChecked ? 600 : 400,
+                    lineHeight: 1.5
+                  }}>
                     {optText}
                   </span>
                 </div>
 
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  isChecked ? 'bg-white text-primary' : 'border border-outline-variant/40 text-transparent'
-                }`}>
-                  <CheckCircle2 size={16} />
+                <div style={{
+                  width: '16px',
+                  height: '16px',
+                  border: `1px solid ${isChecked ? '#06080E' : 'rgba(255, 255, 255, 0.2)'}`,
+                  background: isChecked ? '#06080E' : 'transparent',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}>
+                  {isChecked && <Check size={12} style={{ color: 'var(--color-ivory)' }} />}
                 </div>
-              </button>
+              </div>
             );
           })}
         </div>
 
-        {/* Navigation / Next Button */}
-        <div className="flex items-center justify-end gap-4">
-          <button
-            type="button"
-            disabled={!selectedOption || loading}
-            onClick={handleNextQuestion}
-            className="px-8 py-3.5 rounded-xl bg-primary text-on-primary font-bold text-sm hover:bg-primary-container shadow-md transition-all flex items-center gap-2 disabled:opacity-40 disabled:pointer-events-none"
-          >
-            <span>{currentStep === TOTAL_QUESTIONS ? (loading ? 'Analyzing...' : 'Complete & View Results') : 'Next Question'}</span>
-            <ArrowRight size={18} />
-          </button>
+      </div>
+
+      {/* 5. BOTTOM NAVIGATION BAR */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '1rem'
+      }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--color-text-3)' }}>
+          SELECTION: {selectedOption ? 'REGISTERED' : 'PENDING INPUT'}
         </div>
 
-      </main>
+        <button
+          type="button"
+          disabled={!selectedOption || loading}
+          onClick={handleNextQuestion}
+          className="btn-primary"
+          style={{
+            padding: '1rem 2.25rem',
+            opacity: (!selectedOption || loading) ? 0.35 : 1,
+            pointerEvents: (!selectedOption || loading) ? 'none' : 'auto'
+          }}
+        >
+          <span>
+            {currentStep === TOTAL_QUESTIONS 
+              ? (loading ? 'PROCESSING TELEMETRY...' : 'COMPLETE & VIEW OBSERVATORY REPORT') 
+              : 'NEXT TASK'}
+          </span>
+          <ArrowRight size={18} />
+        </button>
+      </div>
 
     </div>
   );
