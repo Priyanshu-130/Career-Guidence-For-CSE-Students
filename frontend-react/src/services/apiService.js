@@ -17,9 +17,9 @@
  * - Mode selection: 'supabase' | 'java' | 'localstorage' | 'auto'
  */
 
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import bundledItemBank from '../data/adaptive/item_bank.json' with { type: 'json' };
+import bundledRulesConfig from '../data/adaptive/rules_version.json' with { type: 'json' };
+import bundledMappingConfig from '../data/adaptive/domain_mapping_version.json' with { type: 'json' };
 
 import {
   startingLevel,
@@ -31,21 +31,6 @@ import {
   domainMapping,
   storeFeedback
 } from '../data/adaptive/adaptiveEngine.js';
-
-// Load offline question bank and configs safely across Vite and Node
-let bundledItemBank = { questions: [] };
-let bundledRulesConfig = null;
-let bundledMappingConfig = null;
-
-try {
-  const currentDir = typeof __dirname !== 'undefined' ? __dirname : dirname(fileURLToPath(import.meta.url));
-  const adaptiveDir = join(currentDir, '../data/adaptive');
-  bundledItemBank = JSON.parse(readFileSync(join(adaptiveDir, 'item_bank.json'), 'utf-8'));
-  bundledRulesConfig = JSON.parse(readFileSync(join(adaptiveDir, 'rules_version.json'), 'utf-8'));
-  bundledMappingConfig = JSON.parse(readFileSync(join(adaptiveDir, 'domain_mapping_version.json'), 'utf-8'));
-} catch {
-  // Graceful fallback for browser bundles
-}
 
 // Memory fallback for localStorage in Node or environments without window.localStorage
 class MemoryStorage {

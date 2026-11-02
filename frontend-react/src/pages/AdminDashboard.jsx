@@ -36,17 +36,39 @@ export default function AdminDashboard() {
 
   // 1. Compute Analytics
   useEffect(() => {
-    const simulatedAttempts = [];
+    const combinedAttempts = [];
     DEMO_SCENARIOS.forEach(sc => {
       sc.attempts.forEach(att => {
-        simulatedAttempts.push({
+        combinedAttempts.push({
           ...att,
           student_email: sc.student.email
         });
       });
     });
 
-    const results = computeItemAnalytics(bank, simulatedAttempts);
+    // Also include real student attempts recorded in localStorage
+    try {
+      const realAttemptsRaw = localStorage.getItem('cpath_assessment_attempts');
+      if (realAttemptsRaw) {
+        const realList = JSON.parse(realAttemptsRaw);
+        if (Array.isArray(realList)) {
+          realList.forEach(att => {
+            combinedAttempts.push({
+              question_id: att.questionId || att.question_id,
+              correct: att.isCorrect ?? att.correct ?? false,
+              answer: att.selectedAnswer || att.answer || '',
+              is_dont_know: att.isDontKnow ?? att.is_dont_know ?? false,
+              time_taken: att.timeSpentSeconds || att.time_taken || 20,
+              student_email: att.studentEmail || att.student_email || 'student@pathfinder.edu'
+            });
+          });
+        }
+      }
+    } catch (e) {
+      console.warn('Could not read local attempts:', e);
+    }
+
+    const results = computeItemAnalytics(bank, combinedAttempts);
     setAnalytics(results);
   }, [bank]);
 

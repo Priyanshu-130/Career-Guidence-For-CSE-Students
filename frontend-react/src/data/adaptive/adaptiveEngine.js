@@ -12,20 +12,8 @@
  * - Feedback collection for recalibration ("Does this feel right? (1-5)")
  */
 
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
-
-let defaultRulesConfig = null;
-let defaultMappingConfig = null;
-
-try {
-  const currentDir = typeof __dirname !== 'undefined' ? __dirname : dirname(fileURLToPath(import.meta.url));
-  defaultRulesConfig = JSON.parse(readFileSync(join(currentDir, 'rules_version.json'), 'utf-8'));
-  defaultMappingConfig = JSON.parse(readFileSync(join(currentDir, 'domain_mapping_version.json'), 'utf-8'));
-} catch {
-  // Graceful fallback for environments where synchronous fs read is not permitted
-}
+import defaultRulesConfig from './rules_version.json' with { type: 'json' };
+import defaultMappingConfig from './domain_mapping_version.json' with { type: 'json' };
 
 /**
  * Validates a single item or an entire item bank against licensing and schema rules.

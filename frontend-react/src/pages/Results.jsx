@@ -116,7 +116,99 @@ export default function Results() {
     );
   }
 
-  if (!resultsData) return null;
+  if (!resultsData) {
+    return (
+      <div style={{
+        minHeight: '80vh',
+        backgroundColor: '#F7F7F4',
+        color: '#17191C',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '2.5rem 1.5rem'
+      }}>
+        <div style={{
+          backgroundColor: '#FFFFFF',
+          border: '1px solid #D8DAD7',
+          padding: 'clamp(2rem, 5vw, 3.5rem)',
+          maxWidth: '640px',
+          textAlign: 'center'
+        }}>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            fontFamily: "'DM Mono', monospace",
+            fontSize: '0.75rem',
+            color: '#E85D3F',
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            marginBottom: '1rem',
+            backgroundColor: '#FFF0EB',
+            border: '1px solid #E85D3F',
+            padding: '0.35rem 0.85rem',
+            fontWeight: 700
+          }}>
+            NO ACTIVE TELEMETRY RECORD
+          </div>
+          <h2 style={{
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontSize: 'clamp(2rem, 4vw, 2.75rem)',
+            fontWeight: 800,
+            textTransform: 'uppercase',
+            color: '#17191C',
+            marginBottom: '1rem'
+          }}>
+            Assessment Not Completed
+          </h2>
+          <p style={{ color: '#50545B', fontSize: '1rem', lineHeight: 1.6, marginBottom: '2rem' }}>
+            No diagnostic telemetry has been recorded for this session yet. Complete an assessment to generate your psychometric RIASEC profile, skill radar, and personalized career domain affinities.
+          </p>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link
+              to="/assess"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.85rem 1.75rem',
+                backgroundColor: '#17191C',
+                color: '#FFFFFF',
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: '1rem',
+                fontWeight: 700,
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                textDecoration: 'none'
+              }}
+            >
+              <span>Start Adaptive Assessment</span>
+              <ArrowRight size={16} />
+            </Link>
+            <Link
+              to="/quiz"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '0.85rem 1.75rem',
+                backgroundColor: '#FFFFFF',
+                color: '#17191C',
+                border: '1px solid #D8DAD7',
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: '1rem',
+                fontWeight: 700,
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                textDecoration: 'none'
+              }}
+            >
+              <span>Diagnostic Tracks</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const trackConfig = QUIZ_DATA[resultsData.track] || QUIZ_DATA['software'];
   const clusters = trackConfig?.clusters || {};

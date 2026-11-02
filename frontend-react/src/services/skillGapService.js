@@ -9,18 +9,7 @@
  *   flags an active knowledge gap requiring remedial reinforcement.
  */
 
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
-import { domainSubtopics } from '../utils/roadmapHelper.js';
-
-let domainsData = [];
-try {
-  const currentDir = typeof __dirname !== 'undefined' ? __dirname : dirname(fileURLToPath(import.meta.url));
-  domainsData = JSON.parse(readFileSync(join(currentDir, '../data/domains.json'), 'utf-8'));
-} catch {
-  // In browser environments if fs is unavailable
-}
+import domainsData from '../data/domains.json' with { type: 'json' };
 
 // Competency to topic mapping
 const COMPETENCY_TOPIC_MAP = {
