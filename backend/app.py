@@ -94,8 +94,15 @@ def init_db():
             time_taken REAL NOT NULL DEFAULT 0.0,
             bank_version TEXT NOT NULL,
             rules_version TEXT NOT NULL,
+            metadata TEXT,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
+    ''')
+    try:
+        c.execute('ALTER TABLE assessment_attempts ADD COLUMN metadata TEXT')
+    except Exception:
+        pass
+    c.execute('''
     ''')
     c.execute('''
         CREATE TABLE IF NOT EXISTS topic_mastery (
@@ -508,10 +515,23 @@ def assess_answer():
     c = conn.cursor()
 
     # 1. Insert attempt into assessment_attempts (never overwrite)
-    c.execute('''
-        INSERT INTO assessment_attempts (session_id, student_email, topic, question_id, category, answer, correct, time_taken, bank_version, rules_version)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ''', (session_id, student_email, topic, question_id, category, answer, 1 if correct else 0, time_taken, bank_version, rules_version))
+    metadata = json.dumps({
+        "selection_reason_code": data.get("selection_reason_code"),
+        "evidence_gap_addressed": data.get("evidence_gap_addressed"),
+        "post_activity_enjoyment": data.get("post_activity_enjoyment"),
+        "post_activity_willingness": data.get("post_activity_willingness"),
+        "hint_used": bool(data.get("hint_used", False))
+    })
+    try:
+        c.execute('''
+            INSERT INTO assessment_attempts (session_id, student_email, topic, question_id, category, answer, correct, time_taken, bank_version, rules_version, metadata)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (session_id, student_email, topic, question_id, category, answer, 1 if correct else 0, time_taken, bank_version, rules_version, metadata))
+    except sqlite3.OperationalError:
+        c.execute('''
+            INSERT INTO assessment_attempts (session_id, student_email, topic, question_id, category, answer, correct, time_taken, bank_version, rules_version)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (session_id, student_email, topic, question_id, category, answer, 1 if correct else 0, time_taken, bank_version, rules_version))
 
     # 2. Get latest mastery for topic
     c.execute('''

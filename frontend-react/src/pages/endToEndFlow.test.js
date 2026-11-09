@@ -306,3 +306,197 @@ test('E2E Flow 2: Student with Python experience', async () => {
   assert.equal(masteryRes.history.filter(m => m.topic === 'python').length, 3, 'Maintains initial placement + 2 checkpoints');
   assert.equal(masteryRes.history.length, 5, 'Maintains full append-only history across all topics');
 });
+
+
+// =========================================================================
+// ADAPTIVE DOMAIN DISCOVERY COORDINATOR TESTS
+// =========================================================================
+
+import {
+  SUPPORTED_DOMAINS,
+  DOMAIN_CLUSTERS,
+  SELECTION_REASON_CODES,
+  initStudentEvidenceState,
+  calculateDomainScores,
+  getVisitedClusters,
+  selectNextAdaptiveItem,
+  updateEvidenceWithResponse,
+  evaluateStoppingConditions,
+  generateDomainShortlist
+} from '../data/adaptive/adaptiveDomainCoordinator.js';
+
+const explainerCards = JSON.parse(
+  readFileSync(join(__dirname, '../data/adaptive/explainerCards.json'), 'utf-8')
+).explainers;
+
+const domainsCatalogue = JSON.parse(
+  readFileSync(join(__dirname, '../data/domains.json'), 'utf-8')
+);
+
+test('Coordinator: Exact 9 canonical domains mapped', () => {
+  assert.equal(SUPPORTED_DOMAINS.length, 9);
+  const ids = SUPPORTED_DOMAINS.map(d => d.id).sort();
+  const expected = ['ai', 'cloud', 'data', 'iot', 'networking', 'robotics', 'security', 'vlsi', 'web'].sort();
+  assert.deepEqual(ids, expected);
+});
+
+test('Coordinator: Decoupled evidence state initialized without rigid labels', () => {
+  const profile = {
+    semester: 2,
+    prior_programming_exposure: 'none',
+    subjects_tools_explored: [],
+    projects_built: [],
+    existing_career_interests: ['I do not know yet'],
+    preferred_language: 'en',
+    accessibility_needs: 'none'
+  };
+
+  const state = initStudentEvidenceState(profile, 'test_sess_01', 'student@test.edu');
+  assert.equal(state.session_id, 'test_sess_01');
+  assert.equal(state.history.length, 0);
+  assert.equal(state.onboarding_profile.is_unsure, true);
+
+  Object.values(state.domain_evidence).forEach(d => {
+    assert.equal(d.stated_interest_score, 50);
+    assert.equal(d.prior_exposure_level, 0);
+    assert.equal(d.uncertainty, 1.0);
+  });
+});
+
+test('Coordinator Branch F: IDK response serves clarifying explainer without penalty', () => {
+  const state = initStudentEvidenceState({
+    prior_programming_exposure: 'none',
+    existing_career_interests: ['I do not know yet']
+  });
+
+  const updated = updateEvidenceWithResponse(state, {
+    question_id: 'diag_pattern_002',
+    question_type: 'interest',
+    domain_tags: ['data'],
+    selected_option_key: 'idk',
+    selected_option_text: "I don't know / haven't learned this yet",
+    is_idk: true,
+    time_spent_seconds: 12
+  });
+
+  const next = selectNextAdaptiveItem(updated, itemBank.questions, explainerCards);
+  assert.ok(next);
+  assert.equal(next.action_type, 'clarification');
+  assert.equal(next.selection_reason_code, SELECTION_REASON_CODES.RESOLVE_AMBIGUITY_WITHOUT_PENALTY);
+  assert.equal(next.evidence_gap_addressed, 'CLARIFY_UNFAMILIAR_CONCEPT');
+});
+
+test('Coordinator Branch C: High CT Performance + Low Enjoyment decouples aptitude from interest', () => {
+  const state = initStudentEvidenceState({
+    prior_programming_exposure: 'none'
+  });
+
+  const updated = updateEvidenceWithResponse(state, {
+    question_id: 'bebras_graph_001',
+    question_type: 'computational_thinking',
+    domain_tags: ['networking'],
+    selected_option_key: 'A',
+    selected_option_text: 'A cannot send messages to C or D',
+    is_correct: true,
+    is_idk: false,
+    post_activity_enjoyment: 1, // 1 out of 5 stars
+    post_activity_willingness: false,
+    time_spent_seconds: 35
+  });
+
+  const scores = calculateDomainScores(updated);
+  assert.ok(scores.networking.composite_score < 45, 'Low enjoyment prevents score inflation despite correct solution');
+
+  const next = selectNextAdaptiveItem(updated, itemBank.questions, explainerCards);
+  assert.ok(next);
+  assert.equal(next.selection_reason_code, SELECTION_REASON_CODES.DECOUPLE_APTITUDE_FROM_INTEREST);
+  assert.notEqual(next.target_domain, 'networking');
+});
+
+test('Coordinator Branch D: Low Performance + High Enjoyment keeps domain open with foundations', () => {
+  const state = initStudentEvidenceState({
+    prior_programming_exposure: 'none'
+  });
+
+  const updated = updateEvidenceWithResponse(state, {
+    question_id: 'guided_robotics_001',
+    question_type: 'computational_thinking',
+    domain_tags: ['robotics'],
+    selected_option_key: 'B',
+    selected_option_text: 'Steer Right by turning off the right wheel',
+    is_correct: false,
+    is_idk: false,
+    post_activity_enjoyment: 5, // Loved it!
+    post_activity_willingness: true,
+    time_spent_seconds: 40
+  });
+
+  const next = selectNextAdaptiveItem(updated, itemBank.questions, explainerCards);
+  assert.ok(next);
+  assert.equal(next.selection_reason_code, SELECTION_REASON_CODES.SUPPORT_ENTHUSIASM_WITH_FOUNDATIONS);
+  assert.equal(next.target_domain, 'robotics');
+});
+
+test('Coordinator Preference Change: Buzzword AI preference smoothly pivots to Web on real reflection', () => {
+  let state = initStudentEvidenceState({
+    existing_career_interests: ['ai'],
+    prior_programming_exposure: 'none'
+  });
+
+  // Step 1: Real data lab -> Student gives low enjoyment reflection
+  state = updateEvidenceWithResponse(state, {
+    question_id: 'act_codeorg_data_001',
+    question_type: 'guided_experience',
+    domain_tags: ['ai', 'data'],
+    selected_option_text: 'Filter the dataset',
+    is_correct: true,
+    is_idk: false,
+    post_activity_enjoyment: 2,
+    post_activity_willingness: false
+  });
+
+  // Step 2: Explores Web UI interaction -> Student gives high enjoyment reflection
+  state = updateEvidenceWithResponse(state, {
+    question_id: 'act_codeorg_applab_002',
+    question_type: 'guided_experience',
+    domain_tags: ['web'],
+    selected_option_text: 'Store completion locally immediately',
+    is_correct: true,
+    is_idk: false,
+    post_activity_enjoyment: 5,
+    post_activity_willingness: true
+  });
+
+  // Step 3: Explores Cloud/Security cluster
+  state = updateEvidenceWithResponse(state, {
+    question_id: 'act_codeorg_sec_003',
+    question_type: 'guided_experience',
+    domain_tags: ['security'],
+    selected_option_text: 'It encrypts passwords and session cookies',
+    is_correct: true,
+    is_idk: false,
+    post_activity_enjoyment: 3
+  });
+
+  // Step 4: Work preference comparison
+  state = updateEvidenceWithResponse(state, {
+    question_id: 'comp_tradeoff_web_iot_002',
+    question_type: 'interest',
+    domain_tags: ['web'],
+    selected_option_text: 'On a sleek screen with buttons, responsive layouts, and smooth animations (Web & App focus)',
+    option_score: 5,
+    is_idk: false,
+    post_activity_enjoyment: 5
+  });
+
+  const scores = calculateDomainScores(state);
+  assert.ok(scores.web.composite_score > scores.ai.composite_score, 'Web development surpasses AI after genuine reflection');
+
+  const shortlistResult = generateDomainShortlist(state, domainsCatalogue);
+  assert.equal(shortlistResult.is_shortlist, true);
+  assert.equal(shortlistResult.never_single_verdict, true);
+  assert.equal(shortlistResult.shortlist[0].domain_id, 'web');
+  assert.ok(shortlistResult.shortlist[0].relevant_activity_reflections.includes('High engagement'));
+  assert.ok(shortlistResult.shortlist[0].current_exposure_knowledge.includes('Zero prior technical exposure'));
+  assert.equal(shortlistResult.student_actions.length, 4);
+});

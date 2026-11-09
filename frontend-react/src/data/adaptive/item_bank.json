@@ -32,7 +32,26 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted from Bebras International Challenge on Informatics and Computational Thinking.",
-      "modified": true
+      "modified": true,
+      "question_id": "diag_logic_comp_001",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "logical-comparison",
+        "boolean-evaluation"
+      ],
+      "prerequisites": [
+        "basic-math"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web"
+      ]
     },
     {
       "id": "diag_pattern_002",
@@ -63,7 +82,25 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted from Bebras International Challenge on Informatics and Computational Thinking.",
-      "modified": false
+      "modified": false,
+      "question_id": "diag_pattern_002",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "pattern-recognition",
+        "sequences"
+      ],
+      "prerequisites": [
+        "basic-math"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai"
+      ]
     },
     {
       "id": "diag_trace_var_003",
@@ -94,7 +131,26 @@
       "source_url": "https://code.org/educate/csp",
       "license": "CC BY-NC-SA 4.0",
       "attribution_text": "Adapted from Code.org CS Principles: Variables and Sequencing.",
-      "modified": true
+      "modified": true,
+      "question_id": "diag_trace_var_003",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "variable-reassignment",
+        "code-tracing"
+      ],
+      "prerequisites": [
+        "variables-intro"
+      ],
+      "source_type": "adapted_open_curriculum",
+      "source_reference": "https://code.org/educate/csp",
+      "licence": "CC BY-NC-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web"
+      ]
     },
     {
       "id": "diag_loop_rec_004",
@@ -125,7 +181,26 @@
       "source_url": "https://code.org/curriculum/docs/k-5/complete.pdf",
       "license": "CC BY-NC-SA 4.0",
       "attribution_text": "Adapted from Code.org K-5 Computational Concepts: Loops and Repetition.",
-      "modified": true
+      "modified": true,
+      "question_id": "diag_loop_rec_004",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "loop-recognition",
+        "algorithms"
+      ],
+      "prerequisites": [
+        "procedural-logic"
+      ],
+      "source_type": "adapted_open_curriculum",
+      "source_reference": "https://code.org/curriculum/docs/k-5/complete.pdf",
+      "licence": "CC BY-NC-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web"
+      ]
     },
     {
       "id": "diag_step_order_005",
@@ -156,7 +231,26 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted from Bebras International Challenge: Sequencing and Process Flow.",
-      "modified": false
+      "modified": false,
+      "question_id": "diag_step_order_005",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "sequencing",
+        "procedural-thinking"
+      ],
+      "prerequisites": [
+        "procedural-logic"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web"
+      ]
     },
     {
       "id": "onet_r_001",
@@ -186,7 +280,25 @@
       "source_url": "https://www.onetcenter.org/tools.html",
       "license": "USDOL Developer License",
       "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
-      "modified": true
+      "modified": true,
+      "question_id": "onet_r_001",
+      "content_version": "1.1.0",
+      "question_type": "interest",
+      "skill_tags": [
+        "riasec-interest-profiling",
+        "riasec-r"
+      ],
+      "prerequisites": [],
+      "source_type": "official_onet",
+      "source_reference": "https://www.onetcenter.org/tools.html",
+      "licence": "USDOL Developer License",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web",
+        "networking",
+        "iot"
+      ]
     },
     {
       "id": "onet_r_002",
@@ -216,7 +328,24 @@
       "source_url": "https://www.onetcenter.org/tools.html",
       "license": "USDOL Developer License",
       "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
-      "modified": true
+      "modified": true,
+      "question_id": "onet_r_002",
+      "content_version": "1.1.0",
+      "question_type": "interest",
+      "skill_tags": [
+        "riasec-interest-profiling",
+        "riasec-r"
+      ],
+      "prerequisites": [],
+      "source_type": "official_onet",
+      "source_reference": "https://www.onetcenter.org/tools.html",
+      "licence": "USDOL Developer License",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "cloud",
+        "iot"
+      ]
     },
     {
       "id": "onet_r_003",
@@ -246,7 +375,23 @@
       "source_url": "https://www.onetcenter.org/tools.html",
       "license": "USDOL Developer License",
       "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
-      "modified": true
+      "modified": true,
+      "question_id": "onet_r_003",
+      "content_version": "1.1.0",
+      "question_type": "interest",
+      "skill_tags": [
+        "riasec-interest-profiling",
+        "riasec-r"
+      ],
+      "prerequisites": [],
+      "source_type": "official_onet",
+      "source_reference": "https://www.onetcenter.org/tools.html",
+      "licence": "USDOL Developer License",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "iot"
+      ]
     },
     {
       "id": "onet_i_001",
@@ -276,7 +421,23 @@
       "source_url": "https://www.onetcenter.org/tools.html",
       "license": "USDOL Developer License",
       "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
-      "modified": true
+      "modified": true,
+      "question_id": "onet_i_001",
+      "content_version": "1.1.0",
+      "question_type": "interest",
+      "skill_tags": [
+        "riasec-interest-profiling",
+        "riasec-i"
+      ],
+      "prerequisites": [],
+      "source_type": "official_onet",
+      "source_reference": "https://www.onetcenter.org/tools.html",
+      "licence": "USDOL Developer License",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "onet_i_002",
@@ -306,7 +467,23 @@
       "source_url": "https://www.onetcenter.org/tools.html",
       "license": "USDOL Developer License",
       "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
-      "modified": true
+      "modified": true,
+      "question_id": "onet_i_002",
+      "content_version": "1.1.0",
+      "question_type": "interest",
+      "skill_tags": [
+        "riasec-interest-profiling",
+        "riasec-i"
+      ],
+      "prerequisites": [],
+      "source_type": "official_onet",
+      "source_reference": "https://www.onetcenter.org/tools.html",
+      "licence": "USDOL Developer License",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "onet_i_003",
@@ -336,7 +513,24 @@
       "source_url": "https://www.onetcenter.org/tools.html",
       "license": "USDOL Developer License",
       "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
-      "modified": true
+      "modified": true,
+      "question_id": "onet_i_003",
+      "content_version": "1.1.0",
+      "question_type": "interest",
+      "skill_tags": [
+        "riasec-interest-profiling",
+        "riasec-i"
+      ],
+      "prerequisites": [],
+      "source_type": "official_onet",
+      "source_reference": "https://www.onetcenter.org/tools.html",
+      "licence": "USDOL Developer License",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web"
+      ]
     },
     {
       "id": "onet_i_004",
@@ -366,7 +560,24 @@
       "source_url": "https://www.onetcenter.org/tools.html",
       "license": "USDOL Developer License",
       "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
-      "modified": true
+      "modified": true,
+      "question_id": "onet_i_004",
+      "content_version": "1.1.0",
+      "question_type": "interest",
+      "skill_tags": [
+        "riasec-interest-profiling",
+        "riasec-i"
+      ],
+      "prerequisites": [],
+      "source_type": "official_onet",
+      "source_reference": "https://www.onetcenter.org/tools.html",
+      "licence": "USDOL Developer License",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "security",
+        "vlsi"
+      ]
     },
     {
       "id": "onet_a_001",
@@ -396,7 +607,23 @@
       "source_url": "https://www.onetcenter.org/tools.html",
       "license": "USDOL Developer License",
       "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
-      "modified": true
+      "modified": true,
+      "question_id": "onet_a_001",
+      "content_version": "1.1.0",
+      "question_type": "interest",
+      "skill_tags": [
+        "riasec-interest-profiling",
+        "riasec-a"
+      ],
+      "prerequisites": [],
+      "source_type": "official_onet",
+      "source_reference": "https://www.onetcenter.org/tools.html",
+      "licence": "USDOL Developer License",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web"
+      ]
     },
     {
       "id": "onet_a_002",
@@ -426,7 +653,23 @@
       "source_url": "https://www.onetcenter.org/tools.html",
       "license": "USDOL Developer License",
       "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
-      "modified": true
+      "modified": true,
+      "question_id": "onet_a_002",
+      "content_version": "1.1.0",
+      "question_type": "interest",
+      "skill_tags": [
+        "riasec-interest-profiling",
+        "riasec-a"
+      ],
+      "prerequisites": [],
+      "source_type": "official_onet",
+      "source_reference": "https://www.onetcenter.org/tools.html",
+      "licence": "USDOL Developer License",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "onet_a_003",
@@ -456,7 +699,24 @@
       "source_url": "https://www.onetcenter.org/tools.html",
       "license": "USDOL Developer License",
       "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
-      "modified": true
+      "modified": true,
+      "question_id": "onet_a_003",
+      "content_version": "1.1.0",
+      "question_type": "interest",
+      "skill_tags": [
+        "riasec-interest-profiling",
+        "riasec-a"
+      ],
+      "prerequisites": [],
+      "source_type": "official_onet",
+      "source_reference": "https://www.onetcenter.org/tools.html",
+      "licence": "USDOL Developer License",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web"
+      ]
     },
     {
       "id": "onet_s_001",
@@ -486,7 +746,24 @@
       "source_url": "https://www.onetcenter.org/tools.html",
       "license": "USDOL Developer License",
       "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
-      "modified": true
+      "modified": true,
+      "question_id": "onet_s_001",
+      "content_version": "1.1.0",
+      "question_type": "interest",
+      "skill_tags": [
+        "riasec-interest-profiling",
+        "riasec-s"
+      ],
+      "prerequisites": [],
+      "source_type": "official_onet",
+      "source_reference": "https://www.onetcenter.org/tools.html",
+      "licence": "USDOL Developer License",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web"
+      ]
     },
     {
       "id": "onet_s_002",
@@ -516,7 +793,24 @@
       "source_url": "https://www.onetcenter.org/tools.html",
       "license": "USDOL Developer License",
       "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
-      "modified": true
+      "modified": true,
+      "question_id": "onet_s_002",
+      "content_version": "1.1.0",
+      "question_type": "interest",
+      "skill_tags": [
+        "riasec-interest-profiling",
+        "riasec-s"
+      ],
+      "prerequisites": [],
+      "source_type": "official_onet",
+      "source_reference": "https://www.onetcenter.org/tools.html",
+      "licence": "USDOL Developer License",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web"
+      ]
     },
     {
       "id": "onet_s_003",
@@ -546,7 +840,23 @@
       "source_url": "https://www.onetcenter.org/tools.html",
       "license": "USDOL Developer License",
       "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
-      "modified": true
+      "modified": true,
+      "question_id": "onet_s_003",
+      "content_version": "1.1.0",
+      "question_type": "interest",
+      "skill_tags": [
+        "riasec-interest-profiling",
+        "riasec-s"
+      ],
+      "prerequisites": [],
+      "source_type": "official_onet",
+      "source_reference": "https://www.onetcenter.org/tools.html",
+      "licence": "USDOL Developer License",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web"
+      ]
     },
     {
       "id": "onet_e_001",
@@ -576,7 +886,24 @@
       "source_url": "https://www.onetcenter.org/tools.html",
       "license": "USDOL Developer License",
       "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
-      "modified": true
+      "modified": true,
+      "question_id": "onet_e_001",
+      "content_version": "1.1.0",
+      "question_type": "interest",
+      "skill_tags": [
+        "riasec-interest-profiling",
+        "riasec-e"
+      ],
+      "prerequisites": [],
+      "source_type": "official_onet",
+      "source_reference": "https://www.onetcenter.org/tools.html",
+      "licence": "USDOL Developer License",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web"
+      ]
     },
     {
       "id": "onet_e_002",
@@ -606,7 +933,24 @@
       "source_url": "https://www.onetcenter.org/tools.html",
       "license": "USDOL Developer License",
       "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
-      "modified": true
+      "modified": true,
+      "question_id": "onet_e_002",
+      "content_version": "1.1.0",
+      "question_type": "interest",
+      "skill_tags": [
+        "riasec-interest-profiling",
+        "riasec-e"
+      ],
+      "prerequisites": [],
+      "source_type": "official_onet",
+      "source_reference": "https://www.onetcenter.org/tools.html",
+      "licence": "USDOL Developer License",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web"
+      ]
     },
     {
       "id": "onet_e_003",
@@ -636,7 +980,24 @@
       "source_url": "https://www.onetcenter.org/tools.html",
       "license": "USDOL Developer License",
       "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
-      "modified": true
+      "modified": true,
+      "question_id": "onet_e_003",
+      "content_version": "1.1.0",
+      "question_type": "interest",
+      "skill_tags": [
+        "riasec-interest-profiling",
+        "riasec-e"
+      ],
+      "prerequisites": [],
+      "source_type": "official_onet",
+      "source_reference": "https://www.onetcenter.org/tools.html",
+      "licence": "USDOL Developer License",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web"
+      ]
     },
     {
       "id": "onet_c_001",
@@ -666,7 +1027,24 @@
       "source_url": "https://www.onetcenter.org/tools.html",
       "license": "USDOL Developer License",
       "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
-      "modified": true
+      "modified": true,
+      "question_id": "onet_c_001",
+      "content_version": "1.1.0",
+      "question_type": "interest",
+      "skill_tags": [
+        "riasec-interest-profiling",
+        "riasec-c"
+      ],
+      "prerequisites": [],
+      "source_type": "official_onet",
+      "source_reference": "https://www.onetcenter.org/tools.html",
+      "licence": "USDOL Developer License",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web"
+      ]
     },
     {
       "id": "onet_c_002",
@@ -696,7 +1074,24 @@
       "source_url": "https://www.onetcenter.org/tools.html",
       "license": "USDOL Developer License",
       "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
-      "modified": true
+      "modified": true,
+      "question_id": "onet_c_002",
+      "content_version": "1.1.0",
+      "question_type": "interest",
+      "skill_tags": [
+        "riasec-interest-profiling",
+        "riasec-c"
+      ],
+      "prerequisites": [],
+      "source_type": "official_onet",
+      "source_reference": "https://www.onetcenter.org/tools.html",
+      "licence": "USDOL Developer License",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "data"
+      ]
     },
     {
       "id": "onet_c_003",
@@ -726,7 +1121,23 @@
       "source_url": "https://www.onetcenter.org/tools.html",
       "license": "USDOL Developer License",
       "attribution_text": "Adapted from the O*NET Interest Profiler under the USDOL Developer License. This product has not been reviewed, approved, or endorsed by the U.S. Department of Labor / Employment and Training Administration (USDOL/ETA).",
-      "modified": true
+      "modified": true,
+      "question_id": "onet_c_003",
+      "content_version": "1.1.0",
+      "question_type": "interest",
+      "skill_tags": [
+        "riasec-interest-profiling",
+        "riasec-c"
+      ],
+      "prerequisites": [],
+      "source_type": "official_onet",
+      "source_reference": "https://www.onetcenter.org/tools.html",
+      "licence": "USDOL Developer License",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "security"
+      ]
     },
     {
       "id": "bebras_graph_001",
@@ -757,7 +1168,25 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted under CC-BY-SA 4.0 from Bebras international task archives. Tasks inspire computational thinking without requiring prior programming syntax.",
-      "modified": true
+      "modified": true,
+      "question_id": "bebras_graph_001",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "graphs",
+        "connectivity"
+      ],
+      "prerequisites": [
+        "algorithmic-foundations"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "networking"
+      ]
     },
     {
       "id": "bebras_graph_002",
@@ -788,7 +1217,25 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted under CC-BY-SA 4.0 from Bebras international task archives. Tasks inspire computational thinking without requiring prior programming syntax.",
-      "modified": true
+      "modified": true,
+      "question_id": "bebras_graph_002",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "trees",
+        "hierarchies"
+      ],
+      "prerequisites": [
+        "algorithmic-foundations"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "vlsi"
+      ]
     },
     {
       "id": "bebras_graph_003",
@@ -819,7 +1266,25 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted under CC-BY-SA 4.0 from Bebras international task archives. Tasks inspire computational thinking without requiring prior programming syntax.",
-      "modified": true
+      "modified": true,
+      "question_id": "bebras_graph_003",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "shortest-path",
+        "graph-traversal"
+      ],
+      "prerequisites": [
+        "algorithmic-foundations"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "networking"
+      ]
     },
     {
       "id": "bebras_graph_004",
@@ -850,7 +1315,26 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted under CC-BY-SA 4.0 from Bebras international task archives. Tasks inspire computational thinking without requiring prior programming syntax.",
-      "modified": true
+      "modified": true,
+      "question_id": "bebras_graph_004",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "bipartite-matching",
+        "constraints"
+      ],
+      "prerequisites": [
+        "algorithmic-foundations"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "cloud"
+      ]
     },
     {
       "id": "bebras_graph_005",
@@ -881,7 +1365,26 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted under CC-BY-SA 4.0 from Bebras international task archives. Tasks inspire computational thinking without requiring prior programming syntax.",
-      "modified": true
+      "modified": true,
+      "question_id": "bebras_graph_005",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "topological-sort",
+        "dependencies"
+      ],
+      "prerequisites": [
+        "algorithmic-foundations"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web"
+      ]
     },
     {
       "id": "bebras_bin_001",
@@ -912,7 +1415,27 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted under CC-BY-SA 4.0 from Bebras international task archives. Tasks inspire computational thinking without requiring prior programming syntax.",
-      "modified": true
+      "modified": true,
+      "question_id": "bebras_bin_001",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "binary-representation",
+        "state-encoding"
+      ],
+      "prerequisites": [
+        "algorithmic-foundations"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "networking",
+        "vlsi"
+      ]
     },
     {
       "id": "bebras_bin_002",
@@ -943,7 +1466,25 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted under CC-BY-SA 4.0 from Bebras international task archives. Tasks inspire computational thinking without requiring prior programming syntax.",
-      "modified": true
+      "modified": true,
+      "question_id": "bebras_bin_002",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "binary-counting",
+        "place-value"
+      ],
+      "prerequisites": [
+        "algorithmic-foundations"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "vlsi"
+      ]
     },
     {
       "id": "bebras_bin_003",
@@ -974,7 +1515,25 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted under CC-BY-SA 4.0 from Bebras international task archives. Tasks inspire computational thinking without requiring prior programming syntax.",
-      "modified": true
+      "modified": true,
+      "question_id": "bebras_bin_003",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "parity",
+        "error-detection"
+      ],
+      "prerequisites": [
+        "algorithmic-foundations"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "bebras_bin_004",
@@ -1005,7 +1564,25 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted under CC-BY-SA 4.0 from Bebras international task archives. Tasks inspire computational thinking without requiring prior programming syntax.",
-      "modified": true
+      "modified": true,
+      "question_id": "bebras_bin_004",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "boolean-logic",
+        "truth-tables"
+      ],
+      "prerequisites": [
+        "algorithmic-foundations"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "security"
+      ]
     },
     {
       "id": "bebras_sort_001",
@@ -1036,7 +1613,26 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted under CC-BY-SA 4.0 from Bebras international task archives. Tasks inspire computational thinking without requiring prior programming syntax.",
-      "modified": true
+      "modified": true,
+      "question_id": "bebras_sort_001",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "sorting",
+        "comparisons"
+      ],
+      "prerequisites": [
+        "algorithmic-foundations"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web"
+      ]
     },
     {
       "id": "bebras_sort_002",
@@ -1067,7 +1663,25 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted under CC-BY-SA 4.0 from Bebras international task archives. Tasks inspire computational thinking without requiring prior programming syntax.",
-      "modified": true
+      "modified": true,
+      "question_id": "bebras_sort_002",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "binary-search",
+        "divide-and-conquer"
+      ],
+      "prerequisites": [
+        "algorithmic-foundations"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "vlsi"
+      ]
     },
     {
       "id": "bebras_sort_003",
@@ -1098,7 +1712,25 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted under CC-BY-SA 4.0 from Bebras international task archives. Tasks inspire computational thinking without requiring prior programming syntax.",
-      "modified": true
+      "modified": true,
+      "question_id": "bebras_sort_003",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "bubble-sort",
+        "inversions"
+      ],
+      "prerequisites": [
+        "algorithmic-foundations"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai"
+      ]
     },
     {
       "id": "bebras_sort_004",
@@ -1129,7 +1761,26 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted under CC-BY-SA 4.0 from Bebras international task archives. Tasks inspire computational thinking without requiring prior programming syntax.",
-      "modified": true
+      "modified": true,
+      "question_id": "bebras_sort_004",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "queue-vs-stack",
+        "order-of-operations"
+      ],
+      "prerequisites": [
+        "algorithmic-foundations"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web"
+      ]
     },
     {
       "id": "bebras_sort_005",
@@ -1160,7 +1811,26 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted under CC-BY-SA 4.0 from Bebras international task archives. Tasks inspire computational thinking without requiring prior programming syntax.",
-      "modified": true
+      "modified": true,
+      "question_id": "bebras_sort_005",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "recursion",
+        "tree-exploration"
+      ],
+      "prerequisites": [
+        "algorithmic-foundations"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web"
+      ]
     },
     {
       "id": "bebras_fsm_001",
@@ -1191,7 +1861,25 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted under CC-BY-SA 4.0 from Bebras international task archives. Tasks inspire computational thinking without requiring prior programming syntax.",
-      "modified": true
+      "modified": true,
+      "question_id": "bebras_fsm_001",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "state-machines",
+        "transitions"
+      ],
+      "prerequisites": [
+        "algorithmic-foundations"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "robotics"
+      ]
     },
     {
       "id": "bebras_fsm_002",
@@ -1206,23 +1894,42 @@
         "algorithmic-foundations"
       ],
       "type": "application",
-      "questionText": "You must make 36 cents change using standard coins: 25\u00a2, 10\u00a2, 5\u00a2, 1\u00a2. Using a greedy approach (taking the largest coin possible first), how many total coins are used?",
+      "questionText": "You must make 36 cents change using standard coins: 25¢, 10¢, 5¢, 1¢. Using a greedy approach (taking the largest coin possible first), how many total coins are used?",
       "options": [
-        "3 coins (one 25\u00a2, one 10\u00a2, one 1\u00a2)",
+        "3 coins (one 25¢, one 10¢, one 1¢)",
         "4 coins",
         "5 coins",
         "2 coins",
         "I don't know / haven't learned this yet"
       ],
-      "answer": "3 coins (one 25\u00a2, one 10\u00a2, one 1\u00a2)",
-      "explanation": "36 - 25 = 11; 11 - 10 = 1; 1 - 1 = 0. Total = 3 coins (25\u00a2 + 10\u00a2 + 1\u00a2 = 36\u00a2).",
+      "answer": "3 coins (one 25¢, one 10¢, one 1¢)",
+      "explanation": "36 - 25 = 11; 11 - 10 = 1; 1 - 1 = 0. Total = 3 coins (25¢ + 10¢ + 1¢ = 36¢).",
       "explainer_ref": "exp_logic_patterns",
       "status": "approved",
       "source": "Bebras International Challenge on Informatics and Computational Thinking",
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted under CC-BY-SA 4.0 from Bebras international task archives. Tasks inspire computational thinking without requiring prior programming syntax.",
-      "modified": true
+      "modified": true,
+      "question_id": "bebras_fsm_002",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "greedy-algorithms",
+        "optimization"
+      ],
+      "prerequisites": [
+        "algorithmic-foundations"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web"
+      ]
     },
     {
       "id": "bebras_fsm_003",
@@ -1253,7 +1960,25 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted under CC-BY-SA 4.0 from Bebras international task archives. Tasks inspire computational thinking without requiring prior programming syntax.",
-      "modified": true
+      "modified": true,
+      "question_id": "bebras_fsm_003",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "pigeonhole-principle",
+        "discrete-math"
+      ],
+      "prerequisites": [
+        "algorithmic-foundations"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai"
+      ]
     },
     {
       "id": "bebras_fsm_004",
@@ -1284,7 +2009,26 @@
       "source_url": "https://www.bebras.org/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Adapted under CC-BY-SA 4.0 from Bebras international task archives. Tasks inspire computational thinking without requiring prior programming syntax.",
-      "modified": true
+      "modified": true,
+      "question_id": "bebras_fsm_004",
+      "content_version": "1.1.0",
+      "question_type": "computational_thinking",
+      "skill_tags": [
+        "algorithmic-efficiency",
+        "big-o"
+      ],
+      "prerequisites": [
+        "algorithmic-foundations"
+      ],
+      "source_type": "official_bebras",
+      "source_reference": "https://www.bebras.org/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web"
+      ]
     },
     {
       "id": "py_k_001",
@@ -1315,7 +2059,25 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_001",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "python-syntax",
+        "built-in-functions"
+      ],
+      "prerequisites": [
+        "programming-basics"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web"
+      ]
     },
     {
       "id": "py_k_002",
@@ -1345,7 +2107,24 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_002",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "python-data-types"
+      ],
+      "prerequisites": [
+        "programming-basics"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "py_k_003",
@@ -1375,7 +2154,25 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_003",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "variable-assignment"
+      ],
+      "prerequisites": [
+        "programming-basics"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "data"
+      ]
     },
     {
       "id": "py_k_004",
@@ -1405,7 +2202,25 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_004",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "python-comments"
+      ],
+      "prerequisites": [
+        "programming-basics"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "data"
+      ]
     },
     {
       "id": "py_k_005",
@@ -1435,7 +2250,25 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_005",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "boolean-values"
+      ],
+      "prerequisites": [
+        "programming-basics"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "data"
+      ]
     },
     {
       "id": "py_k_006",
@@ -1467,7 +2300,26 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_006",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "lists",
+        "indexing",
+        "negative-indexing"
+      ],
+      "prerequisites": [
+        "python-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web"
+      ]
     },
     {
       "id": "py_k_007",
@@ -1498,7 +2350,26 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_007",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "for-loops",
+        "range"
+      ],
+      "prerequisites": [
+        "python-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "data"
+      ]
     },
     {
       "id": "py_k_008",
@@ -1529,7 +2400,26 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_008",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "strings",
+        "slicing"
+      ],
+      "prerequisites": [
+        "python-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "data"
+      ]
     },
     {
       "id": "py_k_009",
@@ -1560,7 +2450,26 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_009",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "dictionaries",
+        "get-method"
+      ],
+      "prerequisites": [
+        "python-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "data"
+      ]
     },
     {
       "id": "py_k_010",
@@ -1591,7 +2500,26 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_010",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "functions",
+        "return-values"
+      ],
+      "prerequisites": [
+        "python-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "data"
+      ]
     },
     {
       "id": "py_k_011",
@@ -1621,7 +2549,25 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_011",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "list-comprehensions"
+      ],
+      "prerequisites": [
+        "python-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "data"
+      ]
     },
     {
       "id": "py_k_012",
@@ -1651,7 +2597,25 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_012",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "mutable-default-args"
+      ],
+      "prerequisites": [
+        "python-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "data"
+      ]
     },
     {
       "id": "py_k_013",
@@ -1682,7 +2646,26 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_013",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "sets",
+        "time-complexity"
+      ],
+      "prerequisites": [
+        "python-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "data"
+      ]
     },
     {
       "id": "py_k_014",
@@ -1713,7 +2696,25 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_014",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "generators",
+        "yield"
+      ],
+      "prerequisites": [
+        "python-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai"
+      ]
     },
     {
       "id": "py_k_015",
@@ -1744,7 +2745,26 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_015",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "exceptions",
+        "try-finally"
+      ],
+      "prerequisites": [
+        "python-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "data"
+      ]
     },
     {
       "id": "py_k_016",
@@ -1776,7 +2796,27 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_016",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "oop",
+        "inheritance",
+        "dunder-methods"
+      ],
+      "prerequisites": [
+        "python-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "data"
+      ]
     },
     {
       "id": "py_k_017",
@@ -1807,7 +2847,25 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_017",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "decorators",
+        "closures"
+      ],
+      "prerequisites": [
+        "python-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai"
+      ]
     },
     {
       "id": "py_k_018",
@@ -1838,7 +2896,26 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_018",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "gil",
+        "concurrency"
+      ],
+      "prerequisites": [
+        "python-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "data"
+      ]
     },
     {
       "id": "py_k_019",
@@ -1868,7 +2945,25 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_019",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "shallow-vs-deep-copy"
+      ],
+      "prerequisites": [
+        "python-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "data"
+      ]
     },
     {
       "id": "py_k_020",
@@ -1899,7 +2994,26 @@
       "source_url": "https://docs.python.org/3/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Python Software Foundation official documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "py_k_020",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "context-managers",
+        "dunder-enter-exit"
+      ],
+      "prerequisites": [
+        "python-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.python.org/3/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "data"
+      ]
     },
     {
       "id": "sql_k_001",
@@ -1930,7 +3044,25 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_001",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "sql-select",
+        "query-basics"
+      ],
+      "prerequisites": [
+        "data-basics"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "sql_k_002",
@@ -1960,7 +3092,24 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_002",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "sql-from"
+      ],
+      "prerequisites": [
+        "data-basics"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "sql_k_003",
@@ -1990,7 +3139,24 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_003",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "sql-where"
+      ],
+      "prerequisites": [
+        "data-basics"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "sql_k_004",
@@ -2020,7 +3186,24 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_004",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "sql-distinct"
+      ],
+      "prerequisites": [
+        "data-basics"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "sql_k_005",
@@ -2050,7 +3233,24 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_005",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "sql-order-by"
+      ],
+      "prerequisites": [
+        "data-basics"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "sql_k_006",
@@ -2080,7 +3280,24 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_006",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "sql-where-like"
+      ],
+      "prerequisites": [
+        "sql-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "sql_k_007",
@@ -2110,7 +3327,24 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_007",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "sql-null"
+      ],
+      "prerequisites": [
+        "sql-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "sql_k_008",
@@ -2141,7 +3375,27 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_008",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "sql-aggregate",
+        "count"
+      ],
+      "prerequisites": [
+        "sql-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "data",
+        "vlsi"
+      ]
     },
     {
       "id": "sql_k_009",
@@ -2171,7 +3425,25 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_009",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "primary-key"
+      ],
+      "prerequisites": [
+        "sql-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "data"
+      ]
     },
     {
       "id": "sql_k_010",
@@ -2201,7 +3473,24 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_010",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "sql-insert"
+      ],
+      "prerequisites": [
+        "sql-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "sql_k_011",
@@ -2231,7 +3520,24 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_011",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "foreign-key"
+      ],
+      "prerequisites": [
+        "sql-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "sql_k_012",
@@ -2262,7 +3568,25 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_012",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "sql-joins",
+        "inner-join"
+      ],
+      "prerequisites": [
+        "sql-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "sql_k_013",
@@ -2292,7 +3616,24 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_013",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "sql-left-join"
+      ],
+      "prerequisites": [
+        "sql-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "sql_k_014",
@@ -2322,7 +3663,25 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_014",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "where-vs-having"
+      ],
+      "prerequisites": [
+        "sql-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data",
+        "vlsi"
+      ]
     },
     {
       "id": "sql_k_015",
@@ -2352,7 +3711,24 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_015",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "group-by"
+      ],
+      "prerequisites": [
+        "sql-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "sql_k_016",
@@ -2383,7 +3759,25 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_016",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "database-indexes",
+        "b-trees"
+      ],
+      "prerequisites": [
+        "sql-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "sql_k_017",
@@ -2413,7 +3807,24 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_017",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "acid-transactions"
+      ],
+      "prerequisites": [
+        "sql-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "sql_k_018",
@@ -2443,7 +3854,24 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_018",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "window-functions"
+      ],
+      "prerequisites": [
+        "sql-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "sql_k_019",
@@ -2473,7 +3901,24 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_019",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "database-normalization"
+      ],
+      "prerequisites": [
+        "sql-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "sql_k_020",
@@ -2504,7 +3949,26 @@
       "source_url": "https://en.wikipedia.org/wiki/SQL",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in ANSI SQL standards.",
-      "modified": false
+      "modified": false,
+      "question_id": "sql_k_020",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "query-optimization",
+        "explain-plan"
+      ],
+      "prerequisites": [
+        "sql-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://en.wikipedia.org/wiki/SQL",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "data"
+      ]
     },
     {
       "id": "java_k_001",
@@ -2535,7 +3999,26 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_001",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "java-syntax",
+        "entry-point"
+      ],
+      "prerequisites": [
+        "programming-basics"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web"
+      ]
     },
     {
       "id": "java_k_002",
@@ -2566,7 +4049,25 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_002",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "data-types",
+        "primitives"
+      ],
+      "prerequisites": [
+        "programming-basics"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data"
+      ]
     },
     {
       "id": "java_k_003",
@@ -2596,7 +4097,25 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_003",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "variable-output"
+      ],
+      "prerequisites": [
+        "programming-basics"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web",
+        "cloud"
+      ]
     },
     {
       "id": "java_k_004",
@@ -2626,7 +4145,25 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_004",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "jvm-compilation"
+      ],
+      "prerequisites": [
+        "programming-basics"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web",
+        "cloud"
+      ]
     },
     {
       "id": "java_k_005",
@@ -2656,7 +4193,25 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_005",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "java-naming-conventions"
+      ],
+      "prerequisites": [
+        "programming-basics"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web",
+        "cloud"
+      ]
     },
     {
       "id": "java_k_006",
@@ -2687,7 +4242,26 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_006",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "arrays",
+        "length"
+      ],
+      "prerequisites": [
+        "java-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web",
+        "cloud"
+      ]
     },
     {
       "id": "java_k_007",
@@ -2717,7 +4291,25 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_007",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "string-equality"
+      ],
+      "prerequisites": [
+        "java-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web",
+        "cloud"
+      ]
     },
     {
       "id": "java_k_008",
@@ -2747,7 +4339,25 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_008",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "oop-encapsulation"
+      ],
+      "prerequisites": [
+        "java-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web",
+        "cloud"
+      ]
     },
     {
       "id": "java_k_009",
@@ -2777,7 +4387,25 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_009",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "oop-inheritance"
+      ],
+      "prerequisites": [
+        "java-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web",
+        "cloud"
+      ]
     },
     {
       "id": "java_k_010",
@@ -2808,7 +4436,26 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_010",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "arraylist",
+        "collections"
+      ],
+      "prerequisites": [
+        "java-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web",
+        "cloud"
+      ]
     },
     {
       "id": "java_k_011",
@@ -2839,7 +4486,26 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_011",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "loops",
+        "break-continue"
+      ],
+      "prerequisites": [
+        "java-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web",
+        "cloud"
+      ]
     },
     {
       "id": "java_k_012",
@@ -2870,7 +4536,25 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_012",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "exceptions",
+        "checked-vs-unchecked"
+      ],
+      "prerequisites": [
+        "java-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web"
+      ]
     },
     {
       "id": "java_k_013",
@@ -2901,7 +4585,26 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_013",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "oop-polymorphism",
+        "method-overriding"
+      ],
+      "prerequisites": [
+        "java-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web",
+        "cloud"
+      ]
     },
     {
       "id": "java_k_014",
@@ -2932,7 +4635,25 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_014",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "interfaces",
+        "abstract-classes"
+      ],
+      "prerequisites": [
+        "java-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web"
+      ]
     },
     {
       "id": "java_k_015",
@@ -2963,7 +4684,25 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_015",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "memory-management",
+        "garbage-collection"
+      ],
+      "prerequisites": [
+        "java-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai"
+      ]
     },
     {
       "id": "java_k_016",
@@ -2994,7 +4733,26 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_016",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "collections-map",
+        "hashmap"
+      ],
+      "prerequisites": [
+        "java-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web",
+        "cloud"
+      ]
     },
     {
       "id": "java_k_017",
@@ -3025,7 +4783,26 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_017",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "concurrency",
+        "synchronized"
+      ],
+      "prerequisites": [
+        "java-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web",
+        "cloud"
+      ]
     },
     {
       "id": "java_k_018",
@@ -3056,7 +4833,26 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_018",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "generics",
+        "type-erasure"
+      ],
+      "prerequisites": [
+        "java-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web",
+        "cloud"
+      ]
     },
     {
       "id": "java_k_019",
@@ -3087,7 +4883,26 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_019",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "functional-streams",
+        "lambdas"
+      ],
+      "prerequisites": [
+        "java-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web",
+        "cloud"
+      ]
     },
     {
       "id": "java_k_020",
@@ -3118,7 +4933,25 @@
       "source_url": "https://docs.oracle.com/javase/tutorial/",
       "license": "CC-BY-SA 4.0",
       "attribution_text": "Authored by CSE PathFinder Curriculum Team grounded in Oracle Java Documentation.",
-      "modified": false
+      "modified": false,
+      "question_id": "java_k_020",
+      "content_version": "1.1.0",
+      "question_type": "knowledge",
+      "skill_tags": [
+        "classloaders",
+        "jvm-architecture"
+      ],
+      "prerequisites": [
+        "java-fundamentals"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://docs.oracle.com/javase/tutorial/",
+      "licence": "CC-BY-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "vlsi"
+      ]
     },
     {
       "id": "act_codeorg_data_001",
@@ -3150,7 +4983,27 @@
       "source_url": "https://code.org/educate/csp",
       "license": "CC BY-NC-SA 4.0",
       "attribution_text": "Adapted from Code.org CS Principles Unit 9 Data Exploration curriculum under CC BY-NC-SA 4.0.",
-      "modified": true
+      "modified": true,
+      "question_id": "act_codeorg_data_001",
+      "content_version": "1.1.0",
+      "question_type": "guided_experience",
+      "skill_tags": [
+        "data-analysis",
+        "problem-solving",
+        "visualization"
+      ],
+      "prerequisites": [
+        "data-basics"
+      ],
+      "source_type": "adapted_open_curriculum",
+      "source_reference": "https://code.org/educate/csp",
+      "licence": "CC BY-NC-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "data",
+        "web"
+      ]
     },
     {
       "id": "act_codeorg_applab_002",
@@ -3182,7 +5035,26 @@
       "source_url": "https://code.org/educate/applab",
       "license": "CC BY-NC-SA 4.0",
       "attribution_text": "Adapted from Code.org App Lab Event-Driven Programming under CC BY-NC-SA 4.0.",
-      "modified": true
+      "modified": true,
+      "question_id": "act_codeorg_applab_002",
+      "content_version": "1.1.0",
+      "question_type": "guided_experience",
+      "skill_tags": [
+        "ui-design",
+        "event-driven-programming",
+        "state-management"
+      ],
+      "prerequisites": [
+        "event-listeners"
+      ],
+      "source_type": "adapted_open_curriculum",
+      "source_reference": "https://code.org/educate/applab",
+      "licence": "CC BY-NC-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web"
+      ]
     },
     {
       "id": "act_codeorg_sec_003",
@@ -3214,7 +5086,28 @@
       "source_url": "https://code.org/educate/csp",
       "license": "CC BY-NC-SA 4.0",
       "attribution_text": "Adapted from Code.org CS Principles Unit 10 Cybersecurity and the Internet under CC BY-NC-SA 4.0.",
-      "modified": true
+      "modified": true,
+      "question_id": "act_codeorg_sec_003",
+      "content_version": "1.1.0",
+      "question_type": "guided_experience",
+      "skill_tags": [
+        "cybersecurity",
+        "encryption",
+        "ciphers"
+      ],
+      "prerequisites": [
+        "basic-ciphers"
+      ],
+      "source_type": "adapted_open_curriculum",
+      "source_reference": "https://code.org/educate/csp",
+      "licence": "CC BY-NC-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web",
+        "security",
+        "networking"
+      ]
     },
     {
       "id": "act_codehs_trace_004",
@@ -3246,7 +5139,26 @@
       "source_url": "https://codehs.com/curriculum/catalog",
       "license": "Educational Open Access",
       "attribution_text": "Original hands-on software engineering laboratory exercise authored by CSE PathFinder Curriculum Team.",
-      "modified": false
+      "modified": false,
+      "question_id": "act_codehs_trace_004",
+      "content_version": "1.1.0",
+      "question_type": "guided_experience",
+      "skill_tags": [
+        "debugging",
+        "code-investigation",
+        "trace-tables"
+      ],
+      "prerequisites": [
+        "code-tracing"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://codehs.com/curriculum/catalog",
+      "licence": "Educational Open Access",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web"
+      ]
     },
     {
       "id": "act_codehs_api_005",
@@ -3278,7 +5190,29 @@
       "source_url": "https://codehs.com/curriculum/catalog",
       "license": "Educational Open Access",
       "attribution_text": "Original hands-on software engineering laboratory exercise authored by CSE PathFinder Curriculum Team.",
-      "modified": false
+      "modified": false,
+      "question_id": "act_codehs_api_005",
+      "content_version": "1.1.0",
+      "question_type": "guided_experience",
+      "skill_tags": [
+        "backend-architecture",
+        "http-methods",
+        "rest-apis"
+      ],
+      "prerequisites": [
+        "http-basics"
+      ],
+      "source_type": "original_reviewed",
+      "source_reference": "https://codehs.com/curriculum/catalog",
+      "licence": "Educational Open Access",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web",
+        "cloud",
+        "vlsi"
+      ]
     },
     {
       "id": "act_codeorg_algo_006",
@@ -3310,7 +5244,26 @@
       "source_url": "https://code.org/educate/csp",
       "license": "CC BY-NC-SA 4.0",
       "attribution_text": "Adapted from Code.org CS Principles Unit 1 Digital Information compression labs under CC BY-NC-SA 4.0.",
-      "modified": true
+      "modified": true,
+      "question_id": "act_codeorg_algo_006",
+      "content_version": "1.1.0",
+      "question_type": "guided_experience",
+      "skill_tags": [
+        "algorithms",
+        "compression",
+        "run-length-encoding"
+      ],
+      "prerequisites": [
+        "binary-representation"
+      ],
+      "source_type": "adapted_open_curriculum",
+      "source_reference": "https://code.org/educate/csp",
+      "licence": "CC BY-NC-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "web"
+      ]
     },
     {
       "id": "act_codeorg_net_007",
@@ -3342,7 +5295,241 @@
       "source_url": "https://code.org/educate/csp",
       "license": "CC BY-NC-SA 4.0",
       "attribution_text": "Adapted from Code.org CS Principles Internet Simulator curriculum under CC BY-NC-SA 4.0.",
-      "modified": true
+      "modified": true,
+      "question_id": "act_codeorg_net_007",
+      "content_version": "1.1.0",
+      "question_type": "guided_experience",
+      "skill_tags": [
+        "internet-protocols",
+        "packet-routing",
+        "dns"
+      ],
+      "prerequisites": [
+        "network-basics"
+      ],
+      "source_type": "adapted_open_curriculum",
+      "source_reference": "https://code.org/educate/csp",
+      "licence": "CC BY-NC-SA 4.0",
+      "review_status": "approved",
+      "hint": "Focus on how information flows and what the goal of this step is.",
+      "domain_tags": [
+        "ai",
+        "web",
+        "cloud",
+        "networking"
+      ]
+    },
+    {
+      "id": "guided_robotics_001",
+      "question_id": "guided_robotics_001",
+      "category": "guided_activity",
+      "question_type": "guided_experience",
+      "topic": "robotics",
+      "domain_tags": [
+        "robotics",
+        "iot"
+      ],
+      "skills": [
+        "feedback-loops",
+        "sensor-actuator",
+        "obstacle-avoidance"
+      ],
+      "skill_tags": [
+        "feedback-loops",
+        "sensor-actuator",
+        "obstacle-avoidance"
+      ],
+      "difficulty": 1,
+      "prerequisites": [],
+      "questionText": "Guided Activity (Robotics Feedback Loop): You are programming a line-following delivery robot with two optical sensors (Left and Right). If the Left sensor sees black (the line) while the Right sensor sees white (the floor), how should the robot steer to stay centered?",
+      "options": [
+        "Steer Left by slowing down or reversing the left wheel",
+        "Steer Right by turning off the right wheel",
+        "Accelerate both wheels to maximum speed",
+        "Stop all motors and sound an emergency siren",
+        "I don't know / haven't learned this yet"
+      ],
+      "answer": "Steer Left by slowing down or reversing the left wheel",
+      "explanation": "Differential steering turns a robot towards the slower or reversed wheel. Slowing the left wheel corrects the robot trajectory back over the line.",
+      "hint": "Think about how a canoe turns when you paddle harder on only one side.",
+      "source": "Open Robotics Educational Curriculum",
+      "source_type": "original_reviewed",
+      "source_reference": "PathFinder Robotics Lab",
+      "license": "CC-BY-SA 4.0",
+      "licence": "CC-BY-SA 4.0",
+      "status": "approved",
+      "review_status": "approved",
+      "attribution_text": "Original reviewed curriculum by CSE PathFinder team under CC-BY-SA 4.0.",
+      "modified": false
+    },
+    {
+      "id": "guided_iot_002",
+      "question_id": "guided_iot_002",
+      "category": "guided_activity",
+      "question_type": "guided_experience",
+      "topic": "iot",
+      "domain_tags": [
+        "iot",
+        "cloud"
+      ],
+      "skills": [
+        "embedded-sensors",
+        "telemetry",
+        "actuators"
+      ],
+      "skill_tags": [
+        "embedded-sensors",
+        "telemetry",
+        "actuators"
+      ],
+      "difficulty": 1,
+      "prerequisites": [],
+      "questionText": "Guided Activity (Smart Greenhouse IoT): A temperature sensor in an automated greenhouse measures 38°C (threshold is 30°C). What sequence should the microcontroller execute to protect the crops?",
+      "options": [
+        "Activate exhaust fans immediately, send an alert to the farmer's phone, and log the reading",
+        "Shut down the power grid to the greenhouse permanently",
+        "Delete the temperature reading so the average looks normal",
+        "Heat the greenhouse further to calibrate the sensor",
+        "I don't know / haven't learned this yet"
+      ],
+      "answer": "Activate exhaust fans immediately, send an alert to the farmer's phone, and log the reading",
+      "explanation": "IoT systems pair local real-time actuation (turning on fans) with remote telemetry (cloud alerts and monitoring).",
+      "hint": "Consider both the immediate physical response and notifying the human supervisor.",
+      "source": "PathFinder Embedded Labs",
+      "source_type": "original_reviewed",
+      "source_reference": "PathFinder IoT Lab",
+      "license": "CC-BY-SA 4.0",
+      "licence": "CC-BY-SA 4.0",
+      "status": "approved",
+      "review_status": "approved",
+      "attribution_text": "Original reviewed curriculum by CSE PathFinder team under CC-BY-SA 4.0.",
+      "modified": false
+    },
+    {
+      "id": "guided_vlsi_003",
+      "question_id": "guided_vlsi_003",
+      "category": "guided_activity",
+      "question_type": "guided_experience",
+      "topic": "vlsi",
+      "domain_tags": [
+        "vlsi"
+      ],
+      "skills": [
+        "logic-gates",
+        "digital-timing",
+        "propagation-delay"
+      ],
+      "skill_tags": [
+        "logic-gates",
+        "digital-timing",
+        "propagation-delay"
+      ],
+      "difficulty": 2,
+      "prerequisites": [
+        "binary-basics"
+      ],
+      "questionText": "Guided Activity (VLSI Chip Timing): On a microchip, an AND gate output takes 2 nanoseconds to reach the input of an OR gate. Why must chip designers pay close attention to this \"propagation delay\"?",
+      "options": [
+        "Signals must arrive in time for the processor clock cycle, otherwise calculations produce corrupted errors",
+        "Propagation delay makes the silicon turn red and burn",
+        "It allows software to run without electricity",
+        "It converts digital 1s into analog sound waves",
+        "I don't know / haven't learned this yet"
+      ],
+      "answer": "Signals must arrive in time for the processor clock cycle, otherwise calculations produce corrupted errors",
+      "explanation": "Clock frequencies depend on the longest delay (critical path). If signals arrive late, flip-flops sample incorrect transitional states.",
+      "hint": "Think about a runner waiting for a baton pass before the timer runs out.",
+      "source": "Computer Architecture & Digital Logic Open Courseware",
+      "source_type": "original_reviewed",
+      "source_reference": "PathFinder VLSI Lab",
+      "license": "CC-BY-SA 4.0",
+      "licence": "CC-BY-SA 4.0",
+      "status": "approved",
+      "review_status": "approved",
+      "attribution_text": "Original reviewed curriculum by CSE PathFinder team under CC-BY-SA 4.0.",
+      "modified": false
+    },
+    {
+      "id": "comp_tradeoff_ai_data_001",
+      "question_id": "comp_tradeoff_ai_data_001",
+      "category": "interest",
+      "question_type": "interest",
+      "topic": "career_interest",
+      "domain_tags": [
+        "ai",
+        "data"
+      ],
+      "skills": [
+        "ai-vs-data-science",
+        "work-preference"
+      ],
+      "skill_tags": [
+        "ai-vs-data-science",
+        "work-preference"
+      ],
+      "difficulty": 1,
+      "prerequisites": [],
+      "questionText": "Work Preference Comparison (AI vs Data Science): Which type of daily challenge sounds more appealing to you?",
+      "options": [
+        "Building and tuning an AI model that learns to recognize medical scans autonomously (AI focus)",
+        "Analyzing hospital patient trends and health patterns to produce strategic insights for doctors (Data Science focus)",
+        "Both sound equally exciting to me",
+        "Neither sounds appealing",
+        "I don't know / haven't learned this yet"
+      ],
+      "answer": null,
+      "explanation": "Contrasts AI model training pipelines with exploratory business intelligence and statistical inquiry.",
+      "hint": "One focuses on teaching algorithms to act on new data; the other focuses on drawing conclusions from existing patterns.",
+      "source": "CSE PathFinder Career Exploration Model",
+      "source_type": "original_reviewed",
+      "source_reference": "PathFinder Career Explorer",
+      "license": "CC-BY-SA 4.0",
+      "licence": "CC-BY-SA 4.0",
+      "status": "approved",
+      "review_status": "approved",
+      "attribution_text": "Original reviewed curriculum by CSE PathFinder team under CC-BY-SA 4.0.",
+      "modified": false
+    },
+    {
+      "id": "comp_tradeoff_web_iot_002",
+      "question_id": "comp_tradeoff_web_iot_002",
+      "category": "interest",
+      "question_type": "interest",
+      "topic": "career_interest",
+      "domain_tags": [
+        "web",
+        "iot"
+      ],
+      "skills": [
+        "digital-vs-physical-interaction",
+        "work-preference"
+      ],
+      "skill_tags": [
+        "digital-vs-physical-interaction",
+        "work-preference"
+      ],
+      "difficulty": 1,
+      "prerequisites": [],
+      "questionText": "Work Preference Comparison (Interactive Apps vs Physical Devices): When you build something, where do you prefer to see it work?",
+      "options": [
+        "On a sleek screen with buttons, responsive layouts, and smooth animations (Web & App focus)",
+        "On a physical gadget on your desk with real buttons, LEDs, and motorized parts (IoT & Embedded focus)",
+        "Both sound equally rewarding",
+        "Neither sounds appealing",
+        "I don't know / haven't learned this yet"
+      ],
+      "answer": null,
+      "explanation": "Disambiguates between software visual interfaces and cyber-physical hardware creation.",
+      "hint": "Think about whether you enjoy screen-based design or working with tangible objects in the real world.",
+      "source": "CSE PathFinder Career Exploration Model",
+      "source_type": "original_reviewed",
+      "source_reference": "PathFinder Career Explorer",
+      "license": "CC-BY-SA 4.0",
+      "licence": "CC-BY-SA 4.0",
+      "status": "approved",
+      "review_status": "approved",
+      "attribution_text": "Original reviewed curriculum by CSE PathFinder team under CC-BY-SA 4.0.",
+      "modified": false
     }
   ]
 }

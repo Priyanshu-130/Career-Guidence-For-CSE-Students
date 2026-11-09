@@ -19,12 +19,18 @@
   },
   "behavior_adjustment_cap": {
     "max_percentage": 20,
-    "max_decimal": 0.20,
+    "max_decimal": 0.2,
     "rationale": "Behavior adjustment is capped at most +/-20% so it adjusts the hypothesis without overriding it."
   },
   "feedback_control": {
     "prompt": "Does this feel right? (1-5)",
-    "scale": [1, 2, 3, 4, 5],
+    "scale": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
     "purpose": "Validation data for recalibrating weights later"
   },
   "domains": [
@@ -32,7 +38,10 @@
       "id": "0",
       "key": "ai_ml",
       "title": "AI, ML & Deep Learning",
-      "onet_soc_codes": ["15-2051.00", "15-1221.00"],
+      "onet_soc_codes": [
+        "15-2051.00",
+        "15-1221.00"
+      ],
       "onet_occupations": [
         "Data Scientists",
         "Computer and Information Research Scientists"
@@ -45,13 +54,18 @@
         "S": 25,
         "E": 40,
         "C": 70
-      }
+      },
+      "canonical_id": "ai",
+      "domain_id": "ai"
     },
     {
       "id": "1",
       "key": "data_science",
       "title": "Data Science",
-      "onet_soc_codes": ["15-2051.00", "15-2041.00"],
+      "onet_soc_codes": [
+        "15-2051.00",
+        "15-2041.00"
+      ],
       "onet_occupations": [
         "Data Scientists",
         "Statisticians"
@@ -64,13 +78,19 @@
         "S": 35,
         "E": 65,
         "C": 88
-      }
+      },
+      "canonical_id": "data",
+      "domain_id": "data"
     },
     {
       "id": "2",
       "key": "web_app_game",
       "title": "Web, App & Game Development",
-      "onet_soc_codes": ["15-1254.00", "15-1255.00", "15-1252.00"],
+      "onet_soc_codes": [
+        "15-1254.00",
+        "15-1255.00",
+        "15-1252.00"
+      ],
       "onet_occupations": [
         "Web Developers",
         "Web and Digital Interface Designers",
@@ -84,13 +104,18 @@
         "S": 45,
         "E": 60,
         "C": 50
-      }
+      },
+      "canonical_id": "web",
+      "domain_id": "web"
     },
     {
       "id": "3",
       "key": "cyber_security_blockchain",
       "title": "Cyber Security & Blockchain",
-      "onet_soc_codes": ["15-1212.00", "15-1299.08"],
+      "onet_soc_codes": [
+        "15-1212.00",
+        "15-1299.08"
+      ],
       "onet_occupations": [
         "Information Security Analysts",
         "Computer Network Forensics Analysts"
@@ -103,13 +128,18 @@
         "S": 30,
         "E": 45,
         "C": 92
-      }
+      },
+      "canonical_id": "security",
+      "domain_id": "security"
     },
     {
       "id": "4",
       "key": "cloud_computing",
       "title": "Cloud Computing",
-      "onet_soc_codes": ["15-1244.00", "15-1252.00"],
+      "onet_soc_codes": [
+        "15-1244.00",
+        "15-1252.00"
+      ],
       "onet_occupations": [
         "Network and Computer Systems Administrators",
         "Software Developers"
@@ -122,13 +152,18 @@
         "S": 35,
         "E": 60,
         "C": 85
-      }
+      },
+      "canonical_id": "cloud",
+      "domain_id": "cloud"
     },
     {
       "id": "5",
       "key": "iot_embedded",
       "title": "IoT & Embedded Systems",
-      "onet_soc_codes": ["17-2072.00", "15-1252.00"],
+      "onet_soc_codes": [
+        "17-2072.00",
+        "15-1252.00"
+      ],
       "onet_occupations": [
         "Electronics Engineers, Except Computer",
         "Software Developers"
@@ -141,13 +176,18 @@
         "S": 20,
         "E": 30,
         "C": 70
-      }
+      },
+      "canonical_id": "iot",
+      "domain_id": "iot"
     },
     {
       "id": "6",
       "key": "robotics_automation",
       "title": "Robotics & Automation",
-      "onet_soc_codes": ["17-2199.08", "17-3024.01"],
+      "onet_soc_codes": [
+        "17-2199.08",
+        "17-3024.01"
+      ],
       "onet_occupations": [
         "Robotics Engineers",
         "Robotics Technicians"
@@ -160,13 +200,18 @@
         "S": 20,
         "E": 45,
         "C": 60
-      }
+      },
+      "canonical_id": "robotics",
+      "domain_id": "robotics"
     },
     {
       "id": "7",
       "key": "vlsi_architecture",
       "title": "VLSI & Computer Architecture",
-      "onet_soc_codes": ["17-2061.00", "17-2071.00"],
+      "onet_soc_codes": [
+        "17-2061.00",
+        "17-2071.00"
+      ],
       "onet_occupations": [
         "Computer Hardware Engineers",
         "Electrical Engineers"
@@ -179,13 +224,18 @@
         "S": 15,
         "E": 30,
         "C": 80
-      }
+      },
+      "canonical_id": "vlsi",
+      "domain_id": "vlsi"
     },
     {
       "id": "8",
       "key": "networking_systems",
       "title": "Networking & Communication Systems",
-      "onet_soc_codes": ["15-1241.00", "15-1244.00"],
+      "onet_soc_codes": [
+        "15-1241.00",
+        "15-1244.00"
+      ],
       "onet_occupations": [
         "Computer Network Architects",
         "Network and Computer Systems Administrators"
@@ -198,7 +248,9 @@
         "S": 35,
         "E": 50,
         "C": 90
-      }
+      },
+      "canonical_id": "networking",
+      "domain_id": "networking"
     }
   ]
 }
