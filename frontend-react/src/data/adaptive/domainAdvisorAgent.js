@@ -290,3 +290,4 @@ export function computeFinalResults(session, track = 'software') {
     agentSummary: `Based on your ${totalAnswers} choices, our AI Agent identified ${topDomainInfo.name} as your natural sweet spot. Your choices demonstrate strong alignment with: ${topDomainInfo.plainSummary}`
   };
 }
+
