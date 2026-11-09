@@ -332,7 +332,7 @@ export default function Results() {
         </div>
 
         {/* 2. HEADER */}
-        <div style={{ marginBottom: '3.5rem' }}>
+        <div style={{ marginBottom: '3rem' }}>
           <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 600, color: '#E85D3F', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
             EVALUATION VERDICT & DIRECTION
           </div>
@@ -343,6 +343,199 @@ export default function Results() {
             Synthesized through RIASEC occupational resonance, algorithmic logic deduction, and practical engineering simulation.
           </p>
         </div>
+
+        {/* 2.5 EXPLAINABLE CANDIDATE SHORTLIST (TOP 2-3 DOMAINS) */}
+        {resultsData.shortlist && resultsData.shortlist.length > 0 && (
+          <div style={{ marginBottom: '3.5rem' }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '1rem',
+              marginBottom: '1rem'
+            }}>
+              <div style={{
+                fontFamily: "'DM Mono', monospace",
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                color: '#E85D3F',
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase'
+              }}>
+                EXPLAINABLE CANDIDATE SHORTLIST // EXPLORE SUITABLE DOMAINS
+              </div>
+
+              {resultsData.uncertainty_index && (
+                <div style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.35rem 0.85rem',
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #D8DAD7',
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: '0.75rem'
+                }}>
+                  <span style={{ color: '#50545B' }}>UNCERTAINTY INDEX:</span>
+                  <span style={{
+                    fontWeight: 700,
+                    color: resultsData.uncertainty_index === 'Low' ? '#10B981' : resultsData.uncertainty_index === 'Moderate' ? '#D97706' : '#6366F1'
+                  }}>
+                    {resultsData.uncertainty_index.toUpperCase()}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {resultsData.uncertainty_description && (
+              <p style={{ color: '#50545B', fontSize: '0.9375rem', marginBottom: '1.5rem', maxWidth: '820px', lineHeight: 1.6 }}>
+                💡 <strong>Decision Support Note:</strong> {resultsData.uncertainty_description}
+              </p>
+            )}
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+              gap: '1.5rem',
+              marginBottom: '2rem'
+            }}>
+              {resultsData.shortlist.map((cand) => {
+                const isRank1 = cand.rank === 1;
+                return (
+                  <div
+                    key={cand.domainId}
+                    style={{
+                      backgroundColor: '#FFFFFF',
+                      border: isRank1 ? '2px solid #E85D3F' : '1px solid #D8DAD7',
+                      padding: '2rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      boxShadow: isRank1 ? '0 8px 24px rgba(232, 93, 63, 0.08)' : 'none'
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                        <span style={{
+                          fontFamily: "'DM Mono', monospace",
+                          fontSize: '0.6875rem',
+                          fontWeight: 700,
+                          color: isRank1 ? '#E85D3F' : '#50545B',
+                          backgroundColor: isRank1 ? '#FFF0EB' : '#F7F7F4',
+                          padding: '0.2rem 0.5rem',
+                          border: isRank1 ? '1px solid #E85D3F' : '1px solid #D8DAD7'
+                        }}>
+                          {cand.tier?.toUpperCase()}
+                        </span>
+                        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.9375rem', fontWeight: 800, color: '#17191C' }}>
+                          {cand.matchPct}% MATCH
+                        </span>
+                      </div>
+
+                      <h3 style={{
+                        fontFamily: "'Barlow Condensed', sans-serif",
+                        fontSize: '1.85rem',
+                        fontWeight: 800,
+                        textTransform: 'uppercase',
+                        color: '#17191C',
+                        margin: '0 0 0.75rem 0'
+                      }}>
+                        {cand.title}
+                      </h3>
+
+                      <p style={{ color: '#50545B', fontSize: '0.875rem', lineHeight: 1.5, margin: '0 0 1.25rem 0' }}>
+                        {cand.summary}
+                      </p>
+
+                      {cand.careers && (
+                        <div style={{
+                          fontFamily: "'DM Mono', monospace",
+                          fontSize: '0.6875rem',
+                          color: '#646A73',
+                          paddingTop: '0.75rem',
+                          borderTop: '1px dashed #D8DAD7',
+                          marginBottom: '1.5rem'
+                        }}>
+                          ROLES: {cand.careers.slice(0, 3).join(' · ')}
+                        </div>
+                      )}
+                    </div>
+
+                    <Link
+                      to={`/roadmap/${cand.domainId}`}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.5rem',
+                        backgroundColor: isRank1 ? '#17191C' : '#FFFFFF',
+                        color: isRank1 ? '#FFFFFF' : '#17191C',
+                        border: '1px solid #17191C',
+                        fontFamily: "'Barlow Condensed', sans-serif",
+                        fontSize: '0.9375rem',
+                        fontWeight: 700,
+                        letterSpacing: '0.04em',
+                        textTransform: 'uppercase',
+                        padding: '0.75rem 1.25rem',
+                        textDecoration: 'none',
+                        transition: 'all 0.15s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#E85D3F';
+                        e.currentTarget.style.borderColor = '#E85D3F';
+                        e.currentTarget.style.color = '#FFFFFF';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = isRank1 ? '#17191C' : '#FFFFFF';
+                        e.currentTarget.style.borderColor = '#17191C';
+                        e.currentTarget.style.color = isRank1 ? '#FFFFFF' : '#17191C';
+                      }}
+                    >
+                      <span>CHOOSE & VIEW ROADMAP</span>
+                      <ArrowRight size={14} />
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* DECOUPLED EVIDENCE LEDGER (WHY THIS FITS & CAUTIONS) */}
+            {resultsData.evidence_ledger && (
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                gap: '1.5rem',
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #D8DAD7',
+                padding: '2rem'
+              }}>
+                <div>
+                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 700, color: '#10B981', marginBottom: '0.75rem' }}>
+                    ✓ SUPPORTING SESSION EVIDENCE
+                  </div>
+                  <ul style={{ margin: 0, paddingLeft: '1.25rem', color: '#50545B', fontSize: '0.875rem', lineHeight: 1.6 }}>
+                    {resultsData.evidence_ledger.whyItFits?.map((point, idx) => (
+                      <li key={idx} style={{ marginBottom: '0.4rem' }}>{point}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div>
+                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 700, color: '#D97706', marginBottom: '0.75rem' }}>
+                    ⚠ CAUTIONS & DECISION EXPLORATION
+                  </div>
+                  <ul style={{ margin: 0, paddingLeft: '1.25rem', color: '#50545B', fontSize: '0.875rem', lineHeight: 1.6 }}>
+                    {resultsData.evidence_ledger.cautionOpenQuestions?.map((point, idx) => (
+                      <li key={idx} style={{ marginBottom: '0.4rem' }}>{point}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+          </div>
+        )}
 
         {/* 3. HERO VERDICT: HIGH CONTRAST CARD */}
         <div style={{

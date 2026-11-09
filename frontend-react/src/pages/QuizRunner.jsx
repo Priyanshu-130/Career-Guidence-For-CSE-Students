@@ -28,33 +28,36 @@ import {
 } from 'lucide-react';
 
 export default function QuizRunner() {
-  const { track = 'software' } = useParams();
+  const { track = 'beginner' } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const TOTAL_TARGET_QUESTIONS = 10;
+  const TOTAL_TARGET_QUESTIONS = 25;
 
-  // Track choice: 'software' | 'hardware' | 'general'
-  const [activeTrack, setActiveTrack] = useState(track || 'software');
+  // Track choice: 'beginner' | 'experienced' | 'software' | 'hardware'
+  const routeType = (track === 'experienced' || track === 'hardware') ? 'experienced' : 'beginner';
+  const [activeTrack, setActiveTrack] = useState(routeType);
 
   // AI Agent Guided Session - Instantly initialize on mount with Question 1
-  const [agentSession, setAgentSession] = useState(() => initAgentSession(track || 'software', TOTAL_TARGET_QUESTIONS));
+  const [agentSession, setAgentSession] = useState(() => initAgentSession(routeType, TOTAL_TARGET_QUESTIONS));
   const [selectedOptionKey, setSelectedOptionKey] = useState(null);
   const [showPlainEnglishHelper, setShowPlainEnglishHelper] = useState(true);
   const [loading, setLoading] = useState(false);
 
   // Sync track when URL param changes
   useEffect(() => {
-    if (track && track !== activeTrack) {
-      setActiveTrack(track);
-      setAgentSession(initAgentSession(track, TOTAL_TARGET_QUESTIONS));
+    const currentRoute = (track === 'experienced' || track === 'hardware') ? 'experienced' : 'beginner';
+    if (currentRoute !== activeTrack) {
+      setActiveTrack(currentRoute);
+      setAgentSession(initAgentSession(currentRoute, TOTAL_TARGET_QUESTIONS));
       setSelectedOptionKey(null);
     }
   }, [track]);
 
   const handleTrackChange = (newTrack) => {
-    setActiveTrack(newTrack);
-    setAgentSession(initAgentSession(newTrack, TOTAL_TARGET_QUESTIONS));
+    const targetRoute = (newTrack === 'experienced' || newTrack === 'hardware') ? 'experienced' : 'beginner';
+    setActiveTrack(targetRoute);
+    setAgentSession(initAgentSession(targetRoute, TOTAL_TARGET_QUESTIONS));
     setSelectedOptionKey(null);
   };
 
@@ -67,7 +70,6 @@ export default function QuizRunner() {
 
     // Pass the student's answer to the AI Agent to evaluate & adapt
     const nextSession = agentNextQuestion({
-      track: activeTrack,
       currentSession: agentSession,
       selectedOptionKey
     });
@@ -83,7 +85,7 @@ export default function QuizRunner() {
   const finalizeResults = async (completedSession) => {
     setLoading(true);
 
-    const finalResults = computeFinalResults(completedSession, activeTrack);
+    const finalResults = computeFinalResults(completedSession);
 
     // Save to backend if authenticated
     if (user && !user.isGuest) {
@@ -120,7 +122,7 @@ export default function QuizRunner() {
 
   // Options can be an object { A: '...', B: '...' } or array
   const optionsList = Array.isArray(currentQ.options)
-    ? currentQ.options.map((text, idx) => ({ key: String.fromCharCode(65 + idx), text }))
+    ? currentQ.options.map((opt, idx) => (typeof opt === 'string' ? { key: String.fromCharCode(65 + idx), text: opt } : opt))
     : Object.entries(currentQ.options).map(([key, text]) => ({ key, text }));
 
   // Leading domain info
@@ -179,12 +181,11 @@ export default function QuizRunner() {
               {currentQ.category?.toUpperCase() || 'CAREER ALIGNMENT'}
             </span>
             <span style={{ color: '#D8DAD7' }}>|</span>
-            <span style={{ color: '#50545B' }}>TRACK:</span>
+            <span style={{ color: '#50545B' }}>ROUTE:</span>
             <div style={{ display: 'inline-flex', gap: '4px' }}>
               {[
-                { id: 'software', label: 'Software' },
-                { id: 'hardware', label: 'Hardware' },
-                { id: 'general', label: 'General' }
+                { id: 'beginner', label: 'Route 1: Discovery' },
+                { id: 'experienced', label: 'Route 2: Calibration' }
               ].map(({ id, label }) => (
                 <button
                   key={id}
@@ -335,6 +336,20 @@ export default function QuizRunner() {
             </button>
           </div>
 
+          {/* Source Attribution Tag */}
+          {currentQ.provenance && (
+            <div style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: '0.6875rem',
+              color: '#646A73',
+              marginBottom: '0.85rem'
+            }}>
+              <span style={{ color: '#E85D3F', fontWeight: 700 }}>[ATTRIBUTION:</span> {currentQ.provenance.source} · {currentQ.provenance.license}
+              {currentQ.provenance.is_modified && <span> · Adapted</span>}
+              <span style={{ color: '#E85D3F', fontWeight: 700 }}>]</span>
+            </div>
+          )}
+
           {/* Question Text */}
           <h2 style={{
             fontFamily: "'Manrope', sans-serif",
@@ -349,9 +364,12 @@ export default function QuizRunner() {
 
           {/* Options Grid */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {optionsList.map(({ key, text }) => {
+            {optionsList.map((opt) => {
+              const key = opt.key;
+              const text = opt.text;
               const isChecked = selectedOptionKey === key;
               const explainer = BEGINNER_EXPLAINERS[key];
+              const careerInsight = opt.careerMeaning || explainer?.description;
 
               return (
                 <div
@@ -427,8 +445,8 @@ export default function QuizRunner() {
                     </div>
                   </div>
 
-                  {/* Beginner Plain English Helper Card (if toggled or selected) */}
-                  {(showPlainEnglishHelper || isChecked) && explainer && (
+                  {/* Career Meaning & Beginner Plain English Helper Card */}
+                  {(showPlainEnglishHelper || isChecked) && careerInsight && (
                     <div style={{
                       marginTop: '0.85rem',
                       paddingTop: '0.75rem',
@@ -438,9 +456,9 @@ export default function QuizRunner() {
                       lineHeight: 1.5
                     }}>
                       <strong style={{ color: '#E85D3F', fontFamily: "'DM Mono', monospace" }}>
-                        Connects to {explainer.title}:
+                        Career Connection:
                       </strong>{' '}
-                      {explainer.description}
+                      {careerInsight}
                     </div>
                   )}
 

@@ -128,142 +128,209 @@ export default function QuizSelection() {
           </p>
         </div>
 
-        {/* 3. FEATURED RECOMMENDED ASSESSMENT: ADAPTIVE CAREER ASSESSMENT */}
+        {/* 3. TWO PRIMARY STARTING ROUTES */}
         <section style={{ marginBottom: '3.5rem' }}>
-          <div 
-            onClick={() => setSelectedTrack('adaptive')}
-            style={{
+          <div style={{
+            fontFamily: "'DM Mono', monospace",
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            color: '#E85D3F',
+            marginBottom: '1rem'
+          }}>
+            STARTING TRAJECTORY // SELECT YOUR EXPERIENCE LEVEL
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+            gap: '2rem'
+          }}>
+
+            {/* ROUTE 1: ZERO-PREREQUISITE BEGINNER DISCOVERY */}
+            <div style={{
               backgroundColor: '#FFFFFF',
-              border: selectedTrack === 'adaptive' ? '2px solid #E85D3F' : '1px solid #D8DAD7',
-              boxShadow: selectedTrack === 'adaptive' ? '0 12px 32px rgba(232, 93, 63, 0.08)' : '0 2px 8px rgba(0, 0, 0, 0.02)',
-              padding: 'clamp(2rem, 4vw, 3.25rem)',
-              position: 'relative',
-              transition: 'all 0.2s ease',
-              cursor: 'pointer'
-            }}
-          >
-            {/* Top Tag & Metadata */}
-            <div style={{
+              border: '2px solid #E85D3F',
+              boxShadow: '0 8px 24px rgba(232, 93, 63, 0.06)',
+              padding: 'clamp(2rem, 3.5vw, 2.75rem)',
               display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '1rem',
-              marginBottom: '1.75rem'
-            }}>
-              <div style={{
-                fontFamily: "'DM Mono', monospace",
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                color: '#50545B',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}>
-                <span style={{ color: '#E85D3F', fontWeight: 700 }}>RECOMMENDED</span>
-                <span style={{ color: '#D8DAD7' }}>·</span>
-                <span>ADAPTIVE ENGINE</span>
-              </div>
-
-              <div style={{
-                fontFamily: "'DM Mono', monospace",
-                fontSize: '0.75rem',
-                color: '#646A73'
-              }}>
-                ACCREDITATION: O*NET + ACM/IEEE
-              </div>
-            </div>
-
-            {/* Title & Description Grid */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'minmax(0, 1fr) auto',
-              alignItems: 'center',
-              gap: '2.5rem',
-              flexWrap: 'wrap'
+              flexDirection: 'column',
+              justifyContent: 'space-between'
             }}>
               <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                  <span style={{
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    color: '#E85D3F',
+                    backgroundColor: '#FFF0EB',
+                    padding: '0.25rem 0.65rem',
+                    border: '1px solid #E85D3F'
+                  }}>
+                    ROUTE 01 · RECOMMENDED FOR BEGINNERS
+                  </span>
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#646A73' }}>
+                    25 ADAPTIVE ITEMS
+                  </span>
+                </div>
+
                 <h2 style={{
                   fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: 'clamp(2rem, 4vw, 3rem)',
+                  fontSize: 'clamp(2rem, 3.5vw, 2.75rem)',
                   fontWeight: 800,
                   textTransform: 'uppercase',
-                  letterSpacing: '-0.01em',
                   color: '#17191C',
                   margin: '0 0 1rem 0'
                 }}>
-                  Adaptive Career Assessment
+                  Zero-Prerequisite Discovery
                 </h2>
 
-                <p style={{
-                  fontSize: '1.0625rem',
-                  lineHeight: 1.65,
-                  color: '#50545B',
-                  maxWidth: '780px',
-                  margin: 0
-                }}>
-                  An intelligent multi-stage assessment that evaluates your background, identifies your knowledge level, and adapts subsequent questions to your abilities.
+                <p style={{ color: '#50545B', fontSize: '1rem', lineHeight: 1.6, margin: '0 0 1.5rem 0' }}>
+                  You don’t need any coding knowledge yet. Our AI Agent guides you through intuitive problem-solving scenarios, work preferences, and plain-English role explainers to reveal where your natural strengths lie.
                 </p>
 
-                {/* Badges / Micro Features */}
                 <div style={{
                   display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '0.75rem',
-                  marginTop: '1.5rem',
+                  flexDirection: 'column',
+                  gap: '0.5rem',
                   fontFamily: "'DM Mono', monospace",
                   fontSize: '0.75rem',
-                  color: '#50545B'
+                  color: '#50545B',
+                  marginBottom: '2rem',
+                  paddingTop: '1rem',
+                  borderTop: '1px solid #D8DAD7'
                 }}>
-                  <span style={{ padding: '0.35rem 0.75rem', backgroundColor: '#F7F7F4', border: '1px solid #D8DAD7' }}>
-                    • ZERO-KNOWLEDGE & ADVANCED TRACKS
-                  </span>
-                  <span style={{ padding: '0.35rem 0.75rem', backgroundColor: '#F7F7F4', border: '1px solid #D8DAD7' }}>
-                    • 109 VERIFIED QUESTIONS
-                  </span>
-                  <span style={{ padding: '0.35rem 0.75rem', backgroundColor: '#F7F7F4', border: '1px solid #D8DAD7' }}>
-                    • 100% OFFLINE READY
-                  </span>
+                  <div>✓ 0% Coding Syntax Required · 100% Intuitive</div>
+                  <div>✓ Plain-English Career Meaning for Every Option</div>
+                  <div>✓ Explainable Shortlist of Top 2–3 Domains + Uncertainty</div>
                 </div>
               </div>
 
-              {/* Primary CTA */}
+              <Link
+                to="/quiz/beginner"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.75rem',
+                  backgroundColor: '#17191C',
+                  color: '#FFFFFF',
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: '1.125rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  padding: '1.125rem 2rem',
+                  textDecoration: 'none',
+                  border: '1px solid #17191C',
+                  transition: 'all 0.15s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#E85D3F';
+                  e.currentTarget.style.borderColor = '#E85D3F';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#17191C';
+                  e.currentTarget.style.borderColor = '#17191C';
+                }}
+              >
+                <span>LAUNCH BEGINNER DISCOVERY</span>
+                <ArrowRight size={18} />
+              </Link>
+            </div>
+
+            {/* ROUTE 2: TARGETED CALIBRATION & READINESS */}
+            <div style={{
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #D8DAD7',
+              padding: 'clamp(2rem, 3.5vw, 2.75rem)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between'
+            }}>
               <div>
-                <Link
-                  to="/assess"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.75rem',
-                    backgroundColor: '#17191C',
-                    color: '#FFFFFF',
-                    fontFamily: "'Barlow Condensed', sans-serif",
-                    fontSize: '1.125rem',
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                  <span style={{
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: '0.75rem',
                     fontWeight: 700,
-                    letterSpacing: '0.06em',
-                    textTransform: 'uppercase',
-                    padding: '1.125rem 2.25rem',
-                    textDecoration: 'none',
-                    border: '1px solid #17191C',
-                    whiteSpace: 'nowrap',
-                    transition: 'all 0.15s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#E85D3F';
-                    e.currentTarget.style.borderColor = '#E85D3F';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#17191C';
-                    e.currentTarget.style.borderColor = '#17191C';
-                  }}
-                >
-                  <span>START ADAPTIVE ASSESSMENT</span>
-                  <ArrowRight size={18} />
-                </Link>
+                    color: '#50545B',
+                    backgroundColor: '#F7F7F4',
+                    padding: '0.25rem 0.65rem',
+                    border: '1px solid #D8DAD7'
+                  }}>
+                    ROUTE 02 · FOR EXPERIENCED STUDENTS
+                  </span>
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#646A73' }}>
+                    25 ADAPTIVE ITEMS
+                  </span>
+                </div>
+
+                <h2 style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: 'clamp(2rem, 3.5vw, 2.75rem)',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  color: '#17191C',
+                  margin: '0 0 1rem 0'
+                }}>
+                  Targeted Calibration & Readiness
+                </h2>
+
+                <p style={{ color: '#50545B', fontSize: '1rem', lineHeight: 1.6, margin: '0 0 1.5rem 0' }}>
+                  Have existing coding experience or a specific domain in mind? Test your technical depth against realistic engineering trade-offs and evaluate prerequisite readiness without penalties.
+                </p>
+
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.5rem',
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: '0.75rem',
+                  color: '#50545B',
+                  marginBottom: '2rem',
+                  paddingTop: '1rem',
+                  borderTop: '1px solid #D8DAD7'
+                }}>
+                  <div>✓ Domain Depth Scenarios & Production Incidents</div>
+                  <div>✓ Decoupled Readiness Checks (Low score ≠ Eliminated)</div>
+                  <div>✓ Prerequisite Gap Tagging for Personalized Roadmap</div>
+                </div>
               </div>
+
+              <Link
+                to="/quiz/experienced"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.75rem',
+                  backgroundColor: '#FFFFFF',
+                  color: '#17191C',
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: '1.125rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  padding: '1.125rem 2rem',
+                  textDecoration: 'none',
+                  border: '1px solid #17191C',
+                  transition: 'all 0.15s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#17191C';
+                  e.currentTarget.style.color = '#FFFFFF';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#FFFFFF';
+                  e.currentTarget.style.color = '#17191C';
+                }}
+              >
+                <span>CALIBRATE TECHNICAL READINESS</span>
+                <ArrowRight size={18} />
+              </Link>
             </div>
 
           </div>
