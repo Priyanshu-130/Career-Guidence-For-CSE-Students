@@ -399,9 +399,9 @@
     <h2 class="s2-title">Autonomous Corridor Mesh</h2>
     <p class="s2-desc">Resolve zero-collision paths across dense space</p>
     <div class="s2-icons">
-      <span class="s2-icon"></span>
-      <span class="s2-icon"></span>
-      <span class="s2-icon"></span>
+      <span class="s2-icon">⌖</span>
+      <span class="s2-icon">⇶</span>
+      <span class="s2-icon">⍿</span>
     </div>
   </header>
 
@@ -979,8 +979,13 @@
 
       // Camera State Interpolation (k = ease(range(progress, .08, .92)))
       const k = ease(range(progress, 0.08, 0.92));
-      currentCamPos.lerpVectors(camPosA, camPosB, k);
-      currentTarget.lerpVectors(targetA, targetB, k);
+      if (reducedMotion) {
+        currentCamPos.copy(camPosA);
+        currentTarget.copy(targetA);
+      } else {
+        currentCamPos.lerpVectors(camPosA, camPosB, k);
+        currentTarget.lerpVectors(targetA, targetB, k);
+      }
 
       // Portrait aspect adjustment
       if (camera.aspect < 1.0) {
@@ -997,9 +1002,15 @@
       camera.lookAt(currentTarget);
 
       // Raft Pivot Rotation
-      raftPivot.rotation.x = lerp(0.12, -0.04, k);
-      raftPivot.rotation.y = lerp(3.42, 2.42, k);
-      raftPivot.rotation.z = lerp(0.06, 0.0, k);
+      if (reducedMotion) {
+        raftPivot.rotation.x = 0.12;
+        raftPivot.rotation.y = 3.42;
+        raftPivot.rotation.z = 0.06;
+      } else {
+        raftPivot.rotation.x = lerp(0.12, -0.04, k);
+        raftPivot.rotation.y = lerp(3.42, 2.42, k);
+        raftPivot.rotation.z = lerp(0.06, 0.0, k);
+      }
 
       // Raft Bobbing
       if (!reducedMotion) {
@@ -1021,31 +1032,38 @@
       heroHalo.position.y = -0.85 + raftBob.position.y * 0.4;
 
       // Survey Field
-      const r2 = ease(range(progress, 0.5, 0.95));
-      const sScale = lerp(0.35, 1.0, r2);
-      surveyField.scale.setScalar(sScale);
+      if (reducedMotion) {
+        const inRegion2 = progress >= 0.5;
+        surveyField.scale.setScalar(inRegion2 ? 1.0 : 0.001);
+        for (let i = 0; i < 4; i++) {
+          ringMaterials[i].opacity = inRegion2 ? ringSpecs[i].maxOp : 0;
+        }
+        scanWave.scale.setScalar(0.001);
+        scanWaveMat.uniforms.uOpacity.value = 0;
+      } else {
+        const r2 = ease(range(progress, 0.5, 0.95));
+        const sScale = lerp(0.35, 1.0, r2);
+        surveyField.scale.setScalar(sScale);
 
-      // Ring Opacities
-      for (let i = 0; i < 4; i++) {
-        const ringProg = range(progress, 0.5 + i * 0.07, 0.75 + i * 0.07);
-        ringMaterials[i].opacity = ease(ringProg) * ringSpecs[i].maxOp;
-      }
+        // Ring Opacities
+        for (let i = 0; i < 4; i++) {
+          const ringProg = range(progress, 0.5 + i * 0.07, 0.75 + i * 0.07);
+          ringMaterials[i].opacity = ease(ringProg) * ringSpecs[i].maxOp;
+        }
 
-      // Scan Wave
-      if (!reducedMotion) {
+        // Scan Wave
         const scanCycle = (time * 0.35) % 1;
         const scanScale = lerp(2.0, 10.0, scanCycle);
         scanWave.scale.setScalar(scanScale);
         scanWaveMat.uniforms.uOpacity.value = range(progress, 0.55, 0.75) * (1 - scanCycle) * 0.75;
-      } else {
-        scanWave.scale.setScalar(progress > 0.5 ? 5.0 : 0.001);
-        scanWaveMat.uniforms.uOpacity.value = progress > 0.5 ? 0.35 : 0;
       }
 
       // Waypoint Markers
       for (let i = 0; i < markers.length; i++) {
         const m = markers[i];
-        const vis = ease(range(progress, 0.62 + m.delay, 0.82 + m.delay));
+        const vis = reducedMotion 
+          ? (progress >= 0.5 ? 1.0 : 0) 
+          : ease(range(progress, 0.62 + m.delay, 0.82 + m.delay));
         const curAngle = m.angle + (reducedMotion ? 0 : time * m.speed);
         m.mesh.position.set(Math.cos(curAngle) * m.radius, 0.01, Math.sin(curAngle) * m.radius);
         m.mesh.rotation.z = -curAngle + (m.speed > 0 ? 0 : Math.PI);
