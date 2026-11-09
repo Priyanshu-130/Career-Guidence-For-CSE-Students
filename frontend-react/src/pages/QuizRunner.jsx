@@ -2,195 +2,91 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getApiBaseUrl } from '../utils/roadmapHelper';
 import { useAuth } from '../context/AuthContext';
-import { getAdaptiveQuestion, QUIZ_STRUCTURE } from '../data/adaptive/adaptiveRouter';
-import { domainMapping } from '../data/adaptive/adaptiveEngine';
-import domainMappingConfig from '../data/adaptive/domain_mapping_version.json';
+import { 
+  initAgentSession, 
+  agentNextQuestion, 
+  computeFinalResults, 
+  DOMAIN_METADATA,
+  BEGINNER_EXPLAINERS 
+} from '../data/adaptive/domainAdvisorAgent';
+import { QUIZ_DATA } from '../data/questions';
 import { 
   ArrowRight, 
   ArrowLeft, 
   Check, 
   Terminal, 
   Activity, 
-  Crosshair, 
+  Sparkles, 
   ShieldCheck, 
   Compass, 
   Cpu, 
   Layers,
-  Sparkles,
-  HelpCircle
+  HelpCircle,
+  Lightbulb,
+  Bot,
+  BrainCircuit
 } from 'lucide-react';
 
 export default function QuizRunner() {
-  const { track } = useParams();
+  const { track = 'software' } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
 
   // Wizard stage: 'intro' | 'quiz' | 'submitting'
   const [stage, setStage] = useState('intro');
 
-  // Track choice: 'beginner' (Track 1) | 'prereq' (Track 2)
-  const [selectedTrack, setSelectedTrack] = useState('beginner');
+  // Track choice: 'software' | 'hardware' | 'general'
+  const [activeTrack, setActiveTrack] = useState(track || 'software');
 
   // Step 1: Student Intro Profile
-  const [introProfile, setIntroProfile] = useState({
-    semester: 3,
-    experienceLevel: 'beginner', // 'zero' | 'beginner' | 'intermediate' | 'experienced'
-    preferredArea: 'AI, ML & Data Science',
-    codingConfidence: 'Exploring foundations'
+  const [studentBio, setStudentBio] = useState({
+    experienceLevel: 'beginner',
+    curiosityArea: 'Undecided / Exploring'
   });
 
-  // Step 2: Adaptive Quiz Running State
-  const TOTAL_QUESTIONS = QUIZ_STRUCTURE.TOTAL_QUESTIONS; // 21 total: 6 logic, 10 interest, 5 guided
-  const [currentStep, setCurrentStep] = useState(1);
-  const [currentQuestion, setCurrentQuestion] = useState(null);
-  const [agentReasoning, setAgentReasoning] = useState('');
-  const [categoryLabel, setCategoryLabel] = useState('');
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [answers, setAnswers] = useState({});
-  const [askedIds, setAskedIds] = useState([]);
-  const [currentLadderLevel, setCurrentLadderLevel] = useState(2);
+  // Step 2: AI Agent Guided Session
+  const TOTAL_TARGET_QUESTIONS = 10;
+  const [agentSession, setAgentSession] = useState(null);
+  const [selectedOptionKey, setSelectedOptionKey] = useState(null);
+  const [showPlainEnglishHelper, setShowPlainEnglishHelper] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [questionStartTime, setQuestionStartTime] = useState(Date.now());
 
-  // Initial question load upon entering quiz stage
-  const startAdaptiveSession = () => {
-    let startLvl = 2;
-    if (selectedTrack === 'beginner') {
-      startLvl = introProfile.experienceLevel === 'zero' ? 1 : 2;
-    } else {
-      startLvl = introProfile.experienceLevel === 'experienced' ? 4 : 3;
-    }
-    setCurrentLadderLevel(startLvl);
+  // Initialize the AI Agent Session when entering the quiz stage
+  const startAgentSession = () => {
+    const session = initAgentSession(activeTrack, TOTAL_TARGET_QUESTIONS);
+    setAgentSession(session);
+    setSelectedOptionKey(null);
+    setStage('quiz');
+  };
 
-    const initial = getAdaptiveQuestion({
-      stepNumber: 1,
-      previousAnswers: {},
-      studentIntro: { ...introProfile, track: selectedTrack },
-      askedQuestionIds: [],
-      currentLadderLevel: startLvl
+  const handleSelectOption = (key) => {
+    setSelectedOptionKey(key);
+  };
+
+  const handleNextStep = () => {
+    if (!selectedOptionKey || !agentSession) return;
+
+    // Pass the student's answer to the AI Agent to evaluate & adapt
+    const nextSession = agentNextQuestion({
+      track: activeTrack,
+      currentSession: agentSession,
+      selectedOptionKey
     });
 
-    if (initial) {
-      setCurrentQuestion(initial.question);
-      setAgentReasoning(initial.reasoning);
-      setCategoryLabel(initial.categoryLabel);
-      setCurrentLadderLevel(initial.targetDifficulty);
-      setAskedIds([initial.question.id]);
-      setQuestionStartTime(Date.now());
-      setStage('quiz');
-    }
-  };
-
-  const handleSelectOption = (optText) => {
-    setSelectedOption(optText);
-  };
-
-  const handleNextQuestion = () => {
-    if (!selectedOption) return;
-
-    const timeTaken = Math.round((Date.now() - questionStartTime) / 1000);
-    const isDontKnow = selectedOption.includes("I don't know");
-    const isCorrect = currentQuestion.category === 'interest' 
-      ? true 
-      : (!isDontKnow && selectedOption === currentQuestion.answer);
-
-    const updatedAnswers = {
-      ...answers,
-      [currentQuestion.id]: {
-        questionId: currentQuestion.id,
-        category: currentQuestion.category,
-        topic: currentQuestion.topic,
-        difficulty: currentQuestion.difficulty,
-        answer: selectedOption,
-        isCorrect,
-        isDontKnow,
-        timeTaken,
-        riasec: currentQuestion.riasec || null
-      }
-    };
-    setAnswers(updatedAnswers);
-
-    if (currentStep < TOTAL_QUESTIONS) {
-      const nextStepNum = currentStep + 1;
-      const nextResult = getAdaptiveQuestion({
-        stepNumber: nextStepNum,
-        previousAnswers: updatedAnswers,
-        studentIntro: { ...introProfile, track: selectedTrack },
-        askedQuestionIds: askedIds,
-        currentLadderLevel: currentLadderLevel
-      });
-
-      if (nextResult) {
-        setCurrentQuestion(nextResult.question);
-        setAgentReasoning(nextResult.reasoning);
-        setCategoryLabel(nextResult.categoryLabel);
-        setCurrentLadderLevel(nextResult.targetDifficulty);
-        setAskedIds(prev => [...prev, nextResult.question.id]);
-        setSelectedOption(null);
-        setCurrentStep(nextStepNum);
-        setQuestionStartTime(Date.now());
-      }
+    if (nextSession.isComplete) {
+      finalizeResults(nextSession);
     } else {
-      finalizeAndSubmitResults(updatedAnswers);
+      setAgentSession(nextSession);
+      setSelectedOptionKey(null);
     }
   };
 
-  const finalizeAndSubmitResults = async (finalAnswers) => {
+  const finalizeResults = async (completedSession) => {
     setLoading(true);
 
-    // 1. Calculate RIASEC Vector from 10 O*NET Interest Questions
-    const riasecScores = { R: 40, I: 50, A: 40, S: 40, E: 40, C: 40 };
-    Object.values(finalAnswers).forEach(ans => {
-      if (ans.category === 'interest' && ans.riasec) {
-        const opt = ans.answer || '';
-        let weight = 60;
-        if (opt.includes('(5)') || opt.includes('Strongly Like')) weight = 95;
-        else if (opt.includes('(4)') || opt.includes('Like')) weight = 80;
-        else if (opt.includes('(3)') || opt.includes('Neutral')) weight = 50;
-        else if (opt.includes('(2)') || opt.includes('Dislike')) weight = 30;
-        else if (opt.includes('(1)')) weight = 15;
-        riasecScores[ans.riasec] = Math.min(100, Math.round((riasecScores[ans.riasec] + weight) / 2));
-      }
-    });
+    const finalResults = computeFinalResults(completedSession, activeTrack);
 
-    // 2. Behavioral adjustment from Bebras Logic and Code.org Guided Activities
-    let correctCount = 0;
-    let guidedCompleted = 0;
-    Object.values(finalAnswers).forEach(ans => {
-      if (ans.category === 'logic' && ans.isCorrect) correctCount++;
-      if (ans.category === 'guided_activity' && ans.isCorrect) guidedCompleted++;
-    });
-
-    // Derive Domain Recommendations using pure O*NET Euclidean formula
-    const behaviorSignals = {
-      domainAdjustments: {
-        ai: Math.min(15, correctCount * 2),
-        web: Math.min(15, guidedCompleted * 3),
-        security: Math.min(15, correctCount * 2)
-      }
-    };
-
-    const hypothesis = domainMapping(riasecScores, behaviorSignals, domainMappingConfig);
-    const topDomain = hypothesis.top3Domains[0] || { title: 'AI, ML & Deep Learning', score: 88, id: 'ai' };
-
-    // Format scores object for Results page
-    const processScores = {};
-    hypothesis.allDomains.forEach(d => {
-      processScores[d.title] = Math.round(d.score);
-    });
-
-    const resultsData = {
-      track: selectedTrack,
-      top_domain: topDomain.title,
-      domain_id: topDomain.id,
-      match_percentage: topDomain.score,
-      scores: processScores,
-      all_scores: processScores,
-      raw_scores: riasecScores,
-      hypothesis
-    };
-
-    // Save to server if authenticated
+    // Save to backend if authenticated
     if (user && !user.isGuest) {
       try {
         const apiUrl = getApiBaseUrl() + "/api/submit-result";
@@ -199,10 +95,10 @@ export default function QuizRunner() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             student_email: user.email,
-            quiz_type: selectedTrack,
-            recommended_domain: topDomain.title,
-            confidence_score: topDomain.score,
-            all_scores: processScores
+            quiz_type: activeTrack,
+            recommended_domain: finalResults.top_domain,
+            confidence_score: finalResults.confidence_score,
+            all_scores: finalResults.all_scores
           })
         });
       } catch (err) {
@@ -210,12 +106,12 @@ export default function QuizRunner() {
       }
     }
 
-    sessionStorage.setItem('quiz_results', JSON.stringify(resultsData));
+    sessionStorage.setItem('quiz_results', JSON.stringify(finalResults));
     navigate('/results');
   };
 
   // -------------------------------------------------------------
-  // RENDER STAGE 1: TWO-PATHWAY ONBOARDING (VELLUM EDITORIAL)
+  // RENDER STAGE 1: ONBOARDING FOR CONFUSED BEGINNERS (VELLUM)
   // -------------------------------------------------------------
   if (stage === 'intro') {
     return (
@@ -240,287 +136,190 @@ export default function QuizRunner() {
             fontSize: '0.8125rem',
             color: '#646A73'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#17191C' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <Link to="/quiz" style={{ color: '#50545B', textDecoration: 'none' }}>Diagnostic Selection</Link>
-              <span style={{ color: '#D8DAD7' }}>/</span>
-              <span style={{ fontWeight: 600 }}>Track Calibration</span>
+              <span>/</span>
+              <span style={{ color: '#17191C', fontWeight: 600 }}>Beginner Domain Guidance</span>
             </div>
-            <div style={{ color: '#E85D3F', fontWeight: 600 }}>SEQUENCE: 21-STEP ADAPTIVE</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#E85D3F', fontWeight: 700 }}>
+              <BrainCircuit size={16} />
+              <span>AI CAREER AGENT ACTIVE</span>
+            </div>
           </div>
 
-          {/* Header */}
-          <div style={{ marginBottom: '3.5rem' }}>
+          {/* Editorial Heading */}
+          <div style={{ marginBottom: '3rem' }}>
             <div style={{
               fontFamily: "'DM Mono', monospace",
               fontSize: '0.75rem',
-              fontWeight: 600,
+              fontWeight: 700,
               letterSpacing: '0.14em',
               textTransform: 'uppercase',
               color: '#E85D3F',
               marginBottom: '0.75rem'
             }}>
-              STUDENT INITIALIZATION
+              ZERO-PREREQUISITE DOMAIN DISCOVERY
             </div>
             <h1 style={{
               fontFamily: "'Barlow Condensed', sans-serif",
-              fontSize: 'clamp(2.5rem, 5.5vw, 4.25rem)',
+              fontSize: 'clamp(2.75rem, 6vw, 4.25rem)',
               fontWeight: 800,
-              lineHeight: 0.98,
-              letterSpacing: '-0.02em',
+              lineHeight: 1.0,
               textTransform: 'uppercase',
               color: '#17191C',
               margin: '0 0 1rem 0'
             }}>
-              Choose Your Assessment Pathway
+              Confused About Which CSE Domain Fits You?
             </h1>
             <p style={{ color: '#50545B', fontSize: '1.125rem', maxWidth: '720px', margin: 0, lineHeight: 1.6 }}>
-              Select the diagnostic trajectory that reflects your current academic background. The diagnostic engine adapts its evaluation sequence in real-time.
+              You don’t need to know how to code yet. Our AI Career Guidance Agent will ask intuitive questions about your natural curiosity, problem-solving style, and interests to uncover your ideal Computer Science pathway.
             </p>
           </div>
 
-          {/* 2 DISTINCT PATHWAYS */}
+          {/* 3 FOCUS TRACKS */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: '1.5rem',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '1.25rem',
             marginBottom: '2.5rem'
           }}>
             
-            {/* TRACK 1: BEGINNER / ZERO-KNOWLEDGE */}
+            {/* SOFTWARE TRACK */}
             <div 
-              onClick={() => setSelectedTrack('beginner')}
+              onClick={() => setActiveTrack('software')}
               style={{
-                backgroundColor: selectedTrack === 'beginner' ? '#FFF0EB' : '#FFFFFF',
-                border: selectedTrack === 'beginner' ? '2px solid #E85D3F' : '1px solid #D8DAD7',
-                padding: '2.25rem',
+                backgroundColor: activeTrack === 'software' ? '#FFF0EB' : '#FFFFFF',
+                border: activeTrack === 'software' ? '2px solid #E85D3F' : '1px solid #D8DAD7',
+                padding: '2rem',
                 cursor: 'pointer',
-                transition: 'all 0.15s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between'
+                transition: 'all 0.15s ease'
               }}
             >
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
-                  <div style={{
-                    fontFamily: "'DM Mono', monospace",
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.08em',
-                    color: selectedTrack === 'beginner' ? '#E85D3F' : '#646A73'
-                  }}>
-                    TRACK 01 // FOUNDATIONS
-                  </div>
-                  <div style={{
-                    width: '18px',
-                    height: '18px',
-                    border: `2px solid ${selectedTrack === 'beginner' ? '#E85D3F' : '#D8DAD7'}`,
-                    backgroundColor: selectedTrack === 'beginner' ? '#E85D3F' : 'transparent',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    {selectedTrack === 'beginner' && <Check size={12} color="#FFFFFF" />}
-                  </div>
-                </div>
-
-                <h2 style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: '1.85rem',
-                  fontWeight: 800,
-                  textTransform: 'uppercase',
-                  color: '#17191C',
-                  margin: '0 0 0.75rem 0'
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#E85D3F', fontWeight: 700 }}>
+                  TRACK 01
+                </span>
+                <div style={{
+                  width: '18px',
+                  height: '18px',
+                  border: `2px solid ${activeTrack === 'software' ? '#E85D3F' : '#D8DAD7'}`,
+                  backgroundColor: activeTrack === 'software' ? '#E85D3F' : 'transparent',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}>
-                  Beginner / Exploratory
-                </h2>
-                <p style={{ color: '#50545B', fontSize: '0.9375rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-                  Designed for Semesters 1–3 or students with zero prior coding experience. Explores computational thinking, natural problem-solving patterns, and career curiosity.
-                </p>
+                  {activeTrack === 'software' && <Check size={12} color="#FFFFFF" />}
+                </div>
               </div>
-
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.5rem',
-                fontFamily: "'DM Mono', monospace",
-                fontSize: '0.75rem',
-                color: '#50545B',
-                borderTop: '1px solid #D8DAD7',
-                paddingTop: '1rem'
-              }}>
-                <div>• BEBRAS LOGIC & PATTERNS (Difficulty 1-2)</div>
-                <div>• O*NET RIASEC CAREER INTERESTS</div>
-                <div>• GUIDED EXPLORATORY SCENARIOS</div>
-              </div>
+              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', margin: '0 0 0.5rem 0', color: '#17191C' }}>
+                Software & Intelligence
+              </h3>
+              <p style={{ color: '#50545B', fontSize: '0.875rem', margin: 0, lineHeight: 1.5 }}>
+                Explores AI, Data Science, Web/App Development, Cybersecurity, and Cloud Systems.
+              </p>
             </div>
 
-            {/* TRACK 2: PREREQUISITE-AWARE */}
+            {/* HARDWARE TRACK */}
             <div 
-              onClick={() => setSelectedTrack('prereq')}
+              onClick={() => setActiveTrack('hardware')}
               style={{
-                backgroundColor: selectedTrack === 'prereq' ? '#FFF0EB' : '#FFFFFF',
-                border: selectedTrack === 'prereq' ? '2px solid #E85D3F' : '1px solid #D8DAD7',
-                padding: '2.25rem',
+                backgroundColor: activeTrack === 'hardware' ? '#FFF0EB' : '#FFFFFF',
+                border: activeTrack === 'hardware' ? '2px solid #E85D3F' : '1px solid #D8DAD7',
+                padding: '2rem',
                 cursor: 'pointer',
-                transition: 'all 0.15s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between'
+                transition: 'all 0.15s ease'
               }}
             >
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
-                  <div style={{
-                    fontFamily: "'DM Mono', monospace",
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.08em',
-                    color: selectedTrack === 'prereq' ? '#E85D3F' : '#646A73'
-                  }}>
-                    TRACK 02 // TECHNICAL SPECIALIST
-                  </div>
-                  <div style={{
-                    width: '18px',
-                    height: '18px',
-                    border: `2px solid ${selectedTrack === 'prereq' ? '#E85D3F' : '#D8DAD7'}`,
-                    backgroundColor: selectedTrack === 'prereq' ? '#E85D3F' : 'transparent',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    {selectedTrack === 'prereq' && <Check size={12} color="#FFFFFF" />}
-                  </div>
-                </div>
-
-                <h2 style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: '1.85rem',
-                  fontWeight: 800,
-                  textTransform: 'uppercase',
-                  color: '#17191C',
-                  margin: '0 0 0.75rem 0'
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#E85D3F', fontWeight: 700 }}>
+                  TRACK 02
+                </span>
+                <div style={{
+                  width: '18px',
+                  height: '18px',
+                  border: `2px solid ${activeTrack === 'hardware' ? '#E85D3F' : '#D8DAD7'}`,
+                  backgroundColor: activeTrack === 'hardware' ? '#E85D3F' : 'transparent',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}>
-                  Prerequisite-Aware
-                </h2>
-                <p style={{ color: '#50545B', fontSize: '0.9375rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-                  Designed for Semesters 3–8 with familiarity in C++, Python, or Java. Evaluates systems architecture, algorithmic complexity, database tradeoffs, and code traces.
-                </p>
+                  {activeTrack === 'hardware' && <Check size={12} color="#FFFFFF" />}
+                </div>
               </div>
+              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', margin: '0 0 0.5rem 0', color: '#17191C' }}>
+                Hardware & Devices
+              </h3>
+              <p style={{ color: '#50545B', fontSize: '0.875rem', margin: 0, lineHeight: 1.5 }}>
+                Explores Internet of Things (IoT), Robotics, Chip Design (VLSI), and Embedded Systems.
+              </p>
+            </div>
 
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.5rem',
-                fontFamily: "'DM Mono', monospace",
-                fontSize: '0.75rem',
-                color: '#50545B',
-                borderTop: '1px solid #D8DAD7',
-                paddingTop: '1rem'
-              }}>
-                <div>• SYSTEM CODE TRACE & DSA (Difficulty 2-4)</div>
-                <div>• OCCUPATIONAL SPECIALIZATION MAPPING</div>
-                <div>• REAL-WORLD ARCHITECTURE TRADEOFFS</div>
+            {/* GENERAL CSE TRACK */}
+            <div 
+              onClick={() => setActiveTrack('general')}
+              style={{
+                backgroundColor: activeTrack === 'general' ? '#FFF0EB' : '#FFFFFF',
+                border: activeTrack === 'general' ? '2px solid #E85D3F' : '1px solid #D8DAD7',
+                padding: '2rem',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#E85D3F', fontWeight: 700 }}>
+                  TRACK 03
+                </span>
+                <div style={{
+                  width: '18px',
+                  height: '18px',
+                  border: `2px solid ${activeTrack === 'general' ? '#E85D3F' : '#D8DAD7'}`,
+                  backgroundColor: activeTrack === 'general' ? '#E85D3F' : 'transparent',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  {activeTrack === 'general' && <Check size={12} color="#FFFFFF" />}
+                </div>
               </div>
+              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', margin: '0 0 0.5rem 0', color: '#17191C' }}>
+                Broad CSE Discovery
+              </h3>
+              <p style={{ color: '#50545B', fontSize: '0.875rem', margin: 0, lineHeight: 1.5 }}>
+                Comprehensive evaluation across all modern software, hardware, and engineering domains.
+              </p>
             </div>
 
           </div>
 
-          {/* Profile Details Form */}
+          {/* AI AGENT PROMISE CARD */}
           <div style={{
             backgroundColor: '#FFFFFF',
             border: '1px solid #D8DAD7',
-            padding: '2rem 2.25rem',
-            marginBottom: '3rem'
+            padding: '2rem',
+            marginBottom: '3rem',
+            display: 'flex',
+            gap: '1.5rem',
+            alignItems: 'flex-start'
           }}>
             <div style={{
-              fontFamily: "'DM Mono', monospace",
-              fontSize: '0.75rem',
-              color: '#646A73',
-              letterSpacing: '0.08em',
-              marginBottom: '1.25rem'
+              width: '42px',
+              height: '42px',
+              backgroundColor: '#FFF0EB',
+              border: '1px solid #E85D3F',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0
             }}>
-              STUDENT METADATA CALIBRATION
+              <Bot size={22} style={{ color: '#E85D3F' }} />
             </div>
-            
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-              gap: '1.5rem'
-            }}>
-              {/* Semester */}
-              <div>
-                <label style={{ display: 'block', fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#17191C', fontWeight: 600, marginBottom: '0.5rem' }}>
-                  CURRENT SEMESTER
-                </label>
-                <select
-                  value={introProfile.semester}
-                  onChange={(e) => setIntroProfile({ ...introProfile, semester: Number(e.target.value) })}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 1rem',
-                    backgroundColor: '#FFFFFF',
-                    border: '1px solid #D8DAD7',
-                    color: '#17191C',
-                    fontFamily: "'DM Mono', monospace",
-                    fontSize: '0.875rem'
-                  }}
-                >
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
-                    <option key={s} value={s}>Semester {s} (B.Tech CSE)</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Experience Level */}
-              <div>
-                <label style={{ display: 'block', fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#17191C', fontWeight: 600, marginBottom: '0.5rem' }}>
-                  PRIOR CODING EXPOSURE
-                </label>
-                <select
-                  value={introProfile.experienceLevel}
-                  onChange={(e) => setIntroProfile({ ...introProfile, experienceLevel: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 1rem',
-                    backgroundColor: '#FFFFFF',
-                    border: '1px solid #D8DAD7',
-                    color: '#17191C',
-                    fontFamily: "'DM Mono', monospace",
-                    fontSize: '0.875rem'
-                  }}
-                >
-                  <option value="zero">Zero Prior Coding (Foundational)</option>
-                  <option value="beginner">Beginner (Basic conditionals & variables)</option>
-                  <option value="intermediate">Intermediate (Loops, functions, projects)</option>
-                  <option value="experienced">Advanced (Data structures & design)</option>
-                </select>
-              </div>
-
-              {/* Target Area */}
-              <div>
-                <label style={{ display: 'block', fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#17191C', fontWeight: 600, marginBottom: '0.5rem' }}>
-                  INITIAL FIELD OF CURIOSITY
-                </label>
-                <select
-                  value={introProfile.preferredArea}
-                  onChange={(e) => setIntroProfile({ ...introProfile, preferredArea: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 1rem',
-                    backgroundColor: '#FFFFFF',
-                    border: '1px solid #D8DAD7',
-                    color: '#17191C',
-                    fontFamily: "'DM Mono', monospace",
-                    fontSize: '0.875rem'
-                  }}
-                >
-                  <option value="AI, ML & Data Science">AI, Machine Learning & Data</option>
-                  <option value="Full Stack & Cloud Systems">Web, Distributed & Cloud Systems</option>
-                  <option value="Cybersecurity & Networks">Cybersecurity & Networking</option>
-                  <option value="Open to Discovery">Undecided / Broad Discovery</option>
-                </select>
-              </div>
+            <div>
+              <h4 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.35rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: '0 0 0.35rem 0' }}>
+                How Your AI Advisor Works
+              </h4>
+              <p style={{ color: '#50545B', fontSize: '0.9375rem', lineHeight: 1.6, margin: 0 }}>
+                Every time you choose an option, our AI Agent analyzes which domain traits you value most. It will dynamically choose your <strong>next question</strong> to explore ties, deepen clarity, and guide you straight to the Computer Science specialization that matches who you are.
+              </p>
             </div>
           </div>
 
@@ -528,7 +327,7 @@ export default function QuizRunner() {
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <button
               type="button"
-              onClick={startAdaptiveSession}
+              onClick={startAgentSession}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -554,7 +353,7 @@ export default function QuizRunner() {
                 e.currentTarget.style.borderColor = '#17191C';
               }}
             >
-              <span>INITIALIZE ASSESSMENT SEQUENCE</span>
+              <span>START AI GUIDED ASSESSMENT</span>
               <ArrowRight size={18} />
             </button>
           </div>
@@ -565,16 +364,23 @@ export default function QuizRunner() {
   }
 
   // -------------------------------------------------------------
-  // RENDER STAGE 2: EXPERIMENTAL CONTROL QUESTION INTERFACE (VELLUM)
+  // RENDER STAGE 2: ADAPTIVE AI AGENT QUESTION INTERFACE
   // -------------------------------------------------------------
-  if (!currentQuestion) return null;
+  if (!agentSession || !agentSession.currentQuestion) return null;
 
-  let currentPhase = 'BEBRAS LOGIC';
-  if (currentStep > QUIZ_STRUCTURE.LOGIC_COUNT && currentStep <= (QUIZ_STRUCTURE.LOGIC_COUNT + QUIZ_STRUCTURE.INTEREST_COUNT)) {
-    currentPhase = 'O*NET INTEREST PROFILER';
-  } else if (currentStep > (QUIZ_STRUCTURE.LOGIC_COUNT + QUIZ_STRUCTURE.INTEREST_COUNT)) {
-    currentPhase = 'CODE.ORG GUIDED LAB';
-  }
+  const currentQ = agentSession.currentQuestion;
+  const currentStep = agentSession.currentStep;
+  const totalQuestions = agentSession.totalTarget;
+
+  // Options can be an object { A: '...', B: '...' } or array
+  const optionsList = Array.isArray(currentQ.options)
+    ? currentQ.options.map((text, idx) => ({ key: String.fromCharCode(65 + idx), text }))
+    : Object.entries(currentQ.options).map(([key, text]) => ({ key, text }));
+
+  // Leading domain info
+  const leadingDomainMeta = agentSession.emergingLeader 
+    ? DOMAIN_METADATA[agentSession.emergingLeader] 
+    : null;
 
   return (
     <div style={{
@@ -586,7 +392,7 @@ export default function QuizRunner() {
     }}>
       <div style={{ maxWidth: '920px', margin: '0 auto' }}>
         
-        {/* 1. TOP EXPERIMENTAL CONTROL BAR */}
+        {/* 1. TOP STATUS & TELEMETRY BAR */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -620,30 +426,34 @@ export default function QuizRunner() {
               }}
             >
               <ArrowLeft size={14} />
-              <span>EXIT LAB</span>
+              <span>EXIT</span>
             </button>
             <span style={{ color: '#D8DAD7' }}>|</span>
-            <span style={{ color: '#E85D3F', fontWeight: 700 }}>{currentPhase}</span>
+            <span style={{ color: '#E85D3F', fontWeight: 700 }}>
+              {currentQ.category?.toUpperCase() || 'CAREER ALIGNMENT'}
+            </span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            <span style={{ color: '#17191C', fontWeight: 700 }}>
-              STEP [{String(currentStep).padStart(2, '0')} / {String(TOTAL_QUESTIONS).padStart(2, '0')}]
-            </span>
+            {leadingDomainMeta && (
+              <span style={{ color: '#50545B' }}>
+                LEADING TRAIT: <strong style={{ color: '#17191C' }}>{leadingDomainMeta.name.split('&')[0]}</strong>
+              </span>
+            )}
             <span style={{ color: '#D8DAD7' }}>|</span>
-            <span style={{ color: '#50545B' }}>
-              DIFFICULTY: LEVEL 0{currentQuestion.difficulty || 1}
+            <span style={{ color: '#17191C', fontWeight: 700 }}>
+              QUESTION {String(currentStep).padStart(2, '0')} OF {String(totalQuestions).padStart(2, '0')}
             </span>
           </div>
         </div>
 
-        {/* 2. MINIMAL STEP PROGRESSION TICK */}
+        {/* 2. PROGRESS STEPPER */}
         <div style={{
           display: 'flex',
           gap: '4px',
           marginBottom: '2rem'
         }}>
-          {Array.from({ length: TOTAL_QUESTIONS }).map((_, idx) => {
+          {Array.from({ length: totalQuestions }).map((_, idx) => {
             const stepNum = idx + 1;
             const isPassed = stepNum < currentStep;
             const isCurrent = stepNum === currentStep;
@@ -665,23 +475,40 @@ export default function QuizRunner() {
           })}
         </div>
 
-        {/* 3. AGENT REASONING TELEMETRY READOUT */}
-        {agentReasoning && (
+        {/* 3. DYNAMIC AI AGENT REASONING BANNER */}
+        {agentSession.agentReasoning && (
           <div style={{
             display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem',
-            padding: '0.75rem 1rem',
+            alignItems: 'flex-start',
+            gap: '1rem',
+            padding: '1rem 1.25rem',
             backgroundColor: '#FFF0EB',
-            borderLeft: '3px solid #E85D3F',
+            borderLeft: '4px solid #E85D3F',
             border: '1px solid #D8DAD7',
-            fontFamily: "'DM Mono', monospace",
-            fontSize: '0.75rem',
-            color: '#17191C',
             marginBottom: '2rem'
           }}>
-            <Terminal size={14} style={{ color: '#E85D3F', flexShrink: 0 }} />
-            <span>ROUTER REASONING: {agentReasoning}</span>
+            <Bot size={20} style={{ color: '#E85D3F', flexShrink: 0, marginTop: '2px' }} />
+            <div>
+              <div style={{
+                fontFamily: "'DM Mono', monospace",
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                color: '#E85D3F',
+                letterSpacing: '0.08em',
+                marginBottom: '0.25rem'
+              }}>
+                AI ADVISOR ADAPTIVE SELECTION
+              </div>
+              <p style={{
+                fontSize: '0.875rem',
+                lineHeight: 1.5,
+                color: '#17191C',
+                margin: 0,
+                fontFamily: "'Manrope', sans-serif"
+              }}>
+                {agentSession.agentReasoning}
+              </p>
+            </div>
           </div>
         )}
 
@@ -693,62 +520,79 @@ export default function QuizRunner() {
           marginBottom: '2.5rem'
         }}>
           
-          {/* Source citation */}
+          {/* Header & Helper toggle */}
           <div style={{
             display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
-            gap: '0.5rem',
-            fontFamily: "'DM Mono', monospace",
-            fontSize: '0.75rem',
-            color: '#646A73',
-            marginBottom: '1.5rem'
+            marginBottom: '1.5rem',
+            flexWrap: 'wrap',
+            gap: '0.75rem'
           }}>
-            <ShieldCheck size={14} style={{ color: '#2EC4B6' }} />
-            <span>VERIFIED SOURCE: {currentQuestion.source}</span>
-            <span>·</span>
-            <span>{currentQuestion.license}</span>
+            <span style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: '0.75rem',
+              color: '#646A73',
+              letterSpacing: '0.06em'
+            }}>
+              SECTION: {currentQ.category || 'ORIENTATION'}
+            </span>
+
+            <button
+              type="button"
+              onClick={() => setShowPlainEnglishHelper(!showPlainEnglishHelper)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                background: 'transparent',
+                border: '1px solid #D8DAD7',
+                padding: '0.35rem 0.75rem',
+                fontFamily: "'DM Mono', monospace",
+                fontSize: '0.75rem',
+                color: showPlainEnglishHelper ? '#E85D3F' : '#50545B',
+                backgroundColor: showPlainEnglishHelper ? '#FFF0EB' : '#FFFFFF',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <Lightbulb size={13} style={{ color: showPlainEnglishHelper ? '#E85D3F' : '#646A73' }} />
+              <span>{showPlainEnglishHelper ? 'Hide Beginner Helper' : 'Explain Options in Plain English'}</span>
+            </button>
           </div>
 
-          {/* Question Text: Jet Black */}
+          {/* Question Text */}
           <h2 style={{
             fontFamily: "'Manrope', sans-serif",
             fontSize: 'clamp(1.35rem, 2.5vw, 1.85rem)',
             fontWeight: 700,
             color: '#17191C',
             lineHeight: 1.5,
-            marginBottom: '2.5rem',
-            whiteSpace: 'pre-line'
+            marginBottom: '2.5rem'
           }}>
-            {currentQuestion.questionText}
+            {currentQ.q}
           </h2>
 
           {/* Options Grid */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            {currentQuestion.options.map((optText, optIdx) => {
-              const isChecked = selectedOption === optText;
-              const isIdk = optText.includes("I don't know");
-              const letter = isIdk ? '?' : String.fromCharCode(65 + optIdx);
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {optionsList.map(({ key, text }) => {
+              const isChecked = selectedOptionKey === key;
+              const explainer = BEGINNER_EXPLAINERS[key];
 
               return (
                 <div
-                  key={optIdx}
-                  onClick={() => handleSelectOption(optText)}
+                  key={key}
+                  onClick={() => handleSelectOption(key)}
                   style={{
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
+                    flexDirection: 'column',
                     padding: '1.25rem 1.5rem',
                     border: isChecked 
                       ? '2px solid #E85D3F' 
-                      : isIdk 
-                      ? '1px dashed #D8DAD7' 
                       : '1px solid #D8DAD7',
                     backgroundColor: isChecked 
                       ? '#FFF0EB' 
-                      : isIdk 
-                      ? '#F7F7F4' 
                       : '#FFFFFF',
-                    color: isIdk ? '#646A73' : '#17191C',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease'
                   }}
@@ -760,49 +604,72 @@ export default function QuizRunner() {
                   }}
                   onMouseLeave={(e) => {
                     if (!isChecked) {
-                      e.currentTarget.style.borderColor = isIdk ? '#D8DAD7' : '#D8DAD7';
-                      e.currentTarget.style.backgroundColor = isIdk ? '#F7F7F4' : '#FFFFFF';
+                      e.currentTarget.style.borderColor = '#D8DAD7';
+                      e.currentTarget.style.backgroundColor = '#FFFFFF';
                     }
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                      <div style={{
+                        fontFamily: "'DM Mono', monospace",
+                        fontSize: '0.8125rem',
+                        fontWeight: 700,
+                        width: '32px',
+                        height: '32px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: isChecked ? '1px solid #E85D3F' : '1px solid #D8DAD7',
+                        backgroundColor: isChecked ? '#E85D3F' : '#F7F7F4',
+                        color: isChecked ? '#FFFFFF' : '#17191C',
+                        flexShrink: 0
+                      }}>
+                        {key}
+                      </div>
+                      <span style={{ 
+                        fontFamily: "'Manrope', sans-serif", 
+                        fontSize: '1rem',
+                        fontWeight: isChecked ? 700 : 500,
+                        lineHeight: 1.5,
+                        color: '#17191C'
+                      }}>
+                        {text}
+                      </span>
+                    </div>
+
                     <div style={{
-                      fontFamily: "'DM Mono', monospace",
-                      fontSize: '0.8125rem',
-                      fontWeight: 700,
-                      width: '28px',
-                      height: '28px',
+                      width: '20px',
+                      height: '20px',
+                      border: `1px solid ${isChecked ? '#E85D3F' : '#D8DAD7'}`,
+                      backgroundColor: isChecked ? '#E85D3F' : 'transparent',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      border: isChecked ? '1px solid #E85D3F' : '1px solid #D8DAD7',
-                      backgroundColor: isChecked ? '#E85D3F' : (isIdk ? 'transparent' : '#F7F7F4'),
-                      color: isChecked ? '#FFFFFF' : (isIdk ? '#646A73' : '#17191C')
+                      flexShrink: 0,
+                      marginLeft: '1rem'
                     }}>
-                      {letter}
+                      {isChecked && <Check size={14} color="#FFFFFF" />}
                     </div>
-                    <span style={{ 
-                      fontFamily: "'Manrope', sans-serif", 
-                      fontSize: '1rem',
-                      fontWeight: isChecked ? 700 : 500,
-                      lineHeight: 1.5
-                    }}>
-                      {optText}
-                    </span>
                   </div>
 
-                  <div style={{
-                    width: '18px',
-                    height: '18px',
-                    border: `1px solid ${isChecked ? '#E85D3F' : '#D8DAD7'}`,
-                    backgroundColor: isChecked ? '#E85D3F' : 'transparent',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0
-                  }}>
-                    {isChecked && <Check size={12} color="#FFFFFF" />}
-                  </div>
+                  {/* Beginner Plain English Helper Card (if toggled or selected) */}
+                  {(showPlainEnglishHelper || isChecked) && explainer && (
+                    <div style={{
+                      marginTop: '0.85rem',
+                      paddingTop: '0.75rem',
+                      borderTop: '1px dashed #D8DAD7',
+                      fontSize: '0.8125rem',
+                      color: '#50545B',
+                      lineHeight: 1.5
+                    }}>
+                      <strong style={{ color: '#E85D3F', fontFamily: "'DM Mono', monospace" }}>
+                        Connects to {explainer.title}:
+                      </strong>{' '}
+                      {explainer.description}
+                    </div>
+                  )}
+
                 </div>
               );
             })}
@@ -819,13 +686,13 @@ export default function QuizRunner() {
           gap: '1rem'
         }}>
           <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#646A73' }}>
-            SELECTION: {selectedOption ? 'REGISTERED' : 'PENDING INPUT'}
+            SELECTION: {selectedOptionKey ? `OPTION [${selectedOptionKey}] CHOSEN` : 'PLEASE SELECT AN ANSWER'}
           </div>
 
           <button
             type="button"
-            disabled={!selectedOption || loading}
-            onClick={handleNextQuestion}
+            disabled={!selectedOptionKey || loading}
+            onClick={handleNextStep}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -839,12 +706,12 @@ export default function QuizRunner() {
               textTransform: 'uppercase',
               padding: '1rem 2.5rem',
               border: '1px solid #17191C',
-              cursor: (!selectedOption || loading) ? 'not-allowed' : 'pointer',
-              opacity: (!selectedOption || loading) ? 0.4 : 1,
+              cursor: (!selectedOptionKey || loading) ? 'not-allowed' : 'pointer',
+              opacity: (!selectedOptionKey || loading) ? 0.4 : 1,
               transition: 'all 0.15s ease'
             }}
             onMouseEnter={(e) => {
-              if (selectedOption && !loading) {
+              if (selectedOptionKey && !loading) {
                 e.currentTarget.style.backgroundColor = '#E85D3F';
                 e.currentTarget.style.borderColor = '#E85D3F';
               }
@@ -855,9 +722,9 @@ export default function QuizRunner() {
             }}
           >
             <span>
-              {currentStep === TOTAL_QUESTIONS 
-                ? (loading ? 'PROCESSING TELEMETRY...' : 'COMPLETE & VIEW OBSERVATORY REPORT') 
-                : 'NEXT TASK'}
+              {currentStep === totalQuestions 
+                ? (loading ? 'ANALYZING DOMAIN AFFINITY...' : 'COMPLETE & VIEW CAREER OBSERVATORY REPORT') 
+                : 'NEXT QUESTION'}
             </span>
             <ArrowRight size={18} />
           </button>
