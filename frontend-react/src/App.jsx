@@ -18,6 +18,7 @@ import Progress from './pages/Progress';
 import AdaptiveAssessment from './pages/AdaptiveAssessment';
 import AdminDashboard from './pages/AdminDashboard';
 import NeuroLinkHero from './components/NeuroLinkHero';
+import { PerspectiveTunnelHero } from '@/components/ui/perspective-tunnel-hero';
 
 function ProtectedLayout({ children }) {
   const { user } = useAuth();
@@ -40,6 +41,11 @@ function App() {
         <Routes>
           {/* Public / Landing routes */}
           <Route path="/neurolink" element={<NeuroLinkHero />} />
+          <Route path="/tunnel" element={
+            <main className="w-full min-h-screen bg-neutral-950 overflow-x-hidden dark">
+              <PerspectiveTunnelHero />
+            </main>
+          } />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           

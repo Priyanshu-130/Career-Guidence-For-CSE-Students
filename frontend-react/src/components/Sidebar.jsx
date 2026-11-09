@@ -25,6 +25,7 @@ export default function Sidebar() {
     { name: 'Curriculum Roadmap', path: '/roadmap/ai', icon: <Map size={18} />, tag: 'MAP-04' },
     { name: 'Student Trajectory', path: '/progress', icon: <CheckSquare size={18} />, tag: 'TRK-05' },
     { name: 'Diagnostic Results', path: '/results', icon: <PieChart size={18} />, tag: 'RES-06' },
+    { name: 'Spatial Tunnel 3D', path: '/tunnel', icon: <Target size={18} />, tag: '3D-08' },
     { name: 'Admin Telemetry', path: '/admin', icon: <ShieldCheck size={18} />, tag: 'ADM-07' },
   ];
 
