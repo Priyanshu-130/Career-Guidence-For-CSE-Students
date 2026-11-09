@@ -50,7 +50,7 @@ function App() {
           <Route path="/roadmap/:id" element={<ProtectedLayout><Roadmap /></ProtectedLayout>} />
           <Route path="/quiz" element={<ProtectedLayout><QuizSelection /></ProtectedLayout>} />
           <Route path="/quiz/:track" element={<ProtectedLayout><QuizRunner /></ProtectedLayout>} />
-          <Route path="/assess" element={<ProtectedLayout><AdaptiveAssessment /></ProtectedLayout>} />
+          <Route path="/assess" element={<ProtectedLayout><QuizRunner /></ProtectedLayout>} />
           <Route path="/admin" element={<ProtectedLayout><AdminDashboard /></ProtectedLayout>} />
           <Route path="/results" element={<ProtectedLayout><Results /></ProtectedLayout>} />
           <Route path="/career-finder" element={<ProtectedLayout><CareerFinder /></ProtectedLayout>} />

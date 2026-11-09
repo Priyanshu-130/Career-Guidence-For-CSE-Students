@@ -32,31 +32,30 @@ export default function QuizRunner() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // Wizard stage: 'intro' | 'quiz' | 'submitting'
-  const [stage, setStage] = useState('intro');
+  const TOTAL_TARGET_QUESTIONS = 10;
 
   // Track choice: 'software' | 'hardware' | 'general'
   const [activeTrack, setActiveTrack] = useState(track || 'software');
 
-  // Step 1: Student Intro Profile
-  const [studentBio, setStudentBio] = useState({
-    experienceLevel: 'beginner',
-    curiosityArea: 'Undecided / Exploring'
-  });
-
-  // Step 2: AI Agent Guided Session
-  const TOTAL_TARGET_QUESTIONS = 10;
-  const [agentSession, setAgentSession] = useState(null);
+  // AI Agent Guided Session - Instantly initialize on mount with Question 1
+  const [agentSession, setAgentSession] = useState(() => initAgentSession(track || 'software', TOTAL_TARGET_QUESTIONS));
   const [selectedOptionKey, setSelectedOptionKey] = useState(null);
-  const [showPlainEnglishHelper, setShowPlainEnglishHelper] = useState(false);
+  const [showPlainEnglishHelper, setShowPlainEnglishHelper] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  // Initialize the AI Agent Session when entering the quiz stage
-  const startAgentSession = () => {
-    const session = initAgentSession(activeTrack, TOTAL_TARGET_QUESTIONS);
-    setAgentSession(session);
+  // Sync track when URL param changes
+  useEffect(() => {
+    if (track && track !== activeTrack) {
+      setActiveTrack(track);
+      setAgentSession(initAgentSession(track, TOTAL_TARGET_QUESTIONS));
+      setSelectedOptionKey(null);
+    }
+  }, [track]);
+
+  const handleTrackChange = (newTrack) => {
+    setActiveTrack(newTrack);
+    setAgentSession(initAgentSession(newTrack, TOTAL_TARGET_QUESTIONS));
     setSelectedOptionKey(null);
-    setStage('quiz');
   };
 
   const handleSelectOption = (key) => {
@@ -111,260 +110,7 @@ export default function QuizRunner() {
   };
 
   // -------------------------------------------------------------
-  // RENDER STAGE 1: ONBOARDING FOR CONFUSED BEGINNERS (VELLUM)
-  // -------------------------------------------------------------
-  if (stage === 'intro') {
-    return (
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: '#F7F7F4',
-        color: '#17191C',
-        fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif",
-        padding: '2.5rem 1.5rem 6rem'
-      }}>
-        <div style={{ maxWidth: '920px', margin: '0 auto' }}>
-          
-          {/* Top minimal signpost */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            borderBottom: '1px solid #D8DAD7',
-            paddingBottom: '1.25rem',
-            marginBottom: '3rem',
-            fontFamily: "'DM Mono', monospace",
-            fontSize: '0.8125rem',
-            color: '#646A73'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <Link to="/quiz" style={{ color: '#50545B', textDecoration: 'none' }}>Diagnostic Selection</Link>
-              <span>/</span>
-              <span style={{ color: '#17191C', fontWeight: 600 }}>Beginner Domain Guidance</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#E85D3F', fontWeight: 700 }}>
-              <BrainCircuit size={16} />
-              <span>AI CAREER AGENT ACTIVE</span>
-            </div>
-          </div>
-
-          {/* Editorial Heading */}
-          <div style={{ marginBottom: '3rem' }}>
-            <div style={{
-              fontFamily: "'DM Mono', monospace",
-              fontSize: '0.75rem',
-              fontWeight: 700,
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-              color: '#E85D3F',
-              marginBottom: '0.75rem'
-            }}>
-              ZERO-PREREQUISITE DOMAIN DISCOVERY
-            </div>
-            <h1 style={{
-              fontFamily: "'Barlow Condensed', sans-serif",
-              fontSize: 'clamp(2.75rem, 6vw, 4.25rem)',
-              fontWeight: 800,
-              lineHeight: 1.0,
-              textTransform: 'uppercase',
-              color: '#17191C',
-              margin: '0 0 1rem 0'
-            }}>
-              Confused About Which CSE Domain Fits You?
-            </h1>
-            <p style={{ color: '#50545B', fontSize: '1.125rem', maxWidth: '720px', margin: 0, lineHeight: 1.6 }}>
-              You don’t need to know how to code yet. Our AI Career Guidance Agent will ask intuitive questions about your natural curiosity, problem-solving style, and interests to uncover your ideal Computer Science pathway.
-            </p>
-          </div>
-
-          {/* 3 FOCUS TRACKS */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '1.25rem',
-            marginBottom: '2.5rem'
-          }}>
-            
-            {/* SOFTWARE TRACK */}
-            <div 
-              onClick={() => setActiveTrack('software')}
-              style={{
-                backgroundColor: activeTrack === 'software' ? '#FFF0EB' : '#FFFFFF',
-                border: activeTrack === 'software' ? '2px solid #E85D3F' : '1px solid #D8DAD7',
-                padding: '2rem',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#E85D3F', fontWeight: 700 }}>
-                  TRACK 01
-                </span>
-                <div style={{
-                  width: '18px',
-                  height: '18px',
-                  border: `2px solid ${activeTrack === 'software' ? '#E85D3F' : '#D8DAD7'}`,
-                  backgroundColor: activeTrack === 'software' ? '#E85D3F' : 'transparent',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  {activeTrack === 'software' && <Check size={12} color="#FFFFFF" />}
-                </div>
-              </div>
-              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', margin: '0 0 0.5rem 0', color: '#17191C' }}>
-                Software & Intelligence
-              </h3>
-              <p style={{ color: '#50545B', fontSize: '0.875rem', margin: 0, lineHeight: 1.5 }}>
-                Explores AI, Data Science, Web/App Development, Cybersecurity, and Cloud Systems.
-              </p>
-            </div>
-
-            {/* HARDWARE TRACK */}
-            <div 
-              onClick={() => setActiveTrack('hardware')}
-              style={{
-                backgroundColor: activeTrack === 'hardware' ? '#FFF0EB' : '#FFFFFF',
-                border: activeTrack === 'hardware' ? '2px solid #E85D3F' : '1px solid #D8DAD7',
-                padding: '2rem',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#E85D3F', fontWeight: 700 }}>
-                  TRACK 02
-                </span>
-                <div style={{
-                  width: '18px',
-                  height: '18px',
-                  border: `2px solid ${activeTrack === 'hardware' ? '#E85D3F' : '#D8DAD7'}`,
-                  backgroundColor: activeTrack === 'hardware' ? '#E85D3F' : 'transparent',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  {activeTrack === 'hardware' && <Check size={12} color="#FFFFFF" />}
-                </div>
-              </div>
-              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', margin: '0 0 0.5rem 0', color: '#17191C' }}>
-                Hardware & Devices
-              </h3>
-              <p style={{ color: '#50545B', fontSize: '0.875rem', margin: 0, lineHeight: 1.5 }}>
-                Explores Internet of Things (IoT), Robotics, Chip Design (VLSI), and Embedded Systems.
-              </p>
-            </div>
-
-            {/* GENERAL CSE TRACK */}
-            <div 
-              onClick={() => setActiveTrack('general')}
-              style={{
-                backgroundColor: activeTrack === 'general' ? '#FFF0EB' : '#FFFFFF',
-                border: activeTrack === 'general' ? '2px solid #E85D3F' : '1px solid #D8DAD7',
-                padding: '2rem',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#E85D3F', fontWeight: 700 }}>
-                  TRACK 03
-                </span>
-                <div style={{
-                  width: '18px',
-                  height: '18px',
-                  border: `2px solid ${activeTrack === 'general' ? '#E85D3F' : '#D8DAD7'}`,
-                  backgroundColor: activeTrack === 'general' ? '#E85D3F' : 'transparent',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  {activeTrack === 'general' && <Check size={12} color="#FFFFFF" />}
-                </div>
-              </div>
-              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', margin: '0 0 0.5rem 0', color: '#17191C' }}>
-                Broad CSE Discovery
-              </h3>
-              <p style={{ color: '#50545B', fontSize: '0.875rem', margin: 0, lineHeight: 1.5 }}>
-                Comprehensive evaluation across all modern software, hardware, and engineering domains.
-              </p>
-            </div>
-
-          </div>
-
-          {/* AI AGENT PROMISE CARD */}
-          <div style={{
-            backgroundColor: '#FFFFFF',
-            border: '1px solid #D8DAD7',
-            padding: '2rem',
-            marginBottom: '3rem',
-            display: 'flex',
-            gap: '1.5rem',
-            alignItems: 'flex-start'
-          }}>
-            <div style={{
-              width: '42px',
-              height: '42px',
-              backgroundColor: '#FFF0EB',
-              border: '1px solid #E85D3F',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0
-            }}>
-              <Bot size={22} style={{ color: '#E85D3F' }} />
-            </div>
-            <div>
-              <h4 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.35rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: '0 0 0.35rem 0' }}>
-                How Your AI Advisor Works
-              </h4>
-              <p style={{ color: '#50545B', fontSize: '0.9375rem', lineHeight: 1.6, margin: 0 }}>
-                Every time you choose an option, our AI Agent analyzes which domain traits you value most. It will dynamically choose your <strong>next question</strong> to explore ties, deepen clarity, and guide you straight to the Computer Science specialization that matches who you are.
-              </p>
-            </div>
-          </div>
-
-          {/* Start button */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <button
-              type="button"
-              onClick={startAgentSession}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.75rem',
-                backgroundColor: '#17191C',
-                color: '#FFFFFF',
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: '1.125rem',
-                fontWeight: 700,
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
-                padding: '1.125rem 2.5rem',
-                border: '1px solid #17191C',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#E85D3F';
-                e.currentTarget.style.borderColor = '#E85D3F';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#17191C';
-                e.currentTarget.style.borderColor = '#17191C';
-              }}
-            >
-              <span>START AI GUIDED ASSESSMENT</span>
-              <ArrowRight size={18} />
-            </button>
-          </div>
-
-        </div>
-      </div>
-    );
-  }
-
-  // -------------------------------------------------------------
-  // RENDER STAGE 2: ADAPTIVE AI AGENT QUESTION INTERFACE
+  // ADAPTIVE AI AGENT QUESTION INTERFACE (ZERO-PREREQUISITE DOMAIN DISCOVERY)
   // -------------------------------------------------------------
   if (!agentSession || !agentSession.currentQuestion) return null;
 
@@ -407,7 +153,7 @@ export default function QuizRunner() {
           fontSize: '0.75rem',
           color: '#646A73'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
             <button 
               type="button"
               onClick={() => navigate('/quiz')}
@@ -432,6 +178,34 @@ export default function QuizRunner() {
             <span style={{ color: '#E85D3F', fontWeight: 700 }}>
               {currentQ.category?.toUpperCase() || 'CAREER ALIGNMENT'}
             </span>
+            <span style={{ color: '#D8DAD7' }}>|</span>
+            <span style={{ color: '#50545B' }}>TRACK:</span>
+            <div style={{ display: 'inline-flex', gap: '4px' }}>
+              {[
+                { id: 'software', label: 'Software' },
+                { id: 'hardware', label: 'Hardware' },
+                { id: 'general', label: 'General' }
+              ].map(({ id, label }) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => handleTrackChange(id)}
+                  style={{
+                    border: activeTrack === id ? '1px solid #E85D3F' : '1px solid #D8DAD7',
+                    backgroundColor: activeTrack === id ? '#FFF0EB' : '#FFFFFF',
+                    color: activeTrack === id ? '#E85D3F' : '#50545B',
+                    padding: '2px 8px',
+                    fontSize: '0.6875rem',
+                    fontFamily: "'DM Mono', monospace",
+                    textTransform: 'uppercase',
+                    cursor: 'pointer',
+                    fontWeight: activeTrack === id ? 700 : 500
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
