@@ -94,6 +94,15 @@ export const DEMO_SCENARIOS = [
         time_taken: 9.1
       },
       {
+        question_id: 'py_k_008',
+        topic: 'python',
+        correct: false,
+        is_skipped: true,
+        status: 'skipped',
+        answer: 'skipped',
+        time_taken: 4.0
+      },
+      {
         question_id: 'py_k_012',
         topic: 'python',
         correct: true,

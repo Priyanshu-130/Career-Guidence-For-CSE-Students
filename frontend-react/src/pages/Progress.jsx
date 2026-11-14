@@ -7,7 +7,6 @@ import {
   BookOpen, 
   Sparkles, 
   Activity, 
-  Trophy, 
   Terminal, 
   Save, 
   ExternalLink, 
@@ -19,11 +18,14 @@ import {
 } from 'lucide-react';
 import domainsData from '../data/domains.json';
 import { getSemesterCurriculum, getApiBaseUrl, getSemesterSubtopics } from '../utils/roadmapHelper';
+import { getDomainSelection } from '../services/apiService';
 
 export default function Progress() {
   const { user } = useAuth();
   const [selectedDomainId, setSelectedDomainId] = useState('');
   const [recommendedDomainId, setRecommendedDomainId] = useState('');
+  const [primaryDomainId, setPrimaryDomainId] = useState('');
+  const [secondaryDomainIds, setSecondaryDomainIds] = useState([]);
   const [progressData, setProgressData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -35,7 +37,7 @@ export default function Progress() {
 
   const apiBase = getApiBaseUrl();
 
-  // Load recommended domain and progress on mount
+  // Load recommended domain, primary selection, and progress on mount
   useEffect(() => {
     const fetchData = async () => {
       if (!user) return;
@@ -44,37 +46,60 @@ export default function Progress() {
 
       try {
         let domainRec = '';
-        
-        // 1. Get recommended domain
-        if (user.isGuest) {
-          // Default guest to the first domain in list ('ai')
-          domainRec = 'ai';
-          setRecommendedDomainId('ai');
-          setSelectedDomainId('ai');
+        let designatedPrimary = localStorage.getItem('pathfinder_primary_domain') || '';
+        let designatedSecondaries = [];
+        try {
+          const rawSec = localStorage.getItem('pathfinder_secondary_domains');
+          if (rawSec) designatedSecondaries = JSON.parse(rawSec);
+        } catch (e) {}
+
+        // Check backend domain selection if authenticated or local
+        try {
+          const selResp = await getDomainSelection(user.email || 'guest@pathfinder.edu');
+          if (selResp?.status === 'success' && selResp?.selection) {
+            if (selResp.selection.primary_domain) {
+              designatedPrimary = selResp.selection.primary_domain;
+            }
+            if (Array.isArray(selResp.selection.secondary_domains)) {
+              designatedSecondaries = selResp.selection.secondary_domains;
+            }
+          }
+        } catch (e) {
+          console.warn("Could not retrieve domain selection:", e);
+        }
+
+        if (designatedPrimary) {
+          setPrimaryDomainId(designatedPrimary);
+          setSecondaryDomainIds(designatedSecondaries);
+          domainRec = designatedPrimary;
+          setSelectedDomainId(designatedPrimary);
         } else {
-          const resResp = await fetch(`${apiBase}/api/results/${user.email}`);
-          const resData = await resResp.json();
-          if (resData.status === 'success' && resData.results.length > 0) {
-            // Find recommended domain mapping matching title
-            const recTitle = resData.results[0].recommended_domain;
-            // Match title with domain ID in domainsData
-            const matchedDom = domainsData.find(
-              d => d.title.toLowerCase().includes(recTitle.toLowerCase()) || 
-                   recTitle.toLowerCase().includes(d.title.toLowerCase())
-            );
-            if (matchedDom) {
-              domainRec = matchedDom.id;
-              setRecommendedDomainId(matchedDom.id);
-              setSelectedDomainId(matchedDom.id);
+          // Fallback to initial recommended domain
+          if (user.isGuest) {
+            domainRec = 'ai';
+            setRecommendedDomainId('ai');
+            setSelectedDomainId('ai');
+          } else {
+            const resResp = await fetch(`${apiBase}/api/results/${user.email}`);
+            const resData = await resResp.json();
+            if (resData.status === 'success' && resData.results.length > 0) {
+              const recTitle = resData.results[0].recommended_domain;
+              const matchedDom = domainsData.find(
+                d => d.title.toLowerCase().includes(recTitle.toLowerCase()) || 
+                     recTitle.toLowerCase().includes(d.title.toLowerCase())
+              );
+              if (matchedDom) {
+                domainRec = matchedDom.id;
+                setRecommendedDomainId(matchedDom.id);
+                setSelectedDomainId(matchedDom.id);
+              } else {
+                domainRec = 'ai';
+                setSelectedDomainId('ai');
+              }
             } else {
-              // Default to 'ai'
               domainRec = 'ai';
               setSelectedDomainId('ai');
             }
-          } else {
-            // No quiz results, default to 'ai'
-            domainRec = 'ai';
-            setSelectedDomainId('ai');
           }
         }
 
@@ -94,8 +119,7 @@ export default function Progress() {
       } catch (err) {
         console.error("Fetch progress error", err);
         setError("Unable to synchronize progress details. Serving local offline fallback.");
-        // Local storage fallback for network error
-        const localSaved = localStorage.getItem(`pathfinder_progress_fallback_${user.email}`);
+        const localSaved = localStorage.getItem(`pathfinder_progress_fallback_${user?.email || 'guest'}`);
         if (localSaved) {
           setProgressData(JSON.parse(localSaved));
         }
@@ -152,7 +176,7 @@ export default function Progress() {
         return JSON.parse(statusVal);
       }
     } catch (e) {
-      // Not a JSON string, fallback below
+      // fallback
     }
     if (statusVal === 'Completed') return subtopicsList;
     return [];
@@ -164,7 +188,6 @@ export default function Progress() {
     const updatedStatus = newStatus !== null ? newStatus : currentProgress.status;
     const updatedNotes = newNotes !== null ? newNotes : currentProgress.notes;
 
-    // optimistic update
     const newProgressItem = {
       domain_id: selectedDomainId,
       semester_num: semNum,
@@ -188,10 +211,9 @@ export default function Progress() {
     }
     setProgressData(updatedData);
 
-    // Save persistence
+    // Persistence
     if (user.isGuest) {
       localStorage.setItem(`pathfinder_guest_progress_${selectedDomainId}`, JSON.stringify(updatedData));
-      // Trigger a brief success state
       setSaveStatus(prev => ({ ...prev, [semNum]: 'success' }));
       setTimeout(() => {
         setSaveStatus(prev => ({ ...prev, [semNum]: 'idle' }));
@@ -199,7 +221,6 @@ export default function Progress() {
     } else {
       setSaveStatus(prev => ({ ...prev, [semNum]: 'saving' }));
       try {
-        // Save to backend database
         const resp = await fetch(`${apiBase}/api/progress`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -216,7 +237,6 @@ export default function Progress() {
         const data = await resp.json();
         if (data.status === 'success') {
           setSaveStatus(prev => ({ ...prev, [semNum]: 'success' }));
-          // Backup fallback in local storage
           localStorage.setItem(`pathfinder_progress_fallback_${user.email}`, JSON.stringify(updatedData));
           setTimeout(() => {
             setSaveStatus(prev => ({ ...prev, [semNum]: 'idle' }));
@@ -234,7 +254,7 @@ export default function Progress() {
     }
   };
 
-  // Metrics calculations based on granular subtopics
+  // Metrics calculations
   const stats = (() => {
     let completedCourses = 0;
     let inProgressCourses = 0;
@@ -283,496 +303,874 @@ export default function Progress() {
 
   if (loading) {
     return (
-      <div className="page-wrapper content-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
-        <Loader2 className="animate-spin" size={48} color="var(--color-accent)" />
-        <p style={{ marginTop: '1.5rem', color: 'var(--color-text-3)', fontWeight: 600 }}>Loading curriculum progress...</p>
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: '#F7F7F4',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: "'Manrope', sans-serif"
+      }}>
+        <Loader2 className="animate-spin" size={40} color="#E85D3F" />
+        <p style={{ marginTop: '1.25rem', color: '#50545B', fontFamily: "'DM Mono', monospace", fontSize: '0.875rem' }}>
+          SYNCHRONIZING TRAJECTORY DATA...
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="page-wrapper content-container animate-in" style={{ paddingTop: '1rem' }}>
-      
-      {/* Page Header */}
-      <header style={{ marginBottom: '3.5rem' }}>
-        <div className="page-label" style={{ marginBottom: '1.25rem' }}>
-          <Sparkles size={14} style={{ marginRight: '6px' }} /> Learning Trajectory Tracker
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '2rem' }}>
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: '#F7F7F4',
+      color: '#17191C',
+      fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif",
+      padding: '2.5rem 1.5rem 6rem'
+    }}>
+      <div style={{ maxWidth: '1160px', margin: '0 auto' }}>
+
+        {/* 2. HERO HEADER & DOMAIN SELECTOR */}
+        <header style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          flexWrap: 'wrap',
+          gap: '2rem',
+          marginBottom: '3rem'
+        }}>
           <div>
-            <h1 style={{ fontSize: '3.5rem', marginBottom: '0.5rem', lineHeight: 1 }}>
-              Your <span className="text-gradient">Progress.</span>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.35rem 0.85rem',
+              backgroundColor: '#FFF0EB',
+              border: '1px solid #E85D3F',
+              color: '#E85D3F',
+              fontWeight: 700,
+              fontSize: '0.75rem',
+              fontFamily: "'DM Mono', monospace",
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              borderRadius: '9999px',
+              marginBottom: '1rem'
+            }}>
+              <Activity size={13} />
+              <span>TRK-05 // INDIVIDUAL LEARNING TRAJECTORY</span>
+            </div>
+
+            <h1 style={{
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontSize: 'clamp(2.75rem, 5.5vw, 4.5rem)',
+              fontWeight: 800,
+              lineHeight: 0.95,
+              letterSpacing: '-0.02em',
+              textTransform: 'uppercase',
+              color: '#17191C',
+              margin: '0 0 1rem 0'
+            }}>
+              TRACK YOUR <span style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', color: '#E85D3F', textTransform: 'none' }}>Academic Trajectory</span>.
             </h1>
-            <p style={{ color: 'var(--color-text-3)', fontSize: '1.125rem', maxWidth: '600px' }}>
-              Check off courses, add custom repositories, log milestones, and map your academic progression semester-by-semester.
+
+            <p style={{
+              color: '#50545B',
+              fontSize: 'clamp(1rem, 2vw, 1.15rem)',
+              maxWidth: '680px',
+              lineHeight: 1.6,
+              margin: 0
+            }}>
+              Check off verified curriculum topics, link live project repositories, log course milestones, and observe real-time semester progression towards capstone mastery.
             </p>
           </div>
-          
+
           {/* Domain Dropdown Selector */}
-          <div className="glass-card" style={{ padding: '1rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-text-3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Current Specialization</label>
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #D8DAD7',
+            borderRadius: '1.25rem',
+            padding: '1.25rem 1.5rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.5rem',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.03)',
+            minWidth: '280px'
+          }}>
+            <label style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: '0.6875rem',
+              fontWeight: 800,
+              color: '#646A73',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em'
+            }}>
+              SPECIALIZATION FOCUS
+            </label>
             <select 
               value={selectedDomainId}
               onChange={(e) => handleDomainChange(e.target.value)}
               style={{
-                background: 'transparent',
-                border: '1px solid var(--color-border)',
-                borderRadius: '8px',
-                padding: '0.5rem 2rem 0.5rem 0.75rem',
-                color: 'var(--color-text)',
+                backgroundColor: '#F7F7F4',
+                border: '1px solid #D8DAD7',
+                borderRadius: '0.75rem',
+                padding: '0.65rem 1rem',
+                color: '#17191C',
                 fontWeight: 700,
-                fontSize: '1rem',
+                fontSize: '0.9375rem',
                 cursor: 'pointer',
                 outline: 'none',
-                fontFamily: 'var(--font)'
+                fontFamily: "'Manrope', sans-serif"
               }}
             >
               {domainsData.map((d) => (
                 <option key={d.id} value={d.id} style={{ backgroundColor: '#FFFFFF', color: '#17191C' }}>
-                  {d.title} {d.id === recommendedDomainId ? '(Recommended)' : ''}
+                  {d.title} {d.id === primaryDomainId ? '★ (Primary Career Trajectory)' : secondaryDomainIds.includes(d.id) ? '◆ (Secondary Interest)' : d.id === recommendedDomainId ? '(Recommended)' : ''}
                 </option>
               ))}
             </select>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {error && (
-        <div className="glass-card" style={{ padding: '1.25rem 2rem', marginBottom: '2.5rem', borderLeft: '4px solid var(--color-danger)', display: 'flex', alignItems: 'center', gap: '1rem', background: 'rgba(239, 68, 68, 0.03)' }}>
-          <AlertCircle size={20} color="var(--color-danger)" />
-          <span style={{ fontSize: '0.9375rem', color: 'var(--color-text-2)', fontWeight: 600 }}>{error}</span>
-        </div>
-      )}
-
-      {/* Trajectory Analytics Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem', marginBottom: '4rem' }}>
-        
-        <div className="glass-card" style={{ padding: '2rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <div style={{ padding: '0.875rem', background: 'rgba(79, 70, 229, 0.08)', color: 'var(--color-accent)', borderRadius: '16px' }}>
-            <Activity size={24} />
-          </div>
-          <div>
-            <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-text-3)', textTransform: 'uppercase' }}>Completion Rate</div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 900 }}>{stats.completionRate}%</div>
-          </div>
-        </div>
-
-        <div className="glass-card" style={{ padding: '2rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <div style={{ padding: '0.875rem', background: 'rgba(16, 185, 129, 0.08)', color: 'var(--color-success)', borderRadius: '16px' }}>
-            <CheckCircle2 size={24} />
-          </div>
-          <div>
-            <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-text-3)', textTransform: 'uppercase' }}>Completed</div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 900 }}>{stats.completed} / 8</div>
-          </div>
-        </div>
-
-        <div className="glass-card" style={{ padding: '2rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <div style={{ padding: '0.875rem', background: 'rgba(139, 92, 246, 0.08)', color: 'var(--color-purple)', borderRadius: '16px' }}>
-            <Clock size={24} />
-          </div>
-          <div>
-            <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-text-3)', textTransform: 'uppercase' }}>In Progress</div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 900 }}>{stats.inProgress} / 8</div>
-          </div>
-        </div>
-
-        <div className="glass-card" style={{ padding: '2rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <div style={{ padding: '0.875rem', background: 'rgba(100, 116, 139, 0.08)', color: 'var(--color-text-3)', borderRadius: '16px' }}>
-            <ListTodo size={24} />
-          </div>
-          <div>
-            <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-text-3)', textTransform: 'uppercase' }}>Not Started</div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 900 }}>{stats.notStarted} / 8</div>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Progress Bar */}
-      <div style={{ marginBottom: '5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', fontSize: '0.875rem', fontWeight: 700 }}>
-          <span style={{ color: 'var(--color-text-2)' }}>Roadmap Milestone Progress</span>
-          <span style={{ color: 'var(--color-accent)' }}>{stats.completionRate}% Done</span>
-        </div>
-        <div style={{ width: '100%', height: '10px', background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: '10px', overflow: 'hidden' }}>
-          <div style={{ 
-            width: `${stats.completionRate}%`, 
-            height: '100%', 
-            background: 'linear-gradient(to right, var(--color-accent), var(--color-purple), var(--color-success))', 
-            transition: 'width 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-            boxShadow: '0 0 10px rgba(79, 70, 229, 0.2)'
-          }}></div>
-        </div>
-      </div>
-
-      {/* Curriculum Semester Timeline Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(480px, 1fr))', gap: '2rem' }}>
-        
-        {curriculum.map((sem) => {
-          const subtopics = getSemesterSubtopics(selectedDomainId, sem.semester);
-          const prog = getCourseProgress(sem.semester, sem.course.title);
-          const completedList = getCompletedSubtopics(prog.status, subtopics);
-          const isAllCompleted = completedList.length === subtopics.length;
-          const isEditing = editingKey === sem.semester;
-          
-          let cardBorderColor = '';
-          let cardBoxShadow = '';
-          if (completedList.length === subtopics.length) {
-            cardBorderColor = 'rgba(16, 185, 129, 0.2)';
-          } else if (completedList.length > 0) {
-            cardBorderColor = 'rgba(139, 92, 246, 0.2)';
-            cardBoxShadow = `0 8px 30px -10px ${sem.color}22`;
-          }
-
-          return (
-            <div 
-              key={sem.semester} 
-              className="glass-card" 
-              style={{ 
-                padding: '2.5rem', 
-                borderLeft: `5px solid ${sem.color}`, 
-                display: 'flex', 
-                flexDirection: 'column', 
-                gap: '1.5rem',
-                boxShadow: cardBoxShadow,
-                borderColor: cardBorderColor
+        {/* PRIMARY & SECONDARY DESIGNATION BANNER */}
+        {primaryDomainId && (
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #D8DAD7',
+            borderLeft: '4px solid #E85D3F',
+            borderRadius: '1rem',
+            padding: '1rem 1.5rem',
+            marginBottom: '2.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '1rem'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <Sparkles size={18} color="#E85D3F" />
+              <div>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 800, color: '#E85D3F', textTransform: 'uppercase' }}>
+                  DESIGNATED PRIMARY CAREER TRAJECTORY:
+                </span>{' '}
+                <strong style={{ color: '#17191C', fontSize: '0.9375rem' }}>
+                  {domainsData.find(d => d.id === primaryDomainId)?.title || primaryDomainId.toUpperCase()}
+                </strong>
+              </div>
+              {secondaryDomainIds && secondaryDomainIds.length > 0 && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: '0.5rem' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#646A73' }}>Secondary Domains:</span>
+                  {secondaryDomainIds.map(sId => (
+                    <span key={sId} style={{
+                      backgroundColor: '#F3F4F6',
+                      padding: '0.2rem 0.5rem',
+                      borderRadius: '0.375rem',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: '#374151'
+                    }}>
+                      {domainsData.find(d => d.id === sId)?.title || sId}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+            <Link
+              to="/domain-comparison"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                color: '#E85D3F',
+                textDecoration: 'none',
+                fontWeight: 700,
+                fontSize: '0.8125rem',
+                fontFamily: "'DM Mono', monospace"
               }}
             >
-              
-              {/* Semester Card Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1.5rem' }}>
-                <div>
-                  <div style={{ fontSize: '0.7rem', fontWeight: 800, color: sem.color, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.25rem' }}>
-                    {sem.subtitle}
-                  </div>
-                  <h3 style={{ fontSize: '1.5rem', margin: 0 }}>{sem.title}</h3>
-                </div>
-                
-                {/* Sync status toast pill */}
-                {saveStatus[sem.semester] && saveStatus[sem.semester] !== 'idle' && (
-                  <div style={{
-                    fontSize: '0.65rem',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    padding: '0.25rem 0.5rem',
-                    borderRadius: '6px',
-                    color: '#fff',
-                    background: saveStatus[sem.semester] === 'saving' ? 'var(--color-purple)' :
-                                saveStatus[sem.semester] === 'success' ? 'var(--color-success)' : 'var(--color-danger)',
-                    animation: 'pulse 1s infinite alternate'
-                  }}>
-                    {saveStatus[sem.semester] === 'saving' ? 'Saving...' :
-                     saveStatus[sem.semester] === 'success' ? 'Synced' : 'Sync Error'}
-                  </div>
-                )}
+              COMPARE & SWITCH DOMAINS <ChevronRight size={14} />
+            </Link>
+          </div>
+        )}
+
+        {error && (
+          <div style={{
+            padding: '1.25rem 1.5rem',
+            backgroundColor: '#FFF0EB',
+            border: '1px solid #E85D3F',
+            borderRadius: '1rem',
+            marginBottom: '2.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem'
+          }}>
+            <AlertCircle size={20} color="#E85D3F" />
+            <span style={{ fontSize: '0.875rem', color: '#17191C', fontWeight: 600 }}>{error}</span>
+          </div>
+        )}
+
+        {/* 3. FOUR METRICS OVERVIEW CARDS (RESTORA PROPORTIONS) */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gap: '1.25rem',
+          marginBottom: '2.5rem'
+        }}>
+          
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #D8DAD7',
+            borderRadius: '1.25rem',
+            padding: '1.75rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1.25rem',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.02)'
+          }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: '1rem',
+              backgroundColor: '#FFF0EB',
+              color: '#E85D3F',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '1px solid #E85D3F'
+            }}>
+              <Activity size={22} />
+            </div>
+            <div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.6875rem', fontWeight: 700, color: '#646A73', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                COMPLETION RATE
               </div>
+              <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '2rem', fontWeight: 800, color: '#17191C' }}>
+                {stats.completionRate}%
+              </div>
+            </div>
+          </div>
 
-              {/* Course Title and Description */}
-              <div style={{ flexGrow: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                  <input 
-                    type="checkbox"
-                    checked={isAllCompleted}
-                    onChange={(e) => {
-                      const nextStatus = e.target.checked ? JSON.stringify(subtopics) : JSON.stringify([]);
-                      saveProgressState(sem.semester, sem.course.title, nextStatus, null);
-                    }}
-                    style={{
-                      width: '20px',
-                      height: '20px',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      accentColor: 'var(--color-success)',
-                      flexShrink: 0,
-                      marginTop: '1px'
-                    }}
-                  />
-                  <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(0,0,0,0.02)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-3)', border: '1px solid var(--color-border)', flexShrink: 0 }}>
-                    <Terminal size={14} />
-                  </div>
-                  <h4 style={{ 
-                    fontSize: '1.1rem', 
-                    margin: 0, 
-                    fontWeight: 700, 
-                    color: isAllCompleted ? 'var(--color-text-3)' : 'var(--color-text)',
-                    textDecoration: isAllCompleted ? 'line-through' : 'none',
-                    transition: 'var(--transition)'
-                  }}>
-                    {sem.course.title}
-                  </h4>
-                </div>
-                <p style={{ fontSize: '0.875rem', color: 'var(--color-text-3)', lineHeight: 1.6, margin: '0 0 1.25rem 0' }}>
-                  {sem.course.desc}
-                </p>
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #D8DAD7',
+            borderRadius: '1.25rem',
+            padding: '1.75rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1.25rem',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.02)'
+          }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: '1rem',
+              backgroundColor: '#F0FDF4',
+              color: '#2EC4B6',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '1px solid #2EC4B6'
+            }}>
+              <CheckCircle2 size={22} />
+            </div>
+            <div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.6875rem', fontWeight: 700, color: '#646A73', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                COMPLETED
+              </div>
+              <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '2rem', fontWeight: 800, color: '#17191C' }}>
+                {stats.completed} <span style={{ fontSize: '1.25rem', color: '#646A73', fontWeight: 600 }}>/ 8</span>
+              </div>
+            </div>
+          </div>
 
-                {/* Granular Sub-topics Checklist */}
-                <div style={{ 
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #D8DAD7',
+            borderRadius: '1.25rem',
+            padding: '1.75rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1.25rem',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.02)'
+          }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: '1rem',
+              backgroundColor: '#F0F9FF',
+              color: '#0284C7',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '1px solid #0284C7'
+            }}>
+              <Clock size={22} />
+            </div>
+            <div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.6875rem', fontWeight: 700, color: '#646A73', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                IN PROGRESS
+              </div>
+              <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '2rem', fontWeight: 800, color: '#17191C' }}>
+                {stats.inProgress} <span style={{ fontSize: '1.25rem', color: '#646A73', fontWeight: 600 }}>/ 8</span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #D8DAD7',
+            borderRadius: '1.25rem',
+            padding: '1.75rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1.25rem',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.02)'
+          }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: '1rem',
+              backgroundColor: '#F7F7F4',
+              color: '#646A73',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '1px solid #D8DAD7'
+            }}>
+              <ListTodo size={22} />
+            </div>
+            <div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.6875rem', fontWeight: 700, color: '#646A73', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                NOT STARTED
+              </div>
+              <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '2rem', fontWeight: 800, color: '#17191C' }}>
+                {stats.notStarted} <span style={{ fontSize: '1.25rem', color: '#646A73', fontWeight: 600 }}>/ 8</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* 4. PROGRESS BAR CONTAINER */}
+        <div style={{
+          backgroundColor: '#FFFFFF',
+          border: '1px solid #D8DAD7',
+          borderRadius: '1.25rem',
+          padding: '1.5rem 1.75rem',
+          marginBottom: '3.5rem',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.02)'
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '0.75rem',
+            fontFamily: "'DM Mono', monospace",
+            fontSize: '0.75rem',
+            fontWeight: 700
+          }}>
+            <span style={{ color: '#17191C' }}>AGGREGATE CURRICULUM SATISFACTION</span>
+            <span style={{ color: '#E85D3F' }}>{stats.completionRate}% COMPLETE</span>
+          </div>
+          <div style={{
+            width: '100%',
+            height: '8px',
+            backgroundColor: '#E8EAE6',
+            borderRadius: '9999px',
+            overflow: 'hidden'
+          }}>
+            <div style={{ 
+              width: `${stats.completionRate}%`, 
+              height: '100%', 
+              backgroundColor: '#E85D3F',
+              borderRadius: '9999px',
+              transition: 'width 0.4s ease'
+            }} />
+          </div>
+        </div>
+
+        {/* 5. CURRICULUM SEMESTER TIMELINE CARDS */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(480px, 1fr))',
+          gap: '2rem',
+          marginBottom: '4rem'
+        }}>
+          {curriculum.map((sem) => {
+            const subtopics = getSemesterSubtopics(selectedDomainId, sem.semester);
+            const prog = getCourseProgress(sem.semester, sem.course.title);
+            const completedList = getCompletedSubtopics(prog.status, subtopics);
+            const isAllCompleted = completedList.length === subtopics.length && subtopics.length > 0;
+            const isEditing = editingKey === sem.semester;
+
+            return (
+              <div 
+                key={sem.semester} 
+                style={{ 
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '1.25rem',
+                  border: isAllCompleted ? '2px solid #2EC4B6' : '1px solid #D8DAD7',
+                  padding: '2.25rem',
                   display: 'flex', 
                   flexDirection: 'column', 
-                  gap: '0.75rem', 
-                  background: 'rgba(79, 70, 229, 0.02)', 
-                  border: '1px dashed var(--color-border)', 
-                  borderRadius: '12px', 
-                  padding: '1.25rem',
-                  marginBottom: '0.5rem'
-                }}>
-                  <div style={{ fontSize: '0.65rem', fontWeight: 900, color: 'var(--color-text-3)', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '0.5rem', marginBottom: '0.25rem' }}>
-                    Topics Coverage Checklist ({completedList.length} / {subtopics.length})
+                  gap: '1.5rem',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
+                  transition: 'border-color 0.2s ease, transform 0.2s ease'
+                }}
+              >
+                
+                {/* Semester Card Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
+                  <div>
+                    <div style={{
+                      fontFamily: "'DM Mono', monospace",
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      color: '#E85D3F',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.1em',
+                      marginBottom: '0.25rem'
+                    }}>
+                      {sem.subtitle || `SEMESTER 0${sem.semester}`}
+                    </div>
+                    <h3 style={{
+                      fontFamily: "'Barlow Condensed', sans-serif",
+                      fontSize: '1.65rem',
+                      fontWeight: 800,
+                      textTransform: 'uppercase',
+                      color: '#17191C',
+                      margin: 0
+                    }}>
+                      {sem.title}
+                    </h3>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
-                    {subtopics.map((topic, tIdx) => {
-                      const isTopicChecked = completedList.includes(topic);
-                      return (
-                        <label key={tIdx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', cursor: 'pointer', fontSize: '0.875rem', color: 'var(--color-text-2)', userSelect: 'none' }}>
-                          <input 
-                            type="checkbox"
-                            checked={isTopicChecked}
-                            onChange={(e) => {
-                              let updatedList;
-                              if (e.target.checked) {
-                                updatedList = [...completedList, topic];
-                              } else {
-                                updatedList = completedList.filter(s => s !== topic);
-                              }
-                              const nextStatus = JSON.stringify(updatedList);
-                              saveProgressState(sem.semester, sem.course.title, nextStatus, null);
-                            }}
-                            style={{
-                              width: '16px',
-                              height: '16px',
-                              borderRadius: '4px',
-                              accentColor: 'var(--color-success)',
-                              marginTop: '2px',
-                              cursor: 'pointer',
-                              flexShrink: 0
-                            }}
-                          />
-                          <span style={{ 
-                            textDecoration: isTopicChecked ? 'line-through' : 'none', 
-                            color: isTopicChecked ? 'var(--color-text-3)' : 'var(--color-text-2)',
-                            transition: 'var(--transition)',
-                            lineHeight: 1.4
-                          }}>
-                            {topic}
-                          </span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* Progress Status Controller */}
-              <div>
-                <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-text-3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
-                  Progress Status
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', background: 'rgba(0,0,0,0.02)', border: '1px solid var(--color-border)', borderRadius: '10px', padding: '0.25rem' }}>
                   
-                  {/* Not Started Pill */}
-                  <button 
-                    onClick={() => saveProgressState(sem.semester, sem.course.title, JSON.stringify([]), null)}
-                    style={{
-                      border: 'none',
-                      borderRadius: '8px',
-                      padding: '0.5rem',
+                  {/* Sync status toast pill */}
+                  {saveStatus[sem.semester] && saveStatus[sem.semester] !== 'idle' && (
+                    <div style={{
+                      fontFamily: "'DM Mono', monospace",
+                      fontSize: '0.6875rem',
                       fontWeight: 700,
-                      fontSize: '0.75rem',
-                      cursor: 'pointer',
-                      transition: 'var(--transition)',
-                      background: completedList.length === 0 ? 'var(--color-text-3)' : 'transparent',
-                      color: completedList.length === 0 ? '#fff' : 'var(--color-text-3)',
-                    }}
-                  >
-                    Not Started
-                  </button>
-
-                  {/* In Progress Pill */}
-                  <button 
-                    onClick={() => {
-                      const nextList = (completedList.length > 0 && completedList.length < subtopics.length)
-                        ? completedList
-                        : [subtopics[0]];
-                      saveProgressState(sem.semester, sem.course.title, JSON.stringify(nextList), null);
-                    }}
-                    style={{
-                      border: 'none',
-                      borderRadius: '8px',
-                      padding: '0.5rem',
-                      fontWeight: 700,
-                      fontSize: '0.75rem',
-                      cursor: 'pointer',
-                      transition: 'var(--transition)',
-                      background: (completedList.length > 0 && completedList.length < subtopics.length) ? 'var(--color-purple)' : 'transparent',
-                      color: (completedList.length > 0 && completedList.length < subtopics.length) ? '#fff' : 'var(--color-text-3)',
-                      boxShadow: (completedList.length > 0 && completedList.length < subtopics.length) ? `0 4px 12px ${sem.color}33` : ''
-                    }}
-                  >
-                    In Progress
-                  </button>
-
-                  {/* Completed Pill */}
-                  <button 
-                    onClick={() => saveProgressState(sem.semester, sem.course.title, JSON.stringify(subtopics), null)}
-                    style={{
-                      border: 'none',
-                      borderRadius: '8px',
-                      padding: '0.5rem',
-                      fontWeight: 700,
-                      fontSize: '0.75rem',
-                      cursor: 'pointer',
-                      transition: 'var(--transition)',
-                      background: completedList.length === subtopics.length ? 'var(--color-success)' : 'transparent',
-                      color: completedList.length === subtopics.length ? '#fff' : 'var(--color-text-3)',
-                      boxShadow: completedList.length === subtopics.length ? '0 4px 12px rgba(16, 185, 129, 0.2)' : ''
-                    }}
-                  >
-                    Completed
-                  </button>
-
-                </div>
-              </div>
-
-              {/* Notes and Portfolio Links Section */}
-              <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-text-3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Notes & Links
-                  </div>
-                  {!isEditing && (
-                    <button 
-                      onClick={() => startEditingNotes(sem.semester, prog.notes)}
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: 'var(--color-accent)',
-                        fontSize: '0.75rem',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.25rem',
-                        padding: '0.25rem 0.5rem',
-                        borderRadius: '4px',
-                        transition: 'var(--transition)'
-                      }}
-                      className="edit-notes-btn"
-                    >
-                      <Edit3 size={12} /> {prog.notes ? 'Edit Notes' : 'Add Notes'}
-                    </button>
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      padding: '0.25rem 0.65rem',
+                      borderRadius: '9999px',
+                      color: '#FFFFFF',
+                      backgroundColor: saveStatus[sem.semester] === 'saving' ? '#0284C7' :
+                                       saveStatus[sem.semester] === 'success' ? '#2EC4B6' : '#E85D3F'
+                    }}>
+                      {saveStatus[sem.semester] === 'saving' ? 'Saving...' :
+                       saveStatus[sem.semester] === 'success' ? 'Synced ✓' : 'Sync Error'}
+                    </div>
                   )}
                 </div>
 
-                {isEditing ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    <textarea
-                      value={editNotes}
-                      onChange={(e) => setEditNotes(e.target.value)}
-                      placeholder="e.g. Github Repo Link: github.com/user/project or Coursera Certificate notes..."
+                {/* Course Title and Description */}
+                <div style={{ flexGrow: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                    <input 
+                      type="checkbox"
+                      checked={isAllCompleted}
+                      onChange={(e) => {
+                        const nextStatus = e.target.checked ? JSON.stringify(subtopics) : JSON.stringify([]);
+                        saveProgressState(sem.semester, sem.course.title, nextStatus, null);
+                      }}
                       style={{
-                        width: '100%',
-                        minHeight: '80px',
-                        borderRadius: '8px',
-                        border: '1px solid var(--color-border)',
-                        padding: '0.75rem',
-                        fontSize: '0.875rem',
-                        background: 'rgba(0,0,0,0.01)',
-                        color: 'var(--color-text)',
-                        fontFamily: 'var(--font)',
-                        outline: 'none',
-                        resize: 'vertical'
+                        width: '20px',
+                        height: '20px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        accentColor: '#2EC4B6',
+                        flexShrink: 0
                       }}
                     />
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                    <div style={{
+                      width: '28px',
+                      height: '28px',
+                      borderRadius: '8px',
+                      backgroundColor: '#F7F7F4',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#646A73',
+                      border: '1px solid #D8DAD7',
+                      flexShrink: 0
+                    }}>
+                      <Terminal size={14} />
+                    </div>
+                    <h4 style={{ 
+                      fontSize: '1.1rem', 
+                      margin: 0, 
+                      fontWeight: 700, 
+                      color: isAllCompleted ? '#646A73' : '#17191C',
+                      textDecoration: isAllCompleted ? 'line-through' : 'none'
+                    }}>
+                      {sem.course.title}
+                    </h4>
+                  </div>
+
+                  <p style={{ fontSize: '0.875rem', color: '#50545B', lineHeight: 1.6, margin: '0 0 1.25rem 0' }}>
+                    {sem.course.desc}
+                  </p>
+
+                  {/* Granular Sub-topics Checklist */}
+                  <div style={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    gap: '0.75rem', 
+                    backgroundColor: '#F7F7F4', 
+                    border: '1px solid #D8DAD7', 
+                    borderRadius: '1rem', 
+                    padding: '1.25rem',
+                    marginBottom: '0.5rem'
+                  }}>
+                    <div style={{
+                      fontFamily: "'DM Mono', monospace",
+                      fontSize: '0.6875rem',
+                      fontWeight: 700,
+                      color: '#646A73',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.08em',
+                      borderBottom: '1px solid #D8DAD7',
+                      paddingBottom: '0.5rem',
+                      marginBottom: '0.25rem'
+                    }}>
+                      TOPICS COVERAGE CHECKLIST ({completedList.length} / {subtopics.length})
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      {subtopics.map((topic, tIdx) => {
+                        const isTopicChecked = completedList.includes(topic);
+                        return (
+                          <label key={tIdx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', cursor: 'pointer', fontSize: '0.875rem', color: '#17191C', userSelect: 'none' }}>
+                            <input 
+                              type="checkbox"
+                              checked={isTopicChecked}
+                              onChange={(e) => {
+                                let updatedList;
+                                if (e.target.checked) {
+                                  updatedList = [...completedList, topic];
+                                } else {
+                                  updatedList = completedList.filter(s => s !== topic);
+                                }
+                                const nextStatus = JSON.stringify(updatedList);
+                                saveProgressState(sem.semester, sem.course.title, nextStatus, null);
+                              }}
+                              style={{
+                                width: '16px',
+                                height: '16px',
+                                borderRadius: '4px',
+                                accentColor: '#2EC4B6',
+                                marginTop: '3px',
+                                cursor: 'pointer',
+                                flexShrink: 0
+                              }}
+                            />
+                            <span style={{ 
+                              textDecoration: isTopicChecked ? 'line-through' : 'none', 
+                              color: isTopicChecked ? '#8E95A0' : '#17191C',
+                              lineHeight: 1.4
+                            }}>
+                              {topic}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Progress Status Controller */}
+                <div>
+                  <div style={{
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: '0.6875rem',
+                    fontWeight: 700,
+                    color: '#646A73',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
+                    marginBottom: '0.65rem'
+                  }}>
+                    STATUS SETTING
+                  </div>
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gap: '0.5rem',
+                    backgroundColor: '#F7F7F4',
+                    border: '1px solid #D8DAD7',
+                    borderRadius: '0.75rem',
+                    padding: '0.3rem'
+                  }}>
+                    
+                    {/* Not Started Pill */}
+                    <button 
+                      type="button"
+                      onClick={() => saveProgressState(sem.semester, sem.course.title, JSON.stringify([]), null)}
+                      style={{
+                        border: 'none',
+                        borderRadius: '0.5rem',
+                        padding: '0.5rem',
+                        fontWeight: 700,
+                        fontSize: '0.75rem',
+                        cursor: 'pointer',
+                        fontFamily: "'DM Mono', monospace",
+                        background: completedList.length === 0 ? '#17191C' : 'transparent',
+                        color: completedList.length === 0 ? '#FFFFFF' : '#646A73',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      Not Started
+                    </button>
+
+                    {/* In Progress Pill */}
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        const nextList = (completedList.length > 0 && completedList.length < subtopics.length)
+                          ? completedList
+                          : [subtopics[0]];
+                        saveProgressState(sem.semester, sem.course.title, JSON.stringify(nextList), null);
+                      }}
+                      style={{
+                        border: 'none',
+                        borderRadius: '0.5rem',
+                        padding: '0.5rem',
+                        fontWeight: 700,
+                        fontSize: '0.75rem',
+                        cursor: 'pointer',
+                        fontFamily: "'DM Mono', monospace",
+                        background: (completedList.length > 0 && completedList.length < subtopics.length) ? '#0284C7' : 'transparent',
+                        color: (completedList.length > 0 && completedList.length < subtopics.length) ? '#FFFFFF' : '#646A73',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      In Progress
+                    </button>
+
+                    {/* Completed Pill */}
+                    <button 
+                      type="button"
+                      onClick={() => saveProgressState(sem.semester, sem.course.title, JSON.stringify(subtopics), null)}
+                      style={{
+                        border: 'none',
+                        borderRadius: '0.5rem',
+                        padding: '0.5rem',
+                        fontWeight: 700,
+                        fontSize: '0.75rem',
+                        cursor: 'pointer',
+                        fontFamily: "'DM Mono', monospace",
+                        background: isAllCompleted ? '#2EC4B6' : 'transparent',
+                        color: isAllCompleted ? '#FFFFFF' : '#646A73',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      Completed
+                    </button>
+
+                  </div>
+                </div>
+
+                {/* Notes and Portfolio Links Section */}
+                <div style={{ borderTop: '1px solid #D8DAD7', paddingTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.6875rem', fontWeight: 700, color: '#646A73', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                      PROJECT NOTES & REPOSITORIES
+                    </div>
+                    {!isEditing && (
                       <button 
-                        onClick={() => setEditingKey(null)}
+                        type="button"
+                        onClick={() => startEditingNotes(sem.semester, prog.notes)}
                         style={{
                           background: 'transparent',
-                          border: '1px solid var(--color-border)',
-                          borderRadius: '6px',
-                          padding: '0.4rem 1rem',
-                          fontSize: '0.75rem',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                          color: 'var(--color-text-3)'
-                        }}
-                      >
-                        Cancel
-                      </button>
-                      <button 
-                        onClick={() => handleSaveNotes(sem.semester, sem.course.title)}
-                        style={{
-                          background: 'var(--color-accent)',
                           border: 'none',
-                          color: '#fff',
-                          borderRadius: '6px',
-                          padding: '0.4rem 1.25rem',
+                          color: '#E85D3F',
                           fontSize: '0.75rem',
                           fontWeight: 700,
                           cursor: 'pointer',
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: '0.25rem'
+                          gap: '0.25rem',
+                          fontFamily: "'DM Mono', monospace"
                         }}
                       >
-                        <Save size={12} /> Save Notes
+                        <Edit3 size={12} /> {prog.notes ? 'Edit Notes' : '+ Add Notes'}
                       </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div>
-                    {prog.notes ? (
-                      <div style={{
-                        background: 'rgba(0,0,0,0.01)',
-                        border: '1px solid var(--color-border)',
-                        borderRadius: '8px',
-                        padding: '0.75rem 1rem',
-                        fontSize: '0.875rem',
-                        lineHeight: 1.5,
-                        color: 'var(--color-text-2)',
-                        wordBreak: 'break-word',
-                        whiteSpace: 'pre-wrap'
-                      }}>
-                        {/* Auto detect simple URLs and render link tags */}
-                        {prog.notes.split(/(\s+)/).map((word, i) => {
-                          if (word.startsWith('http://') || word.startsWith('https://') || word.startsWith('github.com')) {
-                            const url = word.startsWith('github.com') ? `https://${word}` : word;
-                            return (
-                              <a key={i} href={url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-accent)', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.15rem', textDecoration: 'none' }}>
-                                Link <ExternalLink size={10} />
-                              </a>
-                            );
-                          }
-                          return word;
-                        })}
-                      </div>
-                    ) : (
-                      <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-3)', fontStyle: 'italic' }}>
-                        No notes or project links added yet.
-                      </div>
                     )}
                   </div>
-                )}
+
+                  {isEditing ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                      <textarea
+                        value={editNotes}
+                        onChange={(e) => setEditNotes(e.target.value)}
+                        placeholder="e.g. GitHub: github.com/username/project or Coursera Capstone certificate notes..."
+                        style={{
+                          width: '100%',
+                          minHeight: '80px',
+                          borderRadius: '0.75rem',
+                          border: '1px solid #D8DAD7',
+                          padding: '0.75rem',
+                          fontSize: '0.875rem',
+                          backgroundColor: '#F7F7F4',
+                          color: '#17191C',
+                          fontFamily: "'Manrope', sans-serif",
+                          outline: 'none',
+                          resize: 'vertical'
+                        }}
+                      />
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                        <button 
+                          type="button"
+                          onClick={() => setEditingKey(null)}
+                          style={{
+                            background: 'transparent',
+                            border: '1px solid #D8DAD7',
+                            borderRadius: '9999px',
+                            padding: '0.4rem 1rem',
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            color: '#50545B',
+                            fontFamily: "'DM Mono', monospace"
+                          }}
+                        >
+                          Cancel
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={() => handleSaveNotes(sem.semester, sem.course.title)}
+                          style={{
+                            backgroundColor: '#17191C',
+                            border: 'none',
+                            color: '#FFFFFF',
+                            borderRadius: '9999px',
+                            padding: '0.4rem 1.25rem',
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.35rem',
+                            fontFamily: "'DM Mono', monospace"
+                          }}
+                        >
+                          <Save size={12} /> Save Notes
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      {prog.notes ? (
+                        <div style={{
+                          backgroundColor: '#F7F7F4',
+                          border: '1px solid #D8DAD7',
+                          borderRadius: '0.75rem',
+                          padding: '0.75rem 1rem',
+                          fontSize: '0.875rem',
+                          lineHeight: 1.5,
+                          color: '#17191C',
+                          wordBreak: 'break-word',
+                          whiteSpace: 'pre-wrap'
+                        }}>
+                          {prog.notes.split(/(\s+)/).map((word, i) => {
+                            if (word.startsWith('http://') || word.startsWith('https://') || word.startsWith('github.com')) {
+                              const url = word.startsWith('github.com') ? `https://${word}` : word;
+                              return (
+                                <a key={i} href={url} target="_blank" rel="noopener noreferrer" style={{ color: '#E85D3F', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.15rem', textDecoration: 'none' }}>
+                                  Link <ExternalLink size={10} />
+                                </a>
+                              );
+                            }
+                            return word;
+                          })}
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: '0.8125rem', color: '#8E95A0', fontStyle: 'italic' }}>
+                          No notes or project repositories logged yet.
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
               </div>
+            );
+          })}
+        </div>
 
-            </div>
-          );
-        })}
+        {/* 6. BOTTOM EXPLORE CURRICULUM BANNER */}
+        <div style={{
+          backgroundColor: '#17191C',
+          borderRadius: '1.5rem',
+          padding: '3.5rem 2.5rem',
+          textAlign: 'center',
+          color: '#FFFFFF',
+          boxShadow: '0 8px 32px rgba(23, 25, 28, 0.15)'
+        }}>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            padding: '0.35rem 0.85rem',
+            backgroundColor: '#20252B',
+            border: '1px solid rgba(255,255,255,0.15)',
+            color: '#2EC4B6',
+            fontFamily: "'DM Mono', monospace",
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            borderRadius: '9999px',
+            marginBottom: '1.5rem'
+          }}>
+            <BookOpen size={14} />
+            <span>FULL ACM/IEEE CS2023 SPECIFICATION</span>
+          </div>
+
+          <h3 style={{
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontSize: 'clamp(2rem, 4vw, 3rem)',
+            fontWeight: 800,
+            textTransform: 'uppercase',
+            margin: '0 0 1rem 0'
+          }}>
+            Inspect the Connected Semester Roadmap
+          </h3>
+
+          <p style={{
+            color: '#D8DAD7',
+            maxWidth: '560px',
+            margin: '0 auto 2.5rem auto',
+            fontSize: '1.05rem',
+            lineHeight: 1.6
+          }}>
+            Explore detailed external courses, textbooks, interactive platforms, and capstone milestones curated for {domain.title}.
+          </p>
+
+          <Link 
+            to={`/roadmap/${selectedDomainId}`} 
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              backgroundColor: '#E85D3F',
+              color: '#FFFFFF',
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontSize: '1.15rem',
+              fontWeight: 800,
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              padding: '1rem 2.5rem',
+              borderRadius: '9999px',
+              textDecoration: 'none',
+              boxShadow: '0 4px 16px rgba(232, 93, 63, 0.3)'
+            }}
+          >
+            <span>Open Domain Curriculum</span>
+            <ChevronRight size={18} />
+          </Link>
+        </div>
 
       </div>
-
-      {/* Return to Explore domains card */}
-      <div className="glass-card" style={{ marginTop: '5rem', padding: '3.5rem', textAlign: 'center', borderStyle: 'dashed', borderColor: 'rgba(255,255,255,0.15)' }}>
-        <BookOpen size={48} style={{ margin: '0 auto 1.5rem', color: 'var(--color-purple)' }} />
-        <h3 style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>Want to check full syllabus topics?</h3>
-        <p style={{ color: 'var(--color-text-3)', maxWidth: '500px', margin: '0 auto 2rem', fontSize: '1.05rem' }}>
-          Explore detailed external courses, coding guidelines, textbooks, and interactive sites recommended for this specialization.
-        </p>
-        <Link to={`/roadmap/${selectedDomainId}`} className="btn-primary" style={{ padding: '1.1rem 3rem', fontSize: '1rem' }}>Open Domain Curriculum <ChevronRight size={18} style={{ marginLeft: '4px' }} /></Link>
-      </div>
-
     </div>
   );
 }

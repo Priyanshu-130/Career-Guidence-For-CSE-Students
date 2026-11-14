@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CAREER_QUESTIONS, CAREER_PROFILES } from '../data/careerQuestions';
-import { ChevronRight, ChevronLeft, RefreshCw, Sparkles, Target, Zap, Check } from 'lucide-react';
+import { ChevronRight, ChevronLeft, RefreshCw, Zap, Check } from 'lucide-react';
 
 export default function CareerFinder() {
   const [currentIdx, setCurrentIdx] = useState(0);

@@ -1,416 +1,871 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import domainsData from '../data/domains.json';
-import { 
-  BookOpen, 
-  ArrowRight, 
-  ChevronLeft, 
-  ExternalLink
+import {
+  ArrowRight,
+  BookOpen,
+  Briefcase,
+  Calendar,
+  ChevronLeft,
+  ExternalLink,
+  Layers,
+  MapPin,
+  Sparkles,
+  TrendingUp,
 } from 'lucide-react';
-import MiniQuiz from '../components/MiniQuiz';
+import { getApiBaseUrl } from '../utils/roadmapHelper';
+import { getDomainMarketInsights } from '../services/apiService';
+import {
+  filterAndGroupResources,
+  getPhase4DomainBundle,
+  LEGACY_HARDWARE_ALIASES,
+} from '../data/phase4DataLoader';
+
+function getTrendBadgeStyle(trend) {
+  const norm = String(trend || '').toLowerCase();
+  if (norm === 'rising') {
+    return {
+      backgroundColor: 'var(--color-success-lt)',
+      color: '#0F5132',
+      border: '1px solid var(--color-success)',
+    };
+  }
+  if (norm === 'stable') {
+    return {
+      backgroundColor: 'var(--color-cyan-lt)',
+      color: '#075985',
+      border: '1px solid var(--color-cyan)',
+    };
+  }
+  return {
+    backgroundColor: 'var(--color-amber-lt)',
+    color: '#92400E',
+    border: '1px solid var(--color-amber)',
+  };
+}
 
 export default function DomainDetail() {
   const { id } = useParams();
-  const domain = domainsData.find(d => d.id === id);
+  const [apiPayload, setApiPayload] = useState(null);
+  const [liveMarketInsights, setLiveMarketInsights] = useState(null);
 
-  if (!domain) {
+  const staticBundle = useMemo(() => getPhase4DomainBundle(id), [id]);
+
+  useEffect(() => {
+    const rawId = String(id || '').trim().toLowerCase();
+    if (!rawId) return;
+    const canonicalId = LEGACY_HARDWARE_ALIASES[rawId] || rawId;
+
+    let cancelled = false;
+    const apiBase = getApiBaseUrl();
+    fetch(`${apiBase}/api/data/domains/${canonicalId}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (cancelled || !data || data.status !== 'success') return;
+        setApiPayload({ requestId: rawId, canonicalId, data });
+      })
+      .catch(() => {
+        // Offline or dev static mode: keep bundled Phase 4 JSON fallback
+      });
+
+    getDomainMarketInsights(canonicalId)
+      .then((insights) => {
+        if (!cancelled && insights) {
+          setLiveMarketInsights({ requestId: rawId, data: insights });
+        }
+      })
+      .catch(() => {
+        // Keep static market demand view if lookup fails
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  const bundle = useMemo(() => {
+    if (!staticBundle) return null;
+    const rawId = String(id || '').trim().toLowerCase();
+    if (!apiPayload || apiPayload.requestId !== rawId) {
+      return staticBundle;
+    }
+
+    const { data, canonicalId } = apiPayload;
+    return {
+      domain:
+        canonicalId === rawId && data.domain
+          ? { ...staticBundle.domain, ...data.domain }
+          : staticBundle.domain,
+      marketDemand: data.market_demand || staticBundle.marketDemand,
+      marketBooster: data.market_booster || staticBundle.marketBooster,
+      resources:
+        Array.isArray(data.resources) && data.resources.length > 0
+          ? data.resources
+          : staticBundle.resources,
+      meta: staticBundle.meta,
+    };
+  }, [staticBundle, apiPayload, id]);
+
+  const groupedResources = useMemo(() => {
+    if (!bundle) {
+      return { beginner: [], intermediate: [], advanced: [], totalCount: 0 };
+    }
+    return filterAndGroupResources(bundle.resources);
+  }, [bundle]);
+
+  if (!bundle) {
     return (
-      <div style={{ padding: '4rem 1rem', textAlign: 'center', backgroundColor: '#F7F7F4', minHeight: '100vh', color: '#17191C' }}>
-        <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Domain Specification Not Found</h2>
-        <Link to="/domains" className="btn-secondary">Return to Domain Registry</Link>
+      <div
+        style={{
+          padding: 'var(--space-6) var(--space-2)',
+          backgroundColor: 'var(--color-bg)',
+          minHeight: '80vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <div className="state-container" style={{ maxWidth: '480px', width: '100%' }}>
+          <h2 className="state-title">Domain Not Found</h2>
+          <p className="state-description">
+            We couldn&apos;t find specialization data for &ldquo;{id}&rdquo;.
+          </p>
+          <Link to="/domains" className="btn-secondary">
+            Return to All Domains
+          </Link>
+        </div>
       </div>
     );
   }
 
+  const { domain, marketDemand, marketBooster, resources, meta } = bundle;
+  const trendStyle = getTrendBadgeStyle(marketDemand?.demand_trend);
+
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#F7F7F4',
-      color: '#17191C',
-      fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif",
-      padding: '2.5rem 1.5rem 6rem'
-    }}>
-      <div style={{ maxWidth: '1160px', margin: '0 auto' }}>
-        
-        {/* 1. TOP NAV / TELEMETRY STRIP */}
-        <div style={{
+    <div
+      style={{
+        minHeight: '100%',
+        backgroundColor: 'var(--color-bg)',
+        color: 'var(--color-text)',
+        padding: 'var(--space-4) var(--space-2) var(--space-8)',
+      }}
+    >
+      <div
+        style={{
+          maxWidth: '1040px',
+          margin: '0 auto',
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          padding: '0.75rem 1.25rem',
-          border: '1px solid #D8DAD7',
-          backgroundColor: '#FFFFFF',
-          marginBottom: '2.5rem',
-          fontFamily: "'DM Mono', monospace",
-          fontSize: '0.75rem',
-          color: '#646A73'
-        }}>
-          <Link 
-            to="/domains" 
-            style={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
-              gap: '0.5rem', 
-              color: '#50545B', 
-              textDecoration: 'none',
-              fontWeight: 600
+          flexDirection: 'column',
+          gap: 'var(--space-4)',
+        }}
+      >
+        {/* Top Back Link */}
+        <div>
+          <Link
+            to="/domains"
+            className="btn-ghost"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 'var(--space-1)',
+              padding: 'var(--space-1) var(--space-2)',
+              minHeight: '36px',
+              fontSize: 'var(--text-sm)',
             }}
           >
-            <ChevronLeft size={14} />
-            <span>RETURN TO DOMAIN ARCHIVE</span>
+            <ChevronLeft size={16} />
+            <span>All Domains</span>
           </Link>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            <span>IDENTIFIER: <span style={{ color: '#E85D3F', fontWeight: 700 }}>SPEC-{domain.id.toUpperCase()}</span></span>
-            <span>MARKET: <span style={{ color: '#2EC4B6', fontWeight: 700 }}>{domain.insights?.jobDemand?.toUpperCase() || 'HIGH DEMAND'}</span></span>
-          </div>
         </div>
 
-        {/* 2. HERO HEADER */}
-        <section style={{ marginBottom: '4rem' }}>
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.25rem 0.75rem',
-            border: '1px solid #E85D3F',
-            backgroundColor: '#FFF0EB',
-            color: '#E85D3F',
-            fontFamily: "'DM Mono', monospace",
-            fontSize: '0.75rem',
-            fontWeight: 700,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            marginBottom: '1.25rem'
-          }}>
-            <span>CSE SPECIALIZATION INTELLIGENCE DOSSIER</span>
+        {/* ============================================================
+            SECTION 1: OVERVIEW (3 lines max)
+            ============================================================ */}
+        <section
+          id="domain-section-overview"
+          aria-labelledby="domain-overview-heading"
+          className="card"
+          style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 'var(--space-1)',
+            }}
+          >
+            <span className="mono-tag">1. Overview</span>
+            {domain.onet_code && (
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 'var(--text-xs)',
+                  color: 'var(--color-text-3)',
+                }}
+              >
+                O*NET {domain.onet_code}
+              </span>
+            )}
           </div>
 
-          <h1 style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 'clamp(3rem, 6.5vw, 5rem)',
-            fontWeight: 800,
-            lineHeight: 0.95,
-            letterSpacing: '-0.02em',
-            marginBottom: '1.5rem',
-            color: '#17191C',
-            textTransform: 'uppercase'
-          }}>
-            {domain.title}
+          <h1 id="domain-overview-heading" style={{ margin: 0, color: 'var(--color-text)' }}>
+            {domain.name}
           </h1>
 
-          <p style={{
-            fontSize: 'clamp(1.125rem, 2vw, 1.35rem)',
-            color: '#50545B',
-            maxWidth: '850px',
-            lineHeight: 1.6,
-            margin: 0
-          }}>
-            {domain.description}
+          {/* Strictly capped to 3 lines max */}
+          <p
+            data-testid="domain-overview-text"
+            style={{
+              fontSize: 'var(--text-lg)',
+              color: 'var(--color-text-2)',
+              lineHeight: 1.55,
+              margin: 0,
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}
+          >
+            {domain.overview}
           </p>
-        </section>
 
-        {/* 3. MAIN DOSSIER LAYOUT (GRID: 1fr 340px) */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 340px', gap: '2.5rem', alignItems: 'start' }}>
-          
-          {/* Left Column: Deep Specifications */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-            
-            {/* Field Overview & Scope */}
-            <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2.5rem' }}>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#E85D3F', fontWeight: 700, letterSpacing: '0.1em', marginBottom: '0.5rem' }}>
-                SECTION 01 // OVERVIEW & INDUSTRIAL CONTEXT
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gap: 'var(--space-2)',
+              paddingTop: 'var(--space-2)',
+              borderTop: '1px solid var(--color-border-subtle)',
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 'var(--text-xs)',
+                  fontWeight: 700,
+                  color: 'var(--color-text-3)',
+                  marginBottom: 'var(--space-1)',
+                }}
+              >
+                PREREQUISITES
               </div>
-              <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', marginBottom: '1.25rem' }}>
-                Domain Architecture & Industrial Scope
-              </h2>
-              <p style={{ color: '#50545B', fontSize: '1.0625rem', lineHeight: 1.8, margin: 0 }}>
-                {domain.overview}
-              </p>
-            </div>
-
-            {/* Prerequisites & Real-World Projects */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-              
-              {/* Prerequisites */}
-              <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2rem' }}>
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#E85D3F', fontWeight: 700, letterSpacing: '0.1em', marginBottom: '0.5rem' }}>
-                  SECTION 02 // PREREQUISITES
-                </div>
-                <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', marginBottom: '1.25rem' }}>
-                  Academic Prerequisites
-                </h3>
-                
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-                  {(domain.prerequisites || []).map(item => (
-                    <div 
-                      key={item} 
-                      style={{ 
-                        padding: '0.75rem 1rem', 
-                        backgroundColor: '#F7F7F4', 
-                        border: '1px solid #D8DAD7', 
-                        fontSize: '0.875rem',
-                        fontFamily: "'Manrope', sans-serif",
-                        color: '#17191C',
-                        fontWeight: 600,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem'
-                      }}
-                    >
-                      <span style={{ color: '#E85D3F' }}>•</span>
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Key Projects */}
-              <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2rem' }}>
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#E85D3F', fontWeight: 700, letterSpacing: '0.1em', marginBottom: '0.5rem' }}>
-                  SECTION 03 // PORTFOLIO
-                </div>
-                <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', marginBottom: '1.25rem' }}>
-                  Signature Projects
-                </h3>
-                
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  {(domain.projects || []).slice(0, 3).map((proj, idx) => (
-                    <div key={proj.name} style={{ borderBottom: idx < 2 ? '1px solid #D8DAD7' : 'none', paddingBottom: idx < 2 ? '0.75rem' : '0' }}>
-                      <div style={{ fontWeight: 700, fontSize: '0.9375rem', color: '#17191C', marginBottom: '0.25rem' }}>
-                        {proj.name}
-                      </div>
-                      <div style={{ fontSize: '0.8125rem', color: '#50545B', lineHeight: 1.5 }}>
-                        {proj.desc}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-            </div>
-
-            {/* Industry Trajectories & Global Employers */}
-            <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2.5rem' }}>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#E85D3F', fontWeight: 700, letterSpacing: '0.1em', marginBottom: '0.5rem' }}>
-                SECTION 04 // EMPLOYMENT RADAR
-              </div>
-              <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', marginBottom: '1.5rem' }}>
-                Market Trajectories & Global Ecosystem
-              </h2>
-
-              {/* Future Scope */}
-              <div style={{ marginBottom: '2rem' }}>
-                <h4 style={{ fontSize: '1.125rem', color: '#17191C', fontWeight: 700, marginBottom: '0.5rem' }}>Emerging Horizons</h4>
-                <p style={{ color: '#50545B', fontSize: '0.9375rem', lineHeight: 1.7, margin: 0 }}>
-                  {domain.careerDetails?.futureScopeDetail || domain.insights?.futureScope}
-                </p>
-              </div>
-
-              {/* Indian Hubs & Global Hotspots */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-                <div style={{ padding: '1.5rem', border: '1px solid #D8DAD7', backgroundColor: '#F7F7F4' }}>
-                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 700, color: '#646A73', marginBottom: '0.75rem' }}>
-                    NATIONAL TECH CORRIDORS
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.875rem', color: '#17191C' }}>
-                    {(domain.careerDetails?.locations?.india || ['Bengaluru', 'Hyderabad', 'Pune', 'NCR']).map(loc => (
-                      <div key={loc}>• {loc}</div>
-                    ))}
-                  </div>
-                </div>
-
-                <div style={{ padding: '1.5rem', border: '1px solid #D8DAD7', backgroundColor: '#F7F7F4' }}>
-                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 700, color: '#646A73', marginBottom: '0.75rem' }}>
-                    INTERNATIONAL HUBS
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.875rem', color: '#17191C' }}>
-                    {(domain.careerDetails?.locations?.global || ['Silicon Valley, US', 'Munich, Germany', 'London, UK', 'Tokyo, Japan']).map(loc => (
-                      <div key={loc}>• {loc}</div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Typical Roles */}
-              <div>
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 700, color: '#646A73', marginBottom: '0.75rem' }}>
-                  TYPICAL ROLES & DESIGNATIONS
-                </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  {(domain.roles || []).map(role => (
-                    <span 
-                      key={role} 
-                      style={{ 
-                        padding: '6px 14px', 
-                        backgroundColor: '#F7F7F4', 
-                        color: '#17191C', 
-                        fontSize: '0.8125rem', 
-                        border: '1px solid #D8DAD7',
-                        fontWeight: 600
-                      }}
-                    >
-                      {role}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-            </div>
-
-            {/* Academic & Industry Verification Standard Citations */}
-            <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2.5rem' }}>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#E85D3F', fontWeight: 700, letterSpacing: '0.1em', marginBottom: '0.5rem' }}>
-                SECTION 05 // RESEARCH CITATIONS
-              </div>
-              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', marginBottom: '1.25rem' }}>
-                Accredited Standards & Global Curricula
-              </h3>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem' }}>
-                <a href="https://csed.acm.org/final-report/" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', padding: '1rem', border: '1px solid #D8DAD7', backgroundColor: '#F7F7F4', display: 'block' }}>
-                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.6875rem', fontWeight: 700, color: '#E85D3F', marginBottom: '0.25rem' }}>CURRICULUM SPEC</div>
-                  <div style={{ fontWeight: 700, color: '#17191C', fontSize: '0.9375rem' }}>ACM/IEEE CS2023 Guidelines ↗</div>
-                  <div style={{ color: '#50545B', fontSize: '0.75rem', marginTop: '0.25rem' }}>Undergraduate core competency definitions</div>
-                </a>
-
-                <a href="https://roadmap.sh/" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', padding: '1rem', border: '1px solid #D8DAD7', backgroundColor: '#F7F7F4', display: 'block' }}>
-                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.6875rem', fontWeight: 700, color: '#2EC4B6', marginBottom: '0.25rem' }}>INDUSTRY PATH</div>
-                  <div style={{ fontWeight: 700, color: '#17191C', fontSize: '0.9375rem' }}>roadmap.sh Developer Matrix ↗</div>
-                  <div style={{ color: '#50545B', fontSize: '0.75rem', marginTop: '0.25rem' }}>Community-verified engineering milestones</div>
-                </a>
-
-                <a href="https://www.weforum.org/publications/the-future-of-jobs-report-2025/" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', padding: '1rem', border: '1px solid #D8DAD7', backgroundColor: '#F7F7F4', display: 'block' }}>
-                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.6875rem', fontWeight: 700, color: '#D97706', marginBottom: '0.25rem' }}>MARKET DEMAND</div>
-                  <div style={{ fontWeight: 700, color: '#17191C', fontSize: '0.9375rem' }}>WEF Future of Jobs ↗</div>
-                  <div style={{ color: '#50545B', fontSize: '0.75rem', marginTop: '0.25rem' }}>Emerging technological skill vectors</div>
-                </a>
-              </div>
-            </div>
-
-            {/* Mini Fit Check */}
-            {domain.miniQuiz && domain.miniQuiz.length > 0 && (
-              <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2.5rem' }}>
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#E85D3F', fontWeight: 700, letterSpacing: '0.1em', marginBottom: '0.5rem' }}>
-                  SECTION 06 // DOMAIN FIT CHECK
-                </div>
-                <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', marginBottom: '0.5rem' }}>
-                  Fast 5-Question Domain Aptitude
-                </h2>
-                <p style={{ color: '#50545B', fontSize: '0.9375rem', marginBottom: '2rem' }}>
-                  Verify if your technical intuition aligns with core concepts in {domain.title}.
-                </p>
-                <MiniQuiz questions={domain.miniQuiz} domainName={domain.title} />
-              </div>
-            )}
-
-          </div>
-
-          {/* Right Sidebar: Quick Facts & Tech Stack */}
-          <aside style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            
-            {/* Quick Facts Card */}
-            <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2rem' }}>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#646A73', fontWeight: 700, marginBottom: '1rem' }}>
-                TECHNICAL TELEMETRY
-              </div>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                <div>
-                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.6875rem', color: '#646A73', textTransform: 'uppercase' }}>
-                    MARKET DEMAND
-                  </div>
-                  <div style={{ fontWeight: 700, fontSize: '1.125rem', color: '#17191C' }}>
-                    {domain.insights?.jobDemand || 'High Demand'}
-                  </div>
-                </div>
-
-                <div>
-                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.6875rem', color: '#646A73', textTransform: 'uppercase' }}>
-                    LEARNING CURVE COMPLEXITY
-                  </div>
-                  <div style={{ fontWeight: 700, fontSize: '1.125rem', color: '#17191C' }}>
-                    {domain.insights?.timeToLearn || '6-12 Months'}
-                  </div>
-                </div>
-
-                <div>
-                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.6875rem', color: '#646A73', textTransform: 'uppercase' }}>
-                    ACCREDITATION CATEGORY
-                  </div>
-                  <div style={{ fontWeight: 700, fontSize: '1.125rem', color: '#E85D3F' }}>
-                    {domain.category?.toUpperCase() || 'SOFTWARE'}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Core Tools Stack */}
-            <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2rem' }}>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#646A73', fontWeight: 700, marginBottom: '1rem' }}>
-                PRODUCTION TECH STACK
-              </div>
-              
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                {(domain.tools || []).map(tool => (
-                  <span 
-                    key={tool} 
-                    style={{ 
-                      padding: '6px 12px', 
-                      backgroundColor: '#F7F7F4', 
-                      border: '1px solid #D8DAD7', 
-                      fontSize: '0.75rem', 
-                      fontFamily: "'DM Mono', monospace",
-                      color: '#17191C',
-                      fontWeight: 600
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-1)' }}>
+                {(domain.prerequisites || []).map((item) => (
+                  <span
+                    key={item}
+                    style={{
+                      padding: '4px 10px',
+                      backgroundColor: 'var(--color-bg-alt)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: 'var(--radius-sm)',
+                      fontSize: 'var(--text-sm)',
+                      color: 'var(--color-text)',
                     }}
                   >
-                    {tool}
+                    {item}
                   </span>
                 ))}
               </div>
             </div>
 
-            {/* Launch Roadmap CTA */}
-            <Link 
-              to={`/roadmap/${domain.id}`} 
-              style={{ 
-                padding: '1.25rem', 
-                width: '100%', 
-                display: 'inline-flex',
+            <div>
+              <div
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 'var(--text-xs)',
+                  fontWeight: 700,
+                  color: 'var(--color-text-3)',
+                  marginBottom: 'var(--space-1)',
+                }}
+              >
+                ENTRY-LEVEL ROLES
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-1)' }}>
+                {(domain.career_paths || []).map((role) => (
+                  <span
+                    key={role}
+                    style={{
+                      padding: '4px 10px',
+                      backgroundColor: 'var(--color-bg-alt)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: 'var(--radius-sm)',
+                      fontSize: 'var(--text-sm)',
+                      color: 'var(--color-text)',
+                    }}
+                  >
+                    {role}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================================
+            SECTION 2: MARKET DEMAND IN INDIA
+            ============================================================ */}
+        {marketDemand && (
+          <section
+            id="domain-section-market-demand"
+            aria-labelledby="market-demand-heading"
+            className="card"
+            style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}
+          >
+            <div
+              style={{
+                display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.5rem',
-                backgroundColor: '#17191C',
-                color: '#FFFFFF',
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: '1.125rem',
-                fontWeight: 700,
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                textDecoration: 'none',
-                border: '1px solid #17191C',
-                transition: 'all 0.15s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#E85D3F';
-                e.currentTarget.style.borderColor = '#E85D3F';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#17191C';
-                e.currentTarget.style.borderColor = '#17191C';
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: 'var(--space-2)',
               }}
             >
-              <span>Launch 8-Sem Roadmap</span>
+              <div>
+                <span className="mono-tag">2. Market Demand in India</span>
+                <h2 id="market-demand-heading" style={{ margin: 'var(--space-0-5) 0 0 0' }}>
+                  Hiring Trend &amp; Entry-Level Compensation
+                </h2>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', flexWrap: 'wrap' }}>
+                <span
+                  data-testid="market-demand-trend"
+                  style={{
+                    ...trendStyle,
+                    padding: '6px 14px',
+                    borderRadius: 'var(--radius-full)',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 'var(--text-sm)',
+                    fontWeight: 700,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  <TrendingUp size={16} />
+                  <span>{marketDemand.demand_trend}</span>
+                </span>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                gap: 'var(--space-2)',
+              }}
+            >
+              <div
+                style={{
+                  padding: 'var(--space-2)',
+                  backgroundColor: 'var(--color-bg)',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: 'var(--radius-sm)',
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 'var(--text-xs)',
+                    fontWeight: 700,
+                    color: 'var(--color-text-3)',
+                    marginBottom: 'var(--space-0-5)',
+                  }}
+                >
+                  FRESHER SALARY RANGE (INDIA, 0–2 YRS)
+                </div>
+                <div
+                  data-testid="fresher-salary-range"
+                  style={{
+                    fontSize: 'var(--text-xl)',
+                    fontWeight: 800,
+                    color: 'var(--color-text)',
+                    marginBottom: 'var(--space-0-5)',
+                  }}
+                >
+                  {marketDemand.fresher_salary_range_inr?.display}
+                </div>
+                <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--color-text-2)' }}>
+                  {marketDemand.fresher_salary_range_inr?.notes}
+                </p>
+              </div>
+
+              <div
+                style={{
+                  padding: 'var(--space-2)',
+                  backgroundColor: 'var(--color-bg)',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: 'var(--radius-sm)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  gap: 'var(--space-1)',
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 'var(--text-xs)',
+                      fontWeight: 700,
+                      color: 'var(--color-text-3)',
+                      marginBottom: 'var(--space-0-5)',
+                    }}
+                  >
+                    LAST UPDATED &amp; VERIFICATION
+                  </div>
+                  <div
+                    data-testid="market-last-updated"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'var(--space-1)',
+                      fontSize: 'var(--text-lg)',
+                      fontWeight: 700,
+                      color: 'var(--color-text)',
+                    }}
+                  >
+                    <Calendar size={18} style={{ color: 'var(--color-accent)' }} />
+                    <span>{marketDemand.last_updated}</span>
+                  </div>
+                  <p style={{ margin: 'var(--space-0-5) 0 0 0', fontSize: 'var(--text-sm)', color: 'var(--color-text-2)' }}>
+                    {marketDemand.verified
+                      ? 'Verified dataset entry.'
+                      : 'Indicative estimate — verify live postings on Naukri / LinkedIn India.'}
+                  </p>
+                </div>
+
+                {marketDemand.source_url && (
+                  <a
+                    href={marketDemand.source_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      fontSize: 'var(--text-sm)',
+                      fontWeight: 600,
+                      color: 'var(--color-cyan)',
+                    }}
+                  >
+                    <span>Source: {marketDemand.source}</span>
+                    <ExternalLink size={14} />
+                  </a>
+                )}
+              </div>
+            </div>
+
+            {marketDemand.entry_level_reality && (
+              <p style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--color-text-2)', lineHeight: 1.6 }}>
+                {marketDemand.entry_level_reality}
+              </p>
+            )}
+
+            {(() => {
+              const rawId = String(id || '').trim().toLowerCase();
+              const activeInsights =
+                liveMarketInsights && liveMarketInsights.requestId === rawId
+                  ? liveMarketInsights.data
+                  : null;
+              if (!activeInsights?.market_insights) return null;
+
+              const stats = activeInsights.market_insights;
+              const topSkills = activeInsights.skill_gap?.top_15_domain_skills || [];
+              const listings = activeInsights.job_listings || [];
+
+              return (
+                <div
+                  data-testid="live-market-dataset-block"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 'var(--space-2)',
+                    padding: 'var(--space-2)',
+                    backgroundColor: 'var(--color-bg)',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius-md)',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text)' }}>
+                      2026 INDIAN TECH JOB MARKET SNAPSHOT
+                    </span>
+                  </div>
+
+                  {/* Live Dataset KPI Strip */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '10px' }}>
+                    <div style={{ padding: '10px 12px', backgroundColor: '#FFFFFF', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)' }}>
+                      <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--color-text-3)' }}>TOTAL OPENINGS</div>
+                      <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-text)' }}>
+                        {Number(stats.total_openings || 0).toLocaleString('en-IN')}
+                      </div>
+                    </div>
+
+                    <div style={{ padding: '10px 12px', backgroundColor: '#FFFFFF', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)' }}>
+                      <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--color-text-3)' }}>FRESHER-FRIENDLY</div>
+                      <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-success)' }}>
+                        {Number(stats.fresher_friendly_count || 0).toLocaleString('en-IN')}{' '}
+                        <span style={{ fontSize: '0.82rem', fontWeight: 700 }}>
+                          ({Number(stats.fresher_friendly_ratio_pct || 0).toFixed(1)}%)
+                        </span>
+                      </div>
+                    </div>
+
+                    <div style={{ padding: '10px 12px', backgroundColor: '#FFFFFF', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)' }}>
+                      <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--color-text-3)' }}>MEDIAN LPA</div>
+                      <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-accent)' }}>
+                        {stats.median_salary_lpa != null ? `₹${stats.median_salary_lpa} LPA` : 'N/A'}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Top Hiring Hubs & Top Demanded Skills */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px' }}>
+                    {(stats.top_hiring_hubs || []).length > 0 && (
+                      <div style={{ padding: '12px', backgroundColor: '#FFFFFF', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontFamily: 'var(--font-mono)', fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-3)', marginBottom: '8px' }}>
+                          <MapPin size={13} />
+                          <span>TOP INDIAN HIRING HUBS</span>
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                          {stats.top_hiring_hubs.slice(0, 5).map((hub) => (
+                            <span
+                              key={hub.city}
+                              style={{
+                                fontFamily: 'var(--font-mono)',
+                                fontSize: '0.76rem',
+                                padding: '3px 9px',
+                                borderRadius: '999px',
+                                backgroundColor: 'var(--color-bg-alt)',
+                                border: '1px solid var(--color-border)',
+                              }}
+                            >
+                              {hub.city} ({hub.count})
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {topSkills.length > 0 && (
+                      <div style={{ padding: '12px', backgroundColor: '#FFFFFF', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)' }}>
+                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-3)', marginBottom: '8px' }}>
+                          TOP DEMANDED SKILLS (% OF POSTINGS)
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                          {topSkills.slice(0, 8).map((item) => (
+                            <span
+                              key={item.skill}
+                              style={{
+                                fontFamily: 'var(--font-mono)',
+                                fontSize: '0.76rem',
+                                padding: '3px 9px',
+                                borderRadius: '999px',
+                                backgroundColor: 'var(--color-cyan-lt)',
+                                color: '#075985',
+                                border: '1px solid var(--color-cyan)',
+                              }}
+                            >
+                              {item.skill} ({Number(item.demand_pct || 0).toFixed(1)}%)
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Sample Real Indian Job Listings */}
+                  {listings.length > 0 && (
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: 'var(--font-mono)', fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-3)', marginBottom: '8px' }}>
+                        <Briefcase size={13} />
+                        <span>SAMPLE INDIAN JOB LISTINGS</span>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '10px' }}>
+                        {listings.slice(0, 4).map((job, idx) => (
+                          <div
+                            key={`${job.job_title}-${job.company_name}-${idx}`}
+                            style={{
+                              padding: '10px 12px',
+                              backgroundColor: '#FFFFFF',
+                              border: '1px solid var(--color-border)',
+                              borderRadius: 'var(--radius-sm)',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              justifyContent: 'space-between',
+                              gap: '6px',
+                            }}
+                          >
+                            <div>
+                              <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--color-text)' }}>
+                                {job.job_title}
+                              </div>
+                              <div style={{ fontSize: '0.8rem', color: 'var(--color-text-2)' }}>
+                                {job.company_name} &bull; {job.primary_city}
+                              </div>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', paddingTop: '6px', borderTop: '1px solid var(--color-border-subtle)' }}>
+                              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--color-accent)' }}>
+                                {job.salary_display || 'Competitive'} {job.experience_raw ? `· ${job.experience_raw}` : ''}
+                              </span>
+                              {job.job_url && (
+                                <a
+                                  href={job.job_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', color: 'var(--color-cyan)', fontWeight: 600, textDecoration: 'none' }}
+                                >
+                                  <span>View</span>
+                                  <ExternalLink size={12} />
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
+            <p style={{ margin: 0, fontSize: 'var(--text-xs)', color: 'var(--color-text-3)' }}>
+              Note: {meta.disclaimer}
+            </p>
+          </section>
+        )}
+
+        {/* ============================================================
+            SECTION 3: MARKET VALUE BOOSTER (Summary & Dedicated Page CTA)
+            ============================================================ */}
+        {marketBooster && (
+          <section
+            id="domain-section-market-booster"
+            aria-labelledby="market-booster-heading"
+            className="card"
+            style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+              <div>
+                <span className="mono-tag">3. Market Value Booster</span>
+                <h2 id="market-booster-heading" style={{ margin: 'var(--space-0-5) 0 0 0' }}>
+                  How to Stand Out Beyond Entry-Level Saturation
+                </h2>
+              </div>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 'var(--text-xs)',
+                  fontWeight: 700,
+                  color: 'var(--color-accent)',
+                }}
+              >
+                <Sparkles size={14} />
+                <span>{(marketBooster.upgrade_path || []).length}-Step Upgrade Plan</span>
+              </span>
+            </div>
+
+            {marketBooster.baseline_warning && (
+              <div
+                style={{
+                  padding: 'var(--space-2)',
+                  backgroundColor: 'var(--color-accent-lt)',
+                  borderLeft: '4px solid var(--color-accent)',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: 'var(--text-base)',
+                  color: 'var(--color-text)',
+                }}
+              >
+                <strong>Reality check:</strong> {marketBooster.baseline_warning}
+              </div>
+            )}
+
+            {(marketBooster.high_value_addons || []).length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 'var(--text-xs)',
+                    fontWeight: 700,
+                    color: 'var(--color-success)',
+                  }}
+                >
+                  HIGH-VALUE ADD-ONS:
+                </span>
+                {marketBooster.high_value_addons.slice(0, 5).map((addon) => (
+                  <span
+                    key={addon}
+                    style={{
+                      padding: '4px 10px',
+                      backgroundColor: 'var(--color-success-lt)',
+                      border: '1px solid var(--color-success)',
+                      color: '#0F5132',
+                      borderRadius: 'var(--radius-full)',
+                      fontSize: 'var(--text-xs)',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {addon}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)',
+                flexWrap: 'wrap',
+                paddingTop: 'var(--space-1)',
+              }}
+            >
+              <Link to={`/resources/${domain.id}?tab=booster`} className="btn-primary">
+                <span>Open Stand Out &amp; Market Booster Page</span>
+                <ArrowRight size={16} />
+              </Link>
+              <Link to="/resources?tab=booster" className="btn-secondary">
+                <span>Compare All 7 Domains</span>
+              </Link>
+            </div>
+          </section>
+        )}
+
+        {/* ============================================================
+            SECTION 4: RESOURCES (Summary & Dedicated Page CTA)
+            ============================================================ */}
+        <section
+          id="domain-section-resources"
+          aria-labelledby="resources-heading"
+          className="card"
+          style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-end',
+              flexWrap: 'wrap',
+              gap: 'var(--space-2)',
+            }}
+          >
+            <div>
+              <span className="mono-tag">4. Curated Learning Resources</span>
+              <h2 id="resources-heading" style={{ margin: 'var(--space-0-5) 0 0 0' }}>
+                Resources by Level
+              </h2>
+            </div>
+
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontFamily: 'var(--font-mono)',
+                fontSize: 'var(--text-sm)',
+                color: 'var(--color-text-2)',
+                fontWeight: 700,
+              }}
+            >
+              <BookOpen size={15} />
+              <span>{resources.length} curated resources</span>
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+            {[
+              { label: 'Beginner', count: groupedResources.beginner.length },
+              { label: 'Intermediate', count: groupedResources.intermediate.length },
+              { label: 'Advanced', count: groupedResources.advanced.length },
+            ].map((lvl) => (
+              <span
+                key={lvl.label}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: 'var(--radius-full)',
+                  backgroundColor: 'var(--color-bg-alt)',
+                  border: '1px solid var(--color-border)',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 'var(--text-xs)',
+                  fontWeight: 700,
+                  color: 'var(--color-text)',
+                }}
+              >
+                {lvl.label} ({lvl.count})
+              </span>
+            ))}
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--space-2)',
+              flexWrap: 'wrap',
+              paddingTop: 'var(--space-1)',
+            }}
+          >
+            <Link to={`/resources/${domain.id}?tab=resources`} className="btn-primary">
+              <span>Browse All {domain.name} Resources by Level</span>
+              <ArrowRight size={16} />
+            </Link>
+            <Link to="/resources" className="btn-secondary">
+              <span>All Domains Resource Hub</span>
+            </Link>
+          </div>
+        </section>
+
+        {/* ============================================================
+            SECTION 5: LINK TO THE SEMESTER ROADMAP
+            ============================================================ */}
+        <section
+          id="domain-section-roadmap"
+          aria-labelledby="roadmap-link-heading"
+          className="card"
+          style={{
+            border: '2px solid var(--color-text)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 'var(--space-3)',
+          }}
+        >
+          <div style={{ flex: '1 1 320px' }}>
+            <span className="mono-tag">5. Semester Roadmap</span>
+            <h2 id="roadmap-link-heading" style={{ margin: 'var(--space-0-5) 0 var(--space-1) 0' }}>
+              Turn This Into a Semester-by-Semester Plan
+            </h2>
+            <p style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--color-text-2)', lineHeight: 1.55 }}>
+              Follow the structured 8-semester B.Tech CSE milestone roadmap for {domain.name}.
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+            {domain.roadmap_url && (
+              <a
+                href={domain.roadmap_url}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-secondary"
+              >
+                <Layers size={16} />
+                <span>roadmap.sh Guide</span>
+                <ExternalLink size={14} />
+              </a>
+            )}
+            <Link to={`/roadmap/${domain.id}`} className="btn-primary">
+              <span>Open Semester Roadmap</span>
               <ArrowRight size={18} />
             </Link>
-
-          </aside>
-
-        </div>
-
+          </div>
+        </section>
       </div>
     </div>
   );

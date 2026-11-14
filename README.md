@@ -1,87 +1,98 @@
-# 🎓 CSE PathFinder — Unified Career Guidance & Adaptive Assessment
+# CSE PathFinder — Career Guidance & Adaptive Assessment Platform
 
-> An evidence-based, transparent career navigation platform for Computer Science & Engineering (B.Tech CSE) undergraduates. Features topic-level adaptive placement, O*NET RIASEC career interest profiling, and ACM/IEEE CS2023 curriculum alignment.
-
----
-
-## 📌 Honest Academic & Methodological Limitations (Viva Disclosure)
-
-- **Rule-Based Adaptive Assessment**: The adaptive assessment engine operates on deterministic routing rules (`rules_version 1.0.0`) driven by a validated, curated item bank. It uses a Knowledge Ladder that promotes on 2 consecutive correct answers and demotes on 2 consecutive wrong answers.
-- **Hypothesis v1 Career Mapping**: Career domain mappings are grounded in U.S. Department of Labor O*NET RIASEC vectors. They represent an **exploratory starting hypothesis**, not an objective career certainty or psychological verdict.
-- **Experimental Machine Learning**: Any Random Forest models included in the ML exploration directory are trained on baseline synthetic benchmark data for curriculum exploration. In production and viva evaluations, the system runs transparently under **Rule-Based Mode (35/35/30)** without fabricating artificial placement success probabilities.
-- **Empirical Pilot Study**: The initial pilot validation was conducted with $N = 18$ undergraduate computer science students (including 4 with zero prior programming experience). Read the full findings in [`PILOT_REPORT.md`](file:///c:/Users/priya/OneDrive/Desktop/js/frontend-react/src/data/adaptive/PILOT_REPORT.md).
+> A transparent, evidence-based career guidance and adaptive diagnostic platform for **B.Tech CSE undergraduates in India**. Combines a deterministic Knowledge Ladder assessment, O*NET RIASEC profiling, India job-market demand data, bilingual learning resources, and ACM/IEEE CS2023 semester roadmaps with full offline fallback.
 
 ---
 
-## 🚀 Key Features
+## Core Non-Negotiable Principles
 
-1. **Topic-Level Adaptive Assessment (`/assess`)**:
-   - Zero-punishment diagnostic placement for beginners and experienced students alike.
-   - Separate signals: **Knowledge** (strict correctness on objective items) vs. **Interest** (O*NET activities & behavioral engagement).
-   - "I don't know" option on every question to diagnose knowledge gaps without guessing distortion.
-   - Auto-triggers explanatory conceptual cards on demotions.
-2. **"Explain My Result" & Admin Console (`/admin`)**:
-   - Complete plain-English and mathematical breakdown showing which answers, times, and ladder events produced each topic level and domain recommendation.
-   - Psychometric item analytics (facility index, IDK rates, discrimination index, and flags for too-easy, too-hard, or confusing questions).
-   - Live retirement or re-approval of bank items by curriculum administrators.
-3. **6 Verified Live Demonstration Benchmarks**:
-   - Scenario 1: No prior programming experience $\rightarrow$ Level 0 onboarding route.
-   - Scenario 2: Python experience $\rightarrow$ skips syntax basics straight into Level 2/3.
-   - Scenario 3: Java proficiency with SQL novice $\rightarrow$ independent split topic assessment.
-   - Scenario 4: High algorithmic foundations $\rightarrow$ deeper Bebras conceptual ladder items.
-   - Scenario 5: Intermediate struggle $\rightarrow$ 2 wrong triggers prerequisite demotion & card review.
-   - Scenario 6: Creative/Design background vs Systems background $\rightarrow$ customized domain affinity pathways.
-4. **Curriculum Roadmap Alignment (`/roadmap/:id`)**:
-   - 8-semester course roadmaps aligned with ACM/IEEE CS2023 curriculum guidelines.
-   - Verified topic mastery ladder chart embedded directly in student analytics (`/results`).
-5. **Open Content Licensing & Transparency**:
-   - Fully cited questions sourced from O*NET (USDOL Developer License), Bebras Challenge (CC-BY-SA 4.0), and Code.org (CC BY-NC-SA 4.0).
+1. **Deterministic Knowledge Ladder**: `2 consecutive correct -> +1 level`; `2 consecutive wrong -> -1 level` + conceptual prerequisite explainer card (`rules_version.json`).
+2. **No Forced Guessing (`I don't know` + `Skip question`)**:
+   - **I don't know (`IDK`)**: diagnoses foundational gaps transparently without random-guessing distortion.
+   - **Skip question**: distinct from `IDK` — counts as neither correct nor incorrect, leaves promotion/demotion streaks unchanged, logs `"skipped"` in the audit trail, re-serves at most once near the end within the 25-item cap, and tracks item skip rate in `/admin` analytics.
+3. **Configurable Single-Domain Weighted Recommendation** (`recommendation_config.json`):
+   - `Final Score = 0.4 * RIASEC Euclidean Match + 0.3 * Knowledge-Ladder Readiness + 0.3 * India Market Demand`
+   - Demand trend scores: `Rising = 1.0`, `Stable = 0.7`, `Saturated` / `Saturated at entry level = 0.4`, `Declining = 0.2`
+   - Deterministic tie-breaking: higher RIASEC match wins.
+4. **Full Explainability (`Explain my result`)**: Every question decision, ladder transition, weighted score contribution, and explanation of why lower-ranked domains scored below the winner is inspectable.
+5. **Resilient Offline Fallback**: Bundles starter question banks, Phase 4 India market datasets, and roadmaps in `frontend-react/src/data/`, falling back to `localStorage` and `sessionStorage` whenever `backend/app.py` is offline.
 
 ---
 
-## ⚙️ Routing & Ladder Configuration Rules
+## Architecture & Key Pages
 
-Configured in [`rules_version.json`](file:///c:/Users/priya/OneDrive/Desktop/js/frontend-react/src/data/adaptive/rules_version.json):
-- **Quiz Question Mix**:
-  - **Basic**: ~55% interest, ~25% logic, ~5% knowledge, ~15% guided activity
-  - **Medium**: ~20% interest, ~15% logic, ~60% knowledge, ~5% guided activity
-  - **Hard**: ~10% interest, ~10% logic, ~75% knowledge, ~5% guided activity
-- **Knowledge Ladder**:
-  - Promote: **2 consecutive correct answers** $\rightarrow$ level + 1
-  - Demote: **2 consecutive incorrect answers** $\rightarrow$ level - 1 (activates prerequisite explainer)
-  - Prior evidence skip rule: Students with $\ge 3$ verified correct items assessed within 30 days can skip redundant testing.
+| Route | View | Purpose |
+| :--- | :--- | :--- |
+| `/` | Home (`Home.jsx`) | Focused 1-line value proposition, 3-step workflow, single **Start Assessment** CTA |
+| `/quiz` & `/quiz/:track` | Assessment (`QuizSelection.jsx`, `QuizRunner.jsx`) | Distraction-free single-question view with progress bar, large answer buttons, `I don't know`, and `Skip question` |
+| `/results` | My Result (`Results.jsx`) | Single top recommended domain, **Why this one** (max 3 bullets), link to its domain page, and collapsible **Explain my result** audit log |
+| `/domains` & `/domain/:id` | Domain Detail (`DomainsList.jsx`, `DomainDetail.jsx`) | 5 structured sections: (1) Overview (3 lines max), (2) Market Demand in India, (3) Market Value Booster, (4) Filterable Resources (`free`/`paid`, `English`/`Hindi`), (5) Semester Roadmap link |
+| `/roadmap` & `/roadmap/:id` | Roadmap (`Roadmap.jsx`) | Interactive `roadmap.sh` visual topic graph + 8-semester CS2023 academic breakdown across canonical & hardware domains |
+| `/admin` | Admin / Telemetry Console | Hidden from student `Sidebar.jsx` navigation; inspects facility index, IDK rates, skip rates, discrimination index, and item lifecycle (`draft` -> `approved` -> `retired`) |
 
----
-
-## 👥 How to Add Questions (Small Bank Growth Plan)
-
-Classmates and curriculum mentors can contribute new questions by following [`CONTRIBUTING.md`](file:///c:/Users/priya/OneDrive/Desktop/js/frontend-react/src/data/adaptive/CONTRIBUTING.md):
-1. Copy the JSON item template with all required fields (`id`, `category`, `topic`, `skills`, `difficulty`, `options`, `answer`, `explanation`, `license`).
-2. Run the automated bank validator:
-   ```bash
-   python frontend-react/src/data/adaptive/validate_item_bank.py
-   ```
-3. New questions start in `status: "draft"`. Once checked against the peer review checklist, they are approved and served by the engine.
+Student sidebar navigation keeps exactly 4 items: **Home**, **Assessment**, **My Result**, and **Roadmap**. All layouts share the **Data sources and last updated** global footer (`DataSourcesFooter.jsx`).
 
 ---
 
-## 🧪 Running Automated Unit Tests
+## Phase 4 India Market & Resource Data Foundation (`/data`)
 
-The test suite validates rules integrity, ladder state transitions, question mix ratios, explainability breakdowns, item analytics, and admin retirement actions:
+Versioned datasets live in `data/`:
+- `data/domains.json` — 7 domains (`web`, `ai`, `data`, `cloud`, `security`, `mobile`, `systems`) mapped with O*NET codes and prerequisites.
+- `data/market_demand.json` — Indicative India demand trends (`Rising`, `Stable`, `Declining`, `Saturated at entry level`), INR fresher salary ranges, hot skills, saturated skills, and source URLs.
+- `data/market_boosters.json` — Core skills, high-value add-ons, declining skills, and a 3-step upgrade path per domain.
+- `data/resources.json` — 56 curated learning resources (8 per domain) categorized by `beginner` / `intermediate` / `advanced`, `free` / `paid`, and `English` / `Hindi` language tags.
 
-```bash
+Unverified estimates retain `"verified": false` and display source + `last_updated` transparency banners.
+
+---
+
+## Getting Started
+
+### Prerequisites
+- **Node.js** (v20+ with native `node --test` runner)
+- **Python 3.10+** (optional if running the Flask + SQLite backend; frontend also runs standalone with offline `localStorage` fallback)
+
+### 1. Run Data Validation & Unit Tests
+```powershell
+# Validate Phase 4 JSON schemas, foreign keys, and 6-month freshness
+node scripts/validate_data.js
+
+# Run all 11 Node test suites
 cd frontend-react
-npm test
+npm.cmd test
 ```
 
-Or run all adaptive test suites directly:
-```bash
-node --test src/data/adaptive/adaptiveEngine.test.js src/data/adaptive/analyticsEngine.test.js
+### 2. Run Locally (Full Stack)
+Terminal 1 — Backend API (`http://127.0.0.1:5000`):
+```powershell
+python backend/app.py
+```
+
+Terminal 2 — React Frontend (`http://localhost:5173`):
+```powershell
+cd frontend-react
+npm.cmd install
+npm.cmd run dev
+```
+
+### 3. Production Build & Lint
+```powershell
+cd frontend-react
+npm.cmd run build
+npx.cmd eslint src/pages/QuizRunner.jsx src/pages/Results.jsx src/pages/DomainDetail.jsx
 ```
 
 ---
 
-## 💻 Tech Stack
-- **Frontend**: React 19, Vite 8, Chart.js, React Router DOM 7, Lucide Icons
-- **Backend / Data**: Node.js & Python native services, SQLite (`database.db`), Browser LocalStorage resilient fallback
-- **Author**: Priyanshu — B.Tech Computer Science & Engineering Student
+## Methodological & Academic Disclosures
+
+- **Indicative Market Metrics**: India demand trends and INR fresher salary ranges reflect aggregated job-board and survey indicators with explicit source URLs and dates (`2026-11-01`). Salaries vary by city, college tier, and company.
+- **Educational Hypothesis**: RIASEC matching builds on U.S. Department of Labor O*NET vectors (`domain_mapping_version.json`) under the USDOL Developer License and serves as transparent educational guidance rather than a psychological verdict.
+- **Experimental ML Caveat**: Any Random Forest artifacts in `ml/` remain strictly labeled experimental (`ml/MODEL_CARD.md`); production recommendations run exclusively on the deterministic weighted rule-based engine.
+
+---
+
+## Tech Stack
+- **Frontend**: React 19, Vite 8, React Router 7, Chart.js, Lucide Icons
+- **Backend / Data**: Python Flask (`backend/app.py`), SQLite (`backend/database.db`), versioned JSON datasets (`/data`), browser `localStorage` / `sessionStorage` offline fallback
+- **Testing & Validation**: Node `--test`, ESLint, `scripts/validate_data.js`

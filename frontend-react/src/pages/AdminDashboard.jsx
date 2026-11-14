@@ -2,19 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ShieldCheck, 
-  BarChart2, 
-  Sliders, 
-  CheckCircle, 
-  XCircle, 
-  AlertTriangle, 
-  RotateCcw, 
-  FileText, 
-  Filter, 
-  Compass, 
-  Layers,
-  Sparkles,
-  Info,
-  ExternalLink
+  Filter
 } from 'lucide-react';
 
 import { computeItemAnalytics, updateQuestionStatus, explainResult } from '../data/adaptive/analyticsEngine';
@@ -53,11 +41,16 @@ export default function AdminDashboard() {
         const realList = JSON.parse(realAttemptsRaw);
         if (Array.isArray(realList)) {
           realList.forEach(att => {
+            const skippedFlag = Boolean(
+              att.isSkipped ?? att.is_skipped ?? (att.status === 'skipped' || att.answer === 'skipped' || att.answer === 'SKIP')
+            );
             combinedAttempts.push({
               question_id: att.questionId || att.question_id,
               correct: att.isCorrect ?? att.correct ?? false,
               answer: att.selectedAnswer || att.answer || '',
               is_dont_know: att.isDontKnow ?? att.is_dont_know ?? false,
+              is_skipped: skippedFlag,
+              status: att.status || (skippedFlag ? 'skipped' : undefined),
               time_taken: att.timeSpentSeconds || att.time_taken || 20,
               student_email: att.studentEmail || att.student_email || 'student@pathfinder.edu'
             });
@@ -151,7 +144,7 @@ export default function AdminDashboard() {
             color: '#17191C',
             margin: '0 0 1rem 0'
           }}>
-            Adaptive Engine Console & Analytics
+            ADAPTIVE ENGINE <span style={{ fontFamily: "'Instrument Serif', serif", fontStyle: 'italic', color: '#E85D3F', textTransform: 'none' }}>Console & Analytics</span>
           </h1>
           <p style={{ color: '#50545B', fontSize: '1.0625rem', maxWidth: '820px', margin: 0, lineHeight: 1.6 }}>
             Inspect question status, psychometric analytics, audit event logs, and review the transparent mathematical derivations behind student topic levels and domain recommendations.
@@ -176,8 +169,10 @@ export default function AdminDashboard() {
         <div style={{
           backgroundColor: '#FFFFFF',
           border: '1px solid #D8DAD7',
+          borderRadius: '1.25rem',
           padding: '2.5rem',
-          marginBottom: '3rem'
+          marginBottom: '3rem',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
             <div>
@@ -316,8 +311,10 @@ export default function AdminDashboard() {
         <div style={{
           backgroundColor: '#FFFFFF',
           border: '1px solid #D8DAD7',
+          borderRadius: '1.25rem',
           padding: '2.5rem',
-          marginBottom: '3rem'
+          marginBottom: '3rem',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
             <div>
@@ -332,7 +329,7 @@ export default function AdminDashboard() {
                 📊 Item Bank Diagnostics & Lifecycle Management
               </h2>
               <p style={{ fontSize: '0.875rem', color: '#50545B', margin: 0 }}>
-                Audit % correct (facility), 'I don't know' rates, and retire or approve items using automated psychometric flags.
+                Audit % correct (facility), 'I don't know' rates, skip rates, and retire or approve items using automated psychometric flags.
               </p>
             </div>
 
@@ -378,6 +375,7 @@ export default function AdminDashboard() {
                   <th style={{ padding: '0.85rem' }}>STATUS</th>
                   <th style={{ padding: '0.85rem' }}>FACILITY %</th>
                   <th style={{ padding: '0.85rem' }}>IDK %</th>
+                  <th style={{ padding: '0.85rem' }}>SKIP %</th>
                   <th style={{ padding: '0.85rem' }}>FLAGS & ADVICE</th>
                   <th style={{ padding: '0.85rem' }}>ACTION</th>
                 </tr>
@@ -419,6 +417,9 @@ export default function AdminDashboard() {
                       </td>
                       <td style={{ padding: '0.85rem', fontFamily: "'DM Mono', monospace", fontWeight: 600 }}>
                         {itemStat?.idkRate !== null ? `${Math.round(itemStat.idkRate * 100)}%` : '—'}
+                      </td>
+                      <td style={{ padding: '0.85rem', fontFamily: "'DM Mono', monospace", fontWeight: 600 }}>
+                        {itemStat?.skipRate !== null && itemStat?.skipRate !== undefined ? `${Math.round(itemStat.skipRate * 100)}%` : '—'}
                       </td>
                       <td style={{ padding: '0.85rem' }}>
                         {flags.length > 0 ? (
@@ -463,7 +464,9 @@ export default function AdminDashboard() {
         <div style={{
           backgroundColor: '#FFFFFF',
           border: '1px solid #D8DAD7',
-          padding: '2.5rem'
+          borderRadius: '1.25rem',
+          padding: '2.5rem',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
         }}>
           <h2 style={{
             fontFamily: "'Barlow Condensed', sans-serif",

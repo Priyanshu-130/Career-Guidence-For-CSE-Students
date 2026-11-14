@@ -1,0 +1,15 @@
+{
+  "version": "1.0.0",
+  "weights": {
+    "riasec": 0.4,
+    "readiness": 0.3,
+    "market_demand": 0.3
+  },
+  "demand_trend_scores": {
+    "Rising": 1.0,
+    "Stable": 0.7,
+    "Saturated": 0.4,
+    "Saturated at entry level": 0.4,
+    "Declining": 0.2
+  }
+}

@@ -8,12 +8,11 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "node --test src/data/adaptive/adaptiveEngine.test.js src/services/apiService.test.js src/pages/endToEndFlow.test.js src/services/phase5Honesty.test.js"
+    "validate:data": "node ../scripts/validate_data.js",
+    "test": "node --test src/data/adaptive/adaptiveEngine.test.js src/data/adaptive/analyticsEngine.test.js src/services/apiService.test.js src/pages/endToEndFlow.test.js src/services/phase5Honesty.test.js src/data/adaptive/domainAdvisorAgent.test.js src/data/adaptive/domainAssessmentAgent.test.js src/data/phase4DataFoundation.test.js src/data/phase5DomainPage.test.js src/data/adaptive/phase6Recommendation.test.js src/pages/phase7EndToEndPolish.test.js"
   },
   "dependencies": {
-    "axios": "^1.15.0",
     "chart.js": "^4.5.1",
-    "framer-motion": "^14.11.0",
     "lucide-react": "^1.8.0",
     "react": "^19.2.4",
     "react-chartjs-2": "^5.3.1",
@@ -22,7 +21,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
-    "@tailwindcss/vite": "^4.3.5",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
@@ -30,7 +28,6 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
-    "tailwindcss": "^4.3.5",
     "vite": "^8.0.4"
   }
 }

@@ -1,0 +1,309 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-11-01",
+  "market_boosters": [
+    {
+      "domain_id": "web",
+      "baseline_warning": "Frontend-only HTML/CSS/React TODO apps are heavily saturated at the entry level in India. Employers shortlist freshers who own end-to-end delivery from TypeScript UI to databases, tests, cloud deployment, and AI integrations.",
+      "core_skills": [
+        "HTML5, Semantic CSS & Responsive Design",
+        "JavaScript ES2023+ & React",
+        "HTTP, REST APIs & Git"
+      ],
+      "high_value_addons": [
+        "React + TypeScript",
+        "Next.js (SSR/App Router)",
+        "Node.js / Express or FastAPI Backend",
+        "PostgreSQL & Prisma/Drizzle ORM",
+        "Automated Testing (Playwright / Vitest)",
+        "Cloud Deployment (Docker, AWS/Vercel, CI/CD)",
+        "AI API Integration (LLM SDKs, RAG basics)"
+      ],
+      "declining_skills": [
+        "jQuery",
+        "Plain un-typed React CRUD clones",
+        "Manual FTP / cPanel uploads",
+        "Class-based legacy React boilerplate"
+      ],
+      "upgrade_path": [
+        {
+          "step": 1,
+          "title": "Type-Safe Full-Stack Core (React + TypeScript + Next.js + PostgreSQL)",
+          "description": "Migrate your React skills to strict TypeScript and Next.js App Router backed by a Node/Express or FastAPI API and PostgreSQL schema with proper authentication."
+        },
+        {
+          "step": 2,
+          "title": "Production Reliability (Automated Testing + Docker + CI/CD)",
+          "description": "Add unit/integration tests with Vitest, end-to-end checks with Playwright, containerize with Docker, and ship automated deployments via GitHub Actions to AWS or Vercel."
+        },
+        {
+          "step": 3,
+          "title": "AI Feature Integration & Performance Profiling",
+          "description": "Integrate streaming LLM/AI APIs with rate limiting, caching, and Web Vitals optimization so your capstone solves a real workflow cleanly."
+        }
+      ],
+      "source": "Naukri JobSpeak, LinkedIn Jobs India (0-2 yrs) & roadmap.sh",
+      "source_url": "https://roadmap.sh/full-stack",
+      "last_updated": "2026-11-01",
+      "verified": false
+    },
+    {
+      "domain_id": "ai",
+      "baseline_warning": "Jupyter notebooks with scikit-learn fit/predict on clean CSV datasets no longer differentiate candidates. Hiring teams expect reproducible training pipelines, LLM evaluation harnesses, and deployed inference APIs.",
+      "core_skills": [
+        "Python, NumPy & Pandas",
+        "Probability, Linear Algebra & Calculus",
+        "Supervised & Unsupervised ML"
+      ],
+      "high_value_addons": [
+        "PyTorch Model Training & Fine-Tuning",
+        "RAG, Embeddings & Vector Databases (pgvector/Qdrant)",
+        "LLM Evaluation & Guardrails (Latency, Hallucination Checks)",
+        "FastAPI Inference Serving & Docker",
+        "SQL & Feature Pipeline Engineering",
+        "Experiment Tracking (MLflow / Weights & Biases)"
+      ],
+      "declining_skills": [
+        "Copy-pasted Kaggle Titanic notebooks",
+        "Hardcoded OpenAI/Gemini wrappers with no evaluation",
+        "Manual hyperparameter guessing without validation splits"
+      ],
+      "upgrade_path": [
+        {
+          "step": 1,
+          "title": "Engineering Foundations (PyTorch + Clean Data Splits + Error Analysis)",
+          "description": "Move from notebook scripts to modular Python packages with reproducible train/val/test pipelines, confusion matrices, and baseline benchmarks."
+        },
+        {
+          "step": 2,
+          "title": "Applied GenAI & Evaluation (RAG + Structured Outputs + Evals)",
+          "description": "Build a domain-grounded RAG or classification service with automated evaluation metrics (precision/recall, faithfulness, latency, token cost)."
+        },
+        {
+          "step": 3,
+          "title": "Production Serving (FastAPI + Docker + Monitoring)",
+          "description": "Wrap your model in a typed FastAPI endpoint, containerize it, add logging/fallback handling, and deploy a live testable demo."
+        }
+      ],
+      "source": "fast.ai, NASSCOM AI Reports & LinkedIn Jobs India",
+      "source_url": "https://roadmap.sh/ai-data-scientist",
+      "last_updated": "2026-11-01",
+      "verified": false
+    },
+    {
+      "domain_id": "data",
+      "baseline_warning": "Basic Excel charts and simple SELECT queries face intense competition at entry level. Standing out requires production SQL optimization, automated transformation pipelines (dbt/Airflow), and distributed processing.",
+      "core_skills": [
+        "Relational Modeling & Normalization",
+        "SQL Joins, Aggregations & Window Functions",
+        "Python Data Manipulation"
+      ],
+      "high_value_addons": [
+        "dbt (Data Build Tool) & Tested SQL Transformations",
+        "Apache Airflow / Prefect Orchestration",
+        "PySpark & Parquet/Iceberg Storage Formats",
+        "Cloud Data Warehouses (BigQuery / Snowflake)",
+        "Streaming Pipelines with Apache Kafka",
+        "Data Quality & Lineage Checks"
+      ],
+      "declining_skills": [
+        "Manual CSV copy-pasting workflows",
+        "Unindexed monolithic SQL scripts",
+        "Static BI dashboards without documented data contracts"
+      ],
+      "upgrade_path": [
+        {
+          "step": 1,
+          "title": "Warehouse SQL Mastery (Window Functions + Star Schema + Indexing)",
+          "description": "Design normalized OLTP and dimensional OLAP schemas and solve complex analytical queries using CTEs, window functions, and EXPLAIN plans."
+        },
+        {
+          "step": 2,
+          "title": "Automated ELT Pipelines (Python + dbt + Airflow)",
+          "description": "Build an automated pipeline that ingests public Indian or open datasets into PostgreSQL/BigQuery, transforms them with dbt models, and runs data quality tests."
+        },
+        {
+          "step": 3,
+          "title": "Scale & Streaming (PySpark + Kafka / Partitioning)",
+          "description": "Process multi-million-row event logs with PySpark or Kafka consumers, using partitioning and incremental loads to control cost and runtime."
+        }
+      ],
+      "source": "Naukri JobSpeak, TeamLease Digital & roadmap.sh",
+      "source_url": "https://roadmap.sh/data-engineer",
+      "last_updated": "2026-11-01",
+      "verified": false
+    },
+    {
+      "domain_id": "cloud",
+      "baseline_warning": "Collecting beginner cloud badges by watching slides without terminal/IaC practice fails technical interviews. Recruiters want Linux fluency, repeatable Terraform setups, CI/CD automation, and container debugging.",
+      "core_skills": [
+        "Linux CLI, Processes & File Permissions",
+        "TCP/IP, DNS, HTTP & TLS",
+        "Git & Bash/Python Scripting"
+      ],
+      "high_value_addons": [
+        "Docker Multi-Stage Builds & Container Networking",
+        "Kubernetes (Pods, Services, Ingress, Helm)",
+        "Terraform (Infrastructure as Code)",
+        "CI/CD Automation (GitHub Actions / Jenkins)",
+        "AWS / Azure IAM, VPC & Serverless Basics",
+        "Observability (Prometheus, Grafana, Structured Logs)"
+      ],
+      "declining_skills": [
+        "Manual cloud console click-ops",
+        "FTP-based server deployments",
+        "Unmonitored single-VM pets without backups"
+      ],
+      "upgrade_path": [
+        {
+          "step": 1,
+          "title": "Linux, Networking & Containerization (Docker + Compose + Reverse Proxy)",
+          "description": "Containerize a multi-service web/database app with healthchecks, non-root users, multi-stage builds, and Nginx/Caddy TLS routing."
+        },
+        {
+          "step": 2,
+          "title": "Automation & IaC (GitHub Actions + Terraform)",
+          "description": "Provision cloud networking and compute cleanly with Terraform and automate build, lint, test, and container image publishing via CI/CD."
+        },
+        {
+          "step": 3,
+          "title": "Orchestration & Observability (Kubernetes + Prometheus/Grafana)",
+          "description": "Deploy workloads on a Kubernetes cluster (kind/k3s/EKS) with resource limits, rolling updates, and dashboards tracking latency and error rates."
+        }
+      ],
+      "source": "LinkedIn Jobs India, AWS/Azure Docs & roadmap.sh",
+      "source_url": "https://roadmap.sh/devops",
+      "last_updated": "2026-11-01",
+      "verified": false
+    },
+    {
+      "domain_id": "security",
+      "baseline_warning": "Running pre-built Kali Linux scripts without understanding TCP/IP, Linux permissions, or web code vulnerabilities leads to dead ends. Employers value engineers who can trace root causes, triage logs, and write secure fixes.",
+      "core_skills": [
+        "TCP/IP, DNS, HTTP & TLS Internals",
+        "Linux & Active Directory / IAM Basics",
+        "OWASP Top 10 Concepts"
+      ],
+      "high_value_addons": [
+        "Hands-on Web App Pentesting (Burp Suite, Secure Code Review)",
+        "SIEM Detection & Incident Triage (Splunk / Elastic / Wazuh)",
+        "Cloud IAM & Kubernetes Security Hardening",
+        "DevSecOps Pipeline Scanning (Trivy, Semgrep, SBOM)",
+        "Threat Modeling & Secure Auth (OAuth2, OIDC)",
+        "Python / Bash Incident Automation"
+      ],
+      "declining_skills": [
+        "Blind automated scanner dumps without remediation",
+        "Outdated MD5/RC4 patterns",
+        "Unverified pentest tool checklists"
+      ],
+      "upgrade_path": [
+        {
+          "step": 1,
+          "title": "Systems & Protocol Foundations (Linux + Wireshark + OWASP Labs)",
+          "description": "Inspect real HTTP/TLS/DNS traffic in Wireshark and complete structured beginner security paths on TryHackMe to understand how exploits work."
+        },
+        {
+          "step": 2,
+          "title": "Offensive & Defensive Practice (Burp Suite + SIEM Home Lab)",
+          "description": "Audit a web app for XSS/SQLi/IDOR and write patches, or set up a Wazuh/Elastic lab to detect brute-force and privilege-escalation alerts."
+        },
+        {
+          "step": 3,
+          "title": "Cloud & DevSecOps Security (IAM Hardening + CI Scanners)",
+          "description": "Embed SAST, dependency, and container vulnerability scanning into CI/CD pipelines and enforce least-privilege cloud IAM policies."
+        }
+      ],
+      "source": "TryHackMe, CompTIA Security+, OWASP & roadmap.sh",
+      "source_url": "https://roadmap.sh/cyber-security",
+      "last_updated": "2026-11-01",
+      "verified": false
+    },
+    {
+      "domain_id": "mobile",
+      "baseline_warning": "Simple UI clones without local persistence, proper navigation, or automated testing rarely pass product startup screening. Modern mobile teams expect state management, offline sync, profiling, and clean architecture.",
+      "core_skills": [
+        "Kotlin or Dart or TypeScript/React Native",
+        "Mobile Lifecycle & UI Layouts",
+        "REST API Integration"
+      ],
+      "high_value_addons": [
+        "Jetpack Compose (Kotlin) or React Native TypeScript / Flutter",
+        "Offline-First Persistence (Room / SQLite / Drift)",
+        "Unidirectional State Management & Clean Architecture",
+        "Performance & Memory Profiling (Frame Drops, Cold Start)",
+        "Automated UI & Unit Testing",
+        "CI/CD App Signing & Release Automation (Fastlane / EAS)"
+      ],
+      "declining_skills": [
+        "Legacy Java AsyncTask & raw XML boilerplate",
+        "Unmaintained Cordova / PhoneGap wrappers",
+        "Global mutable state without lifecycle awareness"
+      ],
+      "upgrade_path": [
+        {
+          "step": 1,
+          "title": "Modern UI & State Discipline (Compose / Flutter / RN + TypeScript)",
+          "description": "Build a multi-screen app using declarative UI, typed navigation, and clean view-model / state separation."
+        },
+        {
+          "step": 2,
+          "title": "Offline Sync & Reliability (Local DB + Background Work + Tests)",
+          "description": "Add Room/SQLite caching so the app works smoothly on flaky Indian mobile networks, plus unit tests for repositories and state."
+        },
+        {
+          "step": 3,
+          "title": "Production Polish (Profiling + Auth + Release Pipeline)",
+          "description": "Profile memory and startup speed, add secure token storage, crash reporting, and automated build/release workflows."
+        }
+      ],
+      "source": "Android Developers, Flutter Docs & roadmap.sh",
+      "source_url": "https://roadmap.sh/android",
+      "last_updated": "2026-11-01",
+      "verified": false
+    },
+    {
+      "domain_id": "systems",
+      "baseline_warning": "Textbook OS definitions or basic Arduino LED demos don't translate to core systems engineering jobs. Companies test memory ownership, concurrency bugs, Linux debugging tools, and protocol/firmware reliability.",
+      "core_skills": [
+        "C & Memory/Pointer Semantics",
+        "Data Structures & Bitwise Manipulation",
+        "Operating Systems & Concurrency Concepts"
+      ],
+      "high_value_addons": [
+        "Modern C++ (RAII, Smart Pointers, C++17/20) & Rust",
+        "Multithreading, Mutexes, Lock-Free Queues & Async I/O (epoll/io_uring)",
+        "Embedded RTOS (FreeRTOS / Zephyr) & Hardware Buses (SPI, I2C, CAN)",
+        "Embedded Linux, CMake & Cross-Compilation",
+        "Systems Profiling & Sanitizers (ASan, TSan, Valgrind, perf, GDB)",
+        "Network Programming (TCP Sockets, Custom Protocols)"
+      ],
+      "declining_skills": [
+        "Turbo C / non-standard old C habits",
+        "Raw malloc/free without ownership discipline or sanitizers",
+        "Blocking polling loops in firmware without interrupts/RTOS"
+      ],
+      "upgrade_path": [
+        {
+          "step": 1,
+          "title": "Memory-Safe C/C++ or Rust & Tooling (CMake + GDB + Sanitizers)",
+          "description": "Build a non-trivial CLI tool or mini key-value store in Modern C++ or Rust while eliminating leaks and race conditions using AddressSanitizer and Valgrind."
+        },
+        {
+          "step": 2,
+          "title": "Concurrency & Low-Level I/O (Threads, Sockets or FreeRTOS Tasks)",
+          "description": "Implement a multithreaded HTTP/TCP server, custom shell, or multi-task FreeRTOS sensor controller with queues and interrupts."
+        },
+        {
+          "step": 3,
+          "title": "Performance Profiling & Systems Capstone",
+          "description": "Benchmark throughput/latency using perf, write automated unit/integration tests, and document memory layout and failure recovery."
+        }
+      ],
+      "source": "GitHub Octoverse, Linux Kernel Docs & roadmap.sh",
+      "source_url": "https://roadmap.sh/cpp",
+      "last_updated": "2026-11-01",
+      "verified": false
+    }
+  ]
+}

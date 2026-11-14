@@ -19,6 +19,20 @@
  * Breaks down exactly which answers, starting level, ladder transitions,
  * RIASEC answers, and behavior events determined their outcomes.
  */
+import { recommendSingleDomain } from './recommendationEngine.js';
+
+const KEY_TO_DOMAIN_ID = {
+  ai_ml: 'ai',
+  data_science: 'data',
+  web_app_game: 'web',
+  cyber_security_blockchain: 'security',
+  cloud_computing: 'cloud',
+  iot_embedded: 'iot',
+  robotics_automation: 'robotics',
+  vlsi_architecture: 'vlsi',
+  networking_systems: 'networking',
+};
+
 export function explainResult(sessionData) {
   const {
     studentProfile = {},
@@ -26,7 +40,10 @@ export function explainResult(sessionData) {
     diagnosticResults = null,
     mastery = {},
     hypothesisResult = null,
-    behaviorEvents = []
+    behaviorEvents = [],
+    domainCandidates = null,
+    phase6Recommendation = null,
+    recommendationConfig = undefined
   } = sessionData;
 
   const topicExplanations = {};
@@ -39,11 +56,22 @@ export function explainResult(sessionData) {
     attemptsByTopic[t].push(att);
   });
 
+  const isSkippedAttempt = (a) =>
+    Boolean(
+      a?.is_skipped ||
+      a?.isSkipped ||
+      a?.skipped ||
+      a?.status === 'skipped' ||
+      a?.answer === 'skipped' ||
+      a?.answer === 'SKIP'
+    );
+
   // 1. Topic Level Explanations
   Object.keys(attemptsByTopic).forEach(topic => {
     const topicAttempts = attemptsByTopic[topic];
-    const correctCount = topicAttempts.filter(a => a.correct).length;
-    const idkCount = topicAttempts.filter(a => a.is_dont_know || String(a.answer).includes("I don't know")).length;
+    const skippedCount = topicAttempts.filter(isSkippedAttempt).length;
+    const correctCount = topicAttempts.filter(a => !isSkippedAttempt(a) && a.correct).length;
+    const idkCount = topicAttempts.filter(a => !isSkippedAttempt(a) && (a.is_dont_know || String(a.answer).includes("I don't know"))).length;
     const finalMastery = mastery[topic] || { level: 1, confidence: 'medium' };
 
     const ladderEvents = [];
@@ -51,6 +79,11 @@ export function explainResult(sessionData) {
     let consecutiveWrong = 0;
 
     topicAttempts.forEach((att, idx) => {
+      if (isSkippedAttempt(att)) {
+        ladderEvents.push(`Question #${idx + 1}: Skipped (status: "skipped") — counted as neither correct nor incorrect; promotion/demotion streak unchanged.`);
+        return;
+      }
+
       const isIdk = att.is_dont_know || String(att.answer).includes("I don't know");
       if (att.correct) {
         consecutiveCorrect += 1;
@@ -81,8 +114,9 @@ export function explainResult(sessionData) {
       totalQuestionsAnswered: topicAttempts.length,
       correctCount,
       idkCount,
+      skippedCount,
       ladderTransitions: ladderEvents,
-      summaryText: `Your assigned Level ${finalMastery.level} was derived from your initial starting placement, ${correctCount} correct answer(s), and ${idkCount} transparent 'I don't know' selection(s).`
+      summaryText: `Your assigned Level ${finalMastery.level} was derived from your initial starting placement, ${correctCount} correct answer(s), and ${idkCount} transparent 'I don't know' selection(s)${skippedCount > 0 ? `, with ${skippedCount} skipped item(s)` : ''}.`
     };
   });
 
@@ -104,12 +138,47 @@ export function explainResult(sessionData) {
     });
   }
 
+  // 3. Phase 6 Single-Domain Weighted Score Breakdown & Why Others Ranked Lower
+  let phase6Rec = phase6Recommendation;
+  if (!phase6Rec) {
+    if (Array.isArray(domainCandidates) && domainCandidates.length > 0) {
+      phase6Rec = recommendSingleDomain(domainCandidates, recommendationConfig);
+    } else if (hypothesisResult && (hypothesisResult.allDomains || hypothesisResult.top3Domains)) {
+      const sourceDomains = hypothesisResult.allDomains || hypothesisResult.top3Domains;
+      const masteryLevels = Object.values(mastery || {})
+        .map(m => Number(m?.level))
+        .filter(lvl => Number.isFinite(lvl));
+      const avgReadiness = masteryLevels.length > 0
+        ? masteryLevels.reduce((sum, lvl) => sum + Math.max(0, Math.min(1, lvl / 4)), 0) / masteryLevels.length
+        : 0.25;
+
+      const mappedCandidates = sourceDomains.map(dom => ({
+        domainId: KEY_TO_DOMAIN_ID[dom.key] || String(dom.domainId || dom.id || dom.key || '').toLowerCase(),
+        title: dom.title,
+        riasecScore: Number((((dom.baseFit ?? dom.score ?? 50)) / 100).toFixed(6)),
+        readinessScore: avgReadiness,
+        readinessSource: masteryLevels.length > 0 ? 'Topic Mastery Ladder' : 'Baseline Readiness',
+      }));
+      phase6Rec = recommendSingleDomain(mappedCandidates, recommendationConfig);
+    }
+  }
+
   return {
     studentEmail: sessionData.studentEmail || 'guest_student',
     modelRuleVersion: sessionData.rules_version || '1.0.0',
     mappingVersion: hypothesisResult?.mapping_version || 'hypothesis v1',
     topicExplanations,
     domainExplanations,
+    phase6Evaluation: phase6Rec
+      ? {
+          topDomain: phase6Rec.topDomain,
+          whyThisOne: phase6Rec.whyThisOne,
+          weights: phase6Rec.weights,
+          demandTrendScores: phase6Rec.demandTrendScores,
+          rankedDomains: phase6Rec.rankedDomains,
+          lowerRankedDomains: phase6Rec.lowerRankedDomains
+        }
+      : null,
     behaviorSummary: {
       totalTimeSeconds: attempts.reduce((acc, a) => acc + (a.time_taken || 0), 0),
       voluntaryRetries: behaviorEvents.filter(e => e.type === 'retry').length,
@@ -167,6 +236,8 @@ export function computeItemAnalytics(itemBank, attemptsList, masteryRecords = []
         attemptsCount: 0,
         facility: null,
         idkRate: null,
+        skipRate: null,
+        skippedCount: 0,
         avgTimeSeconds: null,
         discrimination: null,
         flags: [],
@@ -175,12 +246,24 @@ export function computeItemAnalytics(itemBank, attemptsList, masteryRecords = []
       return;
     }
 
-    const correctCount = itemAttempts.filter(a => a.correct).length;
-    const idkCount = itemAttempts.filter(a => a.is_dont_know || String(a.answer).includes("I don't know")).length;
+    const isSkipped = (a) =>
+      Boolean(
+        a?.is_skipped ||
+        a?.isSkipped ||
+        a?.skipped ||
+        a?.status === 'skipped' ||
+        a?.answer === 'skipped' ||
+        a?.answer === 'SKIP'
+      );
+
+    const skippedCount = itemAttempts.filter(isSkipped).length;
+    const correctCount = itemAttempts.filter(a => !isSkipped(a) && a.correct).length;
+    const idkCount = itemAttempts.filter(a => !isSkipped(a) && (a.is_dont_know || String(a.answer).includes("I don't know"))).length;
     const totalTime = itemAttempts.reduce((acc, a) => acc + (a.time_taken || 0), 0);
 
     const facility = Number((correctCount / n).toFixed(2));
     const idkRate = Number((idkCount / n).toFixed(2));
+    const skipRate = Number((skippedCount / n).toFixed(2));
     const avgTime = Number((totalTime / n).toFixed(1));
 
     // Discrimination Index: (Top Half Correct % - Bottom Half Correct %)
@@ -227,6 +310,8 @@ export function computeItemAnalytics(itemBank, attemptsList, masteryRecords = []
       attemptsCount: n,
       facility,
       idkRate,
+      skipRate,
+      skippedCount,
       avgTimeSeconds: avgTime,
       discrimination,
       flags,

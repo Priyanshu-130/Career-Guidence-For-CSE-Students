@@ -558,3 +558,121 @@ test('Diagnostic score separates zero exposure + strong logic from weak logic', 
   const weakProfile = startingLevel({ python: 'none' }, weakRes, rulesConfig);
   assert.equal(weakProfile.python.level, 0);
 });
+
+test('Phase 3 Skip: Skip does not change promotion or demotion streak and is logged as "skipped"', () => {
+  // 1. Knowledge ladder compatibility wrapper
+  let ladder = { currentLevel: 'basic', consecutiveCorrect: 0, consecutiveWrong: 0 };
+  ladder = updateKnowledgeLadder(ladder, true, rulesConfig);
+  assert.equal(ladder.consecutiveCorrect, 1);
+
+  ladder = updateKnowledgeLadder(ladder, 'skip', rulesConfig);
+  assert.equal(ladder.currentLevel, 'basic');
+  assert.equal(ladder.consecutiveCorrect, 1, 'Skip must preserve consecutiveCorrect');
+  assert.equal(ladder.consecutiveWrong, 0, 'Skip must preserve consecutiveWrong');
+  assert.equal(ladder.transitionEvent, 'skipped');
+
+  ladder = updateKnowledgeLadder(ladder, true, rulesConfig);
+  assert.equal(ladder.currentLevel, 'medium', '1 correct -> skip -> 1 correct promotes');
+
+  ladder = updateKnowledgeLadder(ladder, false, rulesConfig);
+  assert.equal(ladder.consecutiveWrong, 1);
+
+  ladder = updateKnowledgeLadder(ladder, { isSkipped: true }, rulesConfig);
+  assert.equal(ladder.consecutiveWrong, 1, 'Skip must preserve consecutiveWrong');
+  assert.equal(ladder.currentLevel, 'medium');
+
+  ladder = updateKnowledgeLadder(ladder, false, rulesConfig);
+  assert.equal(ladder.currentLevel, 'basic', '1 wrong -> skip -> 1 wrong demotes');
+  assert.equal(ladder.showExplainer, true);
+
+  // 2. Topic-level updateMastery preserves streaks and logs 'skipped'
+  let state = {
+    topic: 'python',
+    level: 2,
+    consecutiveCorrect: 0,
+    consecutiveWrong: 0,
+    askedQuestionIds: [],
+    history: [],
+    previousMistakes: []
+  };
+
+  state = updateMastery(state, { questionId: 'py_01', isCorrect: true }, rulesConfig);
+  state = updateMastery(state, { questionId: 'py_02', isSkipped: true }, rulesConfig);
+  assert.equal(state.level, 2);
+  assert.equal(state.consecutiveCorrect, 1);
+  assert.equal(state.consecutiveWrong, 0);
+  assert.equal(state.transitionEvent, 'skipped');
+  assert.equal(state.previousMistakes.length, 0, 'Skipped items must not be logged as mistakes');
+  assert.equal(state.history[state.history.length - 1].status, 'skipped');
+
+  state = updateMastery(state, { questionId: 'py_03', isCorrect: true }, rulesConfig);
+  assert.equal(state.level, 3, 'Should promote cleanly across a skip');
+
+  state = updateMastery(state, { questionId: 'py_04', isCorrect: false, skills: ['loops'] }, rulesConfig);
+  state = updateMastery(state, { questionId: 'py_05', action: 'skip' }, rulesConfig);
+  assert.equal(state.consecutiveWrong, 1);
+  state = updateMastery(state, { questionId: 'py_06', isCorrect: false, skills: ['loops'] }, rulesConfig);
+  assert.equal(state.level, 2, 'Should demote cleanly across a skip');
+  assert.equal(state.showExplainer, true);
+});
+
+test('Phase 3 Skip: nextQuestion re-serves skipped items at most once near the end and respects 25-item cap', () => {
+  const syntheticBank = Array.from({ length: 30 }, (_, idx) => ({
+    id: `syn_${String(idx + 1).padStart(2, '0')}`,
+    topic: 'python',
+    type: 'knowledge',
+    difficulty: 2,
+    status: 'approved',
+    questionText: `Question ${idx + 1}`,
+    options: [
+      { key: 'A', text: 'Right' },
+      { key: 'B', text: 'Wrong' }
+    ],
+    correctOption: 'A'
+  }));
+
+  let state = {
+    topic: 'python',
+    level: 2,
+    consecutiveCorrect: 0,
+    consecutiveWrong: 0,
+    askedQuestionIds: [],
+    history: [],
+    previousMistakes: [],
+    maxQuestions: 25
+  };
+
+  const servedIds = [];
+  const reServedIds = [];
+
+  for (let step = 1; step <= 25; step++) {
+    const q = nextQuestion(state, syntheticBank, rulesConfig);
+    assert.ok(q, `Step ${step} must return a question`);
+    servedIds.push(q.id);
+    if (q.reServed) {
+      reServedIds.push(q.id);
+    }
+
+    const askedQuestionIds = q.reServed ? state.askedQuestionIds : [...state.askedQuestionIds, q.id];
+    const shouldSkip = step === 1 || step === 2 || (q.reServed && step === 24);
+    state = updateMastery(
+      { ...state, askedQuestionIds },
+      shouldSkip
+        ? { questionId: q.id, isSkipped: true, reServed: Boolean(q.reServed) }
+        : { questionId: q.id, isCorrect: true, reServed: Boolean(q.reServed) },
+      rulesConfig
+    );
+  }
+
+  // After 25 questions, nextQuestion must return null (25-item cap enforced)
+  assert.equal(nextQuestion(state, syntheticBank, rulesConfig), null);
+  assert.equal(servedIds.length, 25);
+  assert.deepEqual(reServedIds, ['syn_01', 'syn_02']);
+
+  // No item served more than twice
+  const counts = {};
+  servedIds.forEach(id => {
+    counts[id] = (counts[id] || 0) + 1;
+    assert.ok(counts[id] <= 2, `Item ${id} was served ${counts[id]} times`);
+  });
+});

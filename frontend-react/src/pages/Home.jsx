@@ -1,588 +1,342 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { 
-  ArrowRight, 
-  Compass, 
-  Layers, 
-  Zap, 
-  Terminal, 
-  Activity, 
-  Crosshair, 
-  ExternalLink
+import { predictDomainAndMarket } from '../services/apiService';
+import {
+  AlertCircle,
+  ArrowRight,
+  CheckCircle2,
+  Loader2,
+  Sparkles,
+  TrendingUp,
 } from 'lucide-react';
-import { getApiBaseUrl } from '../utils/roadmapHelper';
+
+const STEPS = [
+  { title: 'Take the assessment', text: 'Answer short questions about logic, interests and what you already know. You can always pick "I don\'t know".' },
+  { title: 'See your best-fit domain', text: 'Get a recommended CSE domain and a clear explanation of why it was chosen.' },
+  { title: 'Follow your roadmap', text: 'Get a semester-by-semester plan of skills, resources and projects for that domain.' },
+];
 
 export default function Home() {
-  const { user } = useAuth();
-  const [history, setHistory] = useState([]);
-  const [activeDomainNode, setActiveDomainNode] = useState('ai');
+  const { user, continuesAsGuest } = useAuth();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (user?.email && !user.isGuest) {
-      fetch(`${getApiBaseUrl()}/api/results/${user.email}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === 'success') {
-            setHistory(data.results || []);
-          }
-        })
-        .catch(err => console.error("Failed to fetch history", err));
-    } else {
-      const stored = sessionStorage.getItem("quiz_results");
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          setHistory([parsed]);
-        } catch (e) {}
-      }
-    }
-  }, [user]);
+  const [skillsInput, setSkillsInput] = useState('');
+  const [mlResult, setMlResult] = useState(null);
+  const [mlLoading, setMlLoading] = useState(false);
 
-  // Constellation domain nodes
-  const domainNodes = [
-    { id: 'ai', name: 'AI & Machine Learning', code: 'DOM-01', x: 20, y: 35, color: '#E85D3F', tag: 'High Growth', sub: 'Deep Learning, PyTorch, LLMs' },
-    { id: 'systems', name: 'Systems & Operating Kernels', code: 'DOM-02', x: 75, y: 25, color: '#2EC4B6', tag: 'Core Foundational', sub: 'C++, Rust, Concurrency' },
-    { id: 'security', name: 'Cybersecurity & Cryptography', code: 'DOM-03', x: 82, y: 70, color: '#D97706', tag: 'Critical Defense', sub: 'Zero-Trust, Reverse Eng' },
-    { id: 'cloud', name: 'Cloud & Distributed Systems', code: 'DOM-04', x: 38, y: 80, color: '#0284C7', tag: 'Infrastructure', sub: 'Kubernetes, Kafka, Go' },
-    { id: 'data', name: 'Data Engineering & Science', code: 'DOM-05', x: 55, y: 45, color: '#FFFFFF', tag: 'Analytical', sub: 'Spark, SQL, Analytics' },
-    { id: 'web', name: 'Full Stack & Web Architecture', code: 'DOM-06', x: 18, y: 68, color: '#94A3B8', tag: 'Product Eng', sub: 'React, Node.js, GraphQL' }
-  ];
+  const runPrediction = async (skillsText, preferredDomain = 'ai') => {
+    const trimmed = String(skillsText || '').trim();
+    if (!trimmed) return;
+    setMlLoading(true);
+    const data = await predictDomainAndMarket({
+      skills: trimmed,
+      preferredDomain,
+    });
+    setMlResult(data);
+    setMlLoading(false);
+  };
 
-  const activeNodeInfo = domainNodes.find(d => d.id === activeDomainNode) || domainNodes[0];
+  const handleStart = () => {
+    if (!user) continuesAsGuest();
+    navigate('/quiz');
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    runPrediction(skillsInput, 'ai');
+  };
+
+  const primaryDomainId = mlResult?.canonical_domain_id || 'ai';
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#F7F7F4',
-      color: '#17191C',
-      fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif",
-      padding: '2.5rem 1.5rem 6rem'
-    }}>
-      <div style={{ maxWidth: '1160px', margin: '0 auto' }}>
-        
-        {/* 1. TOP TECHNICAL TELEMETRY STRIP */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          padding: '0.75rem 1.25rem',
-          border: '1px solid #D8DAD7',
-          backgroundColor: '#FFFFFF',
-          marginBottom: '3.5rem',
-          fontFamily: "'DM Mono', monospace",
-          fontSize: '0.75rem',
-          color: '#646A73',
-          letterSpacing: '0.04em'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <span style={{ 
-              display: 'inline-block', 
-              width: '8px', 
-              height: '8px', 
-              borderRadius: '50%',
-              backgroundColor: '#E85D3F'
-            }} />
-            <span style={{ color: '#17191C', fontWeight: 700 }}>DIAGNOSTIC ENGINE: ACTIVE</span>
-            <span style={{ color: '#D8DAD7' }}>|</span>
-            <span>STATION: CSE-AST-2026</span>
-          </div>
+    <div style={{ minHeight: '100%', padding: '3rem 1.5rem 5rem', color: 'var(--color-text)' }}>
+      <div style={{ maxWidth: '960px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '3rem' }}>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-            <span>ENGINE: <span style={{ color: '#17191C', fontWeight: 600 }}>ADAPTIVE-TRIFOCAL</span></span>
-            <span>BANK: <span style={{ color: '#2EC4B6', fontWeight: 700 }}>109 VERIFIED ITEMS</span></span>
-            <span>LATENCY: <span style={{ color: '#17191C' }}>14ms</span></span>
-          </div>
+        <section style={{ textAlign: 'center' }}>
+          <h1 style={{ fontSize: 'clamp(34px, 3.6vw, 48px)', fontWeight: 400, lineHeight: 1.12, letterSpacing: '-0.035em', color: 'var(--ink)', margin: '0 0 1rem 0' }}>
+            Find the CSE domain that fits you
+          </h1>
+          <p style={{ margin: '0 auto', maxWidth: '620px', color: 'var(--ink-capsule)' }}>
+            A short adaptive assessment for B.Tech CSE students that recommends a domain and shows you exactly what to learn next.
+          </p>
+        </section>
+
+        <section aria-labelledby="how-it-works">
+          <h2 id="how-it-works" style={{ fontSize: '19px', fontWeight: 500, letterSpacing: '-0.02em', color: 'var(--ink)', textAlign: 'center', margin: '0 0 1.5rem 0' }}>How it works</h2>
+          <ol style={{
+            listStyle: 'none', padding: 0, margin: 0,
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem'
+          }}>
+            {STEPS.map((step, i) => (
+              <li key={step.title} style={{
+                background: 'var(--glass)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+                border: '1px solid var(--edge)',
+                boxShadow: '0 10px 40px rgba(21, 36, 78, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.6)',
+                borderRadius: '12px',
+                padding: '1.5rem'
+              }}>
+                <div style={{
+                  width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(11, 22, 54, 0.72)', color: '#FFFFFF',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: '14px',
+                  marginBottom: '1rem'
+                }}>{i + 1}</div>
+                <h3 style={{ fontSize: '19px', fontWeight: 500, letterSpacing: '-0.02em', color: 'var(--ink)', margin: '0 0 0.5rem 0' }}>{step.title}</h3>
+                <p style={{ color: 'var(--ink-capsule)', margin: 0 }}>{step.text}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <div style={{ textAlign: 'center' }}>
+          <button
+            type="button"
+            onClick={handleStart}
+            className="btn-primary"
+            style={{ padding: '1.125rem 2.5rem', cursor: 'pointer' }}
+          >
+            Start Assessment <ArrowRight size={20} />
+          </button>
         </div>
 
-        {/* 2. GRAND HERO SECTION */}
-        <section style={{ marginBottom: '5rem', maxWidth: '960px' }}>
-          
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.35rem 0.85rem',
-            backgroundColor: '#FFF0EB',
-            border: '1px solid #E85D3F',
-            color: '#E85D3F',
-            fontFamily: "'DM Mono', monospace",
-            fontSize: '0.75rem',
-            fontWeight: 700,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            marginBottom: '1.5rem'
-          }}>
-            <Crosshair size={13} />
-            <span>ACADEMIC TRAJECTORY ACCELERATOR</span>
-          </div>
-
-          {/* Main Heading: High-contrast Jet Black */}
-          <h1 style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 'clamp(3.5rem, 8vw, 6.5rem)',
-            fontWeight: 800,
-            lineHeight: 0.95,
-            letterSpacing: '-0.02em',
-            textTransform: 'uppercase',
-            color: '#17191C',
-            margin: '0 0 1.5rem 0'
-          }}>
-            FIND YOUR<br />
-            DIRECTION.
-          </h1>
-
-          {/* Supporting Text: High-contrast Dark Slate */}
-          <p style={{
-            fontSize: 'clamp(1.125rem, 2vw, 1.35rem)',
-            lineHeight: 1.6,
-            color: '#50545B',
-            maxWidth: '680px',
-            margin: '0 0 2.5rem 0'
-          }}>
-            Your CSE journey is not a predefined path. Discover your strengths, explore domains, and build a roadmap that matches your potential.
-          </p>
-
-          {/* Call to Actions */}
-          <div style={{
+        {/* ============================================================
+            QUICK DOMAIN PREDICTOR
+            ============================================================ */}
+        <section
+          id="home-ml-predictor"
+          aria-labelledby="home-ml-heading"
+          className="card"
+          style={{
+            border: '1px solid var(--edge)',
+            padding: 'clamp(1.25rem, 3vw, 2rem)',
             display: 'flex',
-            flexWrap: 'wrap',
-            alignItems: 'center',
-            gap: '1.25rem'
-          }}>
-            <Link 
-              to="/quiz" 
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.75rem',
-                backgroundColor: '#17191C',
-                color: '#FFFFFF',
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: '1.125rem',
-                fontWeight: 700,
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
-                padding: '1.125rem 2.5rem',
-                textDecoration: 'none',
-                border: '1px solid #17191C',
-                transition: 'all 0.15s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#E85D3F';
-                e.currentTarget.style.borderColor = '#E85D3F';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#17191C';
-                e.currentTarget.style.borderColor = '#17191C';
-              }}
-            >
-              <span>Discover My Path</span>
-              <ArrowRight size={18} />
-            </Link>
-
-            <Link 
-              to="/domains" 
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.75rem',
-                backgroundColor: '#FFFFFF',
-                color: '#17191C',
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: '1.125rem',
-                fontWeight: 700,
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
-                padding: '1.125rem 2.25rem',
-                textDecoration: 'none',
-                border: '1px solid #D8DAD7',
-                transition: 'all 0.15s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#17191C';
-                e.currentTarget.style.backgroundColor = '#F7F7F4';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = '#D8DAD7';
-                e.currentTarget.style.backgroundColor = '#FFFFFF';
-              }}
-            >
-              <span>Explore Domains</span>
-            </Link>
-
-            <Link 
-              to="/assess"
-              style={{
-                fontFamily: "'DM Mono', monospace",
-                fontSize: '0.8125rem',
-                color: '#50545B',
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.85rem 1.25rem',
-                border: '1px dashed #D8DAD7',
-                backgroundColor: '#FFFFFF',
-                transition: 'all 0.15s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#E85D3F';
-                e.currentTarget.style.color = '#E85D3F';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = '#D8DAD7';
-                e.currentTarget.style.color = '#50545B';
-              }}
-            >
-              <Terminal size={14} style={{ color: '#E85D3F' }} />
-              <span>OR TEST TOPIC LADDER [L1-L4] →</span>
-            </Link>
-          </div>
-
-        </section>
-
-        {/* 3. INTERACTIVE DOMAIN CONSTELLATION MAP */}
-        <section style={{ marginBottom: '5rem' }}>
-          <div style={{
-            backgroundColor: '#FFFFFF',
-            border: '1px solid #D8DAD7',
-            padding: '2.5rem'
-          }}>
-            
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'flex-start',
-              flexWrap: 'wrap',
-              gap: '1rem',
-              marginBottom: '2rem'
-            }}>
-              <div>
-                <div style={{
-                  fontFamily: "'DM Mono', monospace",
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  color: '#E85D3F',
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                  marginBottom: '0.35rem'
-                }}>
-                  TOPOLOGICAL DOMAIN SPACE // INTERACTIVE MAP
-                </div>
-                <h2 style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: '2rem',
-                  fontWeight: 800,
-                  textTransform: 'uppercase',
-                  color: '#17191C',
-                  margin: 0
-                }}>
-                  CSE Domain Constellation
-                </h2>
-              </div>
-              
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#646A73', textAlign: 'right' }}>
-                <div>COORDINATES: [0x7F · 0x1A]</div>
-                <div style={{ color: '#E85D3F', fontWeight: 600 }}>SELECTED: {activeNodeInfo.name}</div>
-              </div>
-            </div>
-
-            {/* Dark Technical Radar Canvas: High Contrast Text & Nodes */}
-            <div style={{
-              position: 'relative',
-              height: '360px',
-              width: '100%',
-              backgroundColor: '#20252B',
-              border: '1px solid #343C4E',
-              marginBottom: '1.75rem',
-              overflow: 'hidden'
-            }}>
-              
-              {/* SVG Connecting Lines */}
-              <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
-                <line x1="20%" y1="35%" x2="55%" y2="45%" stroke="rgba(255,255,255,0.25)" strokeWidth="1" strokeDasharray="4 4" />
-                <line x1="55%" y1="45%" x2="75%" y2="25%" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
-                <line x1="75%" y1="25%" x2="82%" y2="70%" stroke="rgba(255,255,255,0.25)" strokeWidth="1" strokeDasharray="4 4" />
-                <line x1="82%" y1="70%" x2="38%" y2="80%" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
-                <line x1="38%" y1="80%" x2="18%" y2="68%" stroke="rgba(255,255,255,0.25)" strokeWidth="1" strokeDasharray="4 4" />
-                <line x1="18%" y1="68%" x2="20%" y2="35%" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
-                <line x1="20%" y1="35%" x2="38%" y2="80%" stroke="#E85D3F" strokeWidth="2" />
-              </svg>
-
-              {/* Nodes */}
-              {domainNodes.map((node) => {
-                const isSelected = activeDomainNode === node.id;
-                return (
-                  <div
-                    key={node.id}
-                    onClick={() => setActiveDomainNode(node.id)}
-                    style={{
-                      position: 'absolute',
-                      left: `${node.x}%`,
-                      top: `${node.y}%`,
-                      transform: 'translate(-50%, -50%)',
-                      cursor: 'pointer',
-                      zIndex: 2,
-                      textAlign: 'center'
-                    }}
-                  >
-                    <div style={{
-                      width: isSelected ? '20px' : '12px',
-                      height: isSelected ? '20px' : '12px',
-                      backgroundColor: isSelected ? node.color : '#20252B',
-                      border: `2px solid ${node.color}`,
-                      margin: '0 auto',
-                      transition: 'all 0.2s ease',
-                      boxShadow: isSelected ? `0 0 14px ${node.color}` : 'none'
-                    }} />
-                    <div style={{
-                      marginTop: '8px',
-                      fontFamily: "'DM Mono', monospace",
-                      fontSize: '0.6875rem',
-                      fontWeight: 600,
-                      color: '#FFFFFF',
-                      backgroundColor: isSelected ? '#17191C' : 'rgba(32, 37, 43, 0.85)',
-                      padding: '2px 8px',
-                      whiteSpace: 'nowrap',
-                      border: `1px solid ${isSelected ? node.color : 'rgba(255, 255, 255, 0.15)'}`
-                    }}>
-                      {node.code} · {node.name.split(' ')[0]}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Active Node Detail Card */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '1.5rem',
-              padding: '1.5rem',
-              backgroundColor: '#F7F7F4',
-              border: '1px solid #D8DAD7'
-            }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.35rem' }}>
-                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 700, color: '#E85D3F' }}>
-                    {activeNodeInfo.code}
-                  </span>
-                  <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.35rem', fontWeight: 800, textTransform: 'uppercase', margin: 0, color: '#17191C' }}>
-                    {activeNodeInfo.name}
-                  </h3>
-                  <span style={{ 
-                    fontFamily: "'DM Mono', monospace", 
-                    fontSize: '0.6875rem', 
-                    padding: '2px 8px', 
-                    backgroundColor: '#FFFFFF', 
-                    border: '1px solid #D8DAD7',
-                    color: '#50545B' 
-                  }}>
-                    {activeNodeInfo.tag}
-                  </span>
-                </div>
-                <div style={{ color: '#50545B', fontSize: '0.875rem' }}>
-                  Core Competencies: <span style={{ color: '#17191C', fontWeight: 600 }}>{activeNodeInfo.sub}</span>
-                </div>
-              </div>
-
-              <Link
-                to={`/domain/${activeNodeInfo.id}`}
+            flexDirection: 'column',
+            gap: '1.5rem',
+          }}
+        >
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.75rem' }}>
+            <div>
+              <div
                 style={{
-                  padding: '0.75rem 1.25rem',
-                  backgroundColor: '#FFFFFF',
-                  border: '1px solid #D8DAD7',
-                  color: '#17191C',
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: '0.9375rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.04em',
-                  textTransform: 'uppercase',
-                  textDecoration: 'none',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '0.5rem',
-                  transition: 'all 0.15s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#17191C';
-                  e.currentTarget.style.backgroundColor = '#FFF0EB';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#D8DAD7';
-                  e.currentTarget.style.backgroundColor = '#FFFFFF';
+                  gap: '6px',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '11px',
+                  fontWeight: 400,
+                  letterSpacing: '0.02em',
+                  color: 'var(--ink-soft)',
+                  marginBottom: '6px',
                 }}
               >
-                <span>Inspect Specialization</span>
-                <ExternalLink size={14} />
-              </Link>
+                <Sparkles size={14} style={{ color: 'var(--signal)' }} />
+                <span>Quick Domain Predictor</span>
+              </div>
+              <h2 id="home-ml-heading" style={{ margin: 0, fontSize: '19px', fontWeight: 500, letterSpacing: '-0.02em', color: 'var(--ink)' }}>
+                Quick Domain Predictor
+              </h2>
+              <p style={{ margin: '6px 0 0', color: 'var(--ink-capsule)' }}>
+                Enter your technical skills to predict your best-fit CSE domains and check your skill readiness.
+              </p>
             </div>
-
-          </div>
-        </section>
-
-        {/* 4. SCIENTIFIC DIAGNOSTIC MODULES (4 GRID PANELS) */}
-        <section style={{ marginBottom: '5rem' }}>
-          <div style={{ marginBottom: '2rem' }}>
-            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 600, color: '#E85D3F', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
-              SYSTEM PLATFORM ARCHITECTURE
-            </div>
-            <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '2.5rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: 0 }}>
-              Scientific Diagnostic Modules
-            </h2>
           </div>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-            gap: '1.5rem'
-          }}>
-            
-            <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 700, color: '#646A73' }}>MOD-01</span>
-                <Compass size={22} style={{ color: '#E85D3F' }} />
-              </div>
-              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: '0 0 0.75rem 0' }}>
-                O*NET Career Profiling
-              </h3>
-              <p style={{ color: '#50545B', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-                Calibrated items from the U.S. Dept of Labor O*NET Interest Profiler mapping your natural affinity to RIASEC occupational dimensions.
-              </p>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#E85D3F', fontWeight: 700 }}>
-                OUTPUT: DOMAIN WEIGHT MATRIX
-              </div>
+          {/* Custom Skills Input Form */}
+          <form onSubmit={handleFormSubmit} style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+            <input
+              id="home-ml-skills-input"
+              type="text"
+              aria-label="Enter technical skills (comma-separated)"
+              className="input-field"
+              value={skillsInput}
+              onChange={(e) => setSkillsInput(e.target.value)}
+              placeholder="e.g. Python, React, SQL, Docker, Machine Learning"
+              style={{ flex: '1 1 280px' }}
+            />
+            <button
+              type="submit"
+              className="btn-primary"
+              disabled={mlLoading || !skillsInput.trim()}
+              style={{ whiteSpace: 'nowrap' }}
+            >
+              {mlLoading ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  <span>Predicting...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles size={16} />
+                  <span>Prediction</span>
+                </>
+              )}
+            </button>
+          </form>
+
+          {mlLoading && !mlResult && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '1rem', borderRadius: '8px', border: '1px solid var(--color-border)', color: 'var(--color-text-2)' }}>
+              <Loader2 size={18} className="animate-spin" />
+              <span>Predicting your best-fit domains...</span>
             </div>
+          )}
 
-            <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 700, color: '#646A73' }}>MOD-02</span>
-                <Zap size={22} style={{ color: '#D97706' }} />
-              </div>
-              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: '0 0 0.75rem 0' }}>
-                Bebras Logic Tasks
-              </h3>
-              <p style={{ color: '#50545B', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-                Language-agnostic computational thinking tasks assessing graph traversal, binary state analysis, and algorithmic pattern recognition.
-              </p>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#D97706', fontWeight: 700 }}>
-                OUTPUT: COGNITIVE APTITUDE SCORE
-              </div>
-            </div>
+          {mlResult && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+                {/* Top 3 Predicted Domains */}
+                <div style={{ padding: '1rem', borderRadius: '10px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                    <h3 style={{ margin: 0, fontSize: '1.125rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <TrendingUp size={16} />
+                      <span>Top 3 Predicted Domains</span>
+                    </h3>
+                    <span className="mono-tag" style={{ fontSize: '0.75rem', color: 'var(--color-accent)', fontWeight: 700 }}>
+                      Top: {mlResult.primary_domain}
+                    </span>
+                  </div>
 
-            <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 700, color: '#646A73' }}>MOD-03</span>
-                <Layers size={22} style={{ color: '#2EC4B6' }} />
-              </div>
-              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: '0 0 0.75rem 0' }}>
-                Code.org Guided Labs
-              </h3>
-              <p style={{ color: '#50545B', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-                Scenario-based software engineering simulations covering database queries, system scalability, and security posture tradeoffs.
-              </p>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#2EC4B6', fontWeight: 700 }}>
-                OUTPUT: PRACTICAL READINESS INDEX
-              </div>
-            </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                    {(mlResult.top_predictions || []).slice(0, 3).map((pred, idx) => {
+                      const pct = Math.max(0, Math.min(100, Number(pred.confidence_pct || 0)));
+                      const domId = pred.canonical_domain_id || 'ai';
+                      return (
+                        <div key={`${pred.domain_label}-${idx}`}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.875rem', marginBottom: '4px', gap: '8px' }}>
+                            <span style={{ fontWeight: idx === 0 ? 700 : 500 }}>
+                              {idx + 1}. {pred.domain_label}
+                            </span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <Link
+                                to={`/domain/${domId}`}
+                                style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--color-cyan)', fontWeight: 700, textDecoration: 'none' }}
+                              >
+                                Details
+                              </Link>
+                              <Link
+                                to={`/roadmap/${domId}`}
+                                style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--color-text-2)', fontWeight: 700, textDecoration: 'none' }}
+                              >
+                                Roadmap
+                              </Link>
+                              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: idx === 0 ? 'var(--color-accent)' : 'var(--color-text-2)' }}>
+                                {pct.toFixed(1)}%
+                              </span>
+                            </div>
+                          </div>
+                          <div style={{ width: '100%', height: '8px', borderRadius: '999px', backgroundColor: 'rgba(255, 255, 255, 0.55)', border: '1px solid var(--edge)', overflow: 'hidden' }}>
+                            <div
+                              style={{
+                                width: `${pct}%`,
+                                height: '100%',
+                                borderRadius: '999px',
+                                backgroundColor: idx === 0 ? 'var(--color-accent)' : 'var(--color-cyan)',
+                                transition: 'width 0.3s ease',
+                              }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
 
-            <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 700, color: '#646A73' }}>MOD-04</span>
-                <Activity size={22} style={{ color: '#0284C7' }} />
-              </div>
-              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: '0 0 0.75rem 0' }}>
-                8-Semester Roadmap
-              </h3>
-              <p style={{ color: '#50545B', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-                Personalized technical progression plan with starting depths dynamically tuned to your evaluated topic mastery levels.
-              </p>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#0284C7', fontWeight: 700 }}>
-                OUTPUT: CURRICULUM SYLLABUS
-              </div>
-            </div>
-
-          </div>
-        </section>
-
-        {/* 5. ACTIVE STUDENT TELEMETRY BANNER (IF RECORDED) */}
-        {history.length > 0 && (
-          <section style={{ marginBottom: '4rem' }}>
-            <div style={{ 
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #D8DAD7',
-              borderLeft: '4px solid #E85D3F',
-              padding: '2.5rem', 
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '2rem'
-            }}>
-              <div>
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#E85D3F', fontWeight: 700, marginBottom: '0.5rem' }}>
-                  RECORDED TELEMETRY // ACTIVE PROFILE
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid var(--color-border-subtle)' }}>
+                    <Link to={`/domain/${primaryDomainId}`} className="btn-secondary" style={{ padding: '0.45rem 0.9rem', minHeight: '36px', fontSize: '0.85rem' }}>
+                      Explore {mlResult.primary_domain} <ArrowRight size={14} />
+                    </Link>
+                    <Link to={`/roadmap/${primaryDomainId}`} className="btn-ghost" style={{ padding: '0.45rem 0.9rem', minHeight: '36px', fontSize: '0.85rem' }}>
+                      Open Roadmap
+                    </Link>
+                  </div>
                 </div>
-                <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '2rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: '0 0 0.5rem 0' }}>
-                  Primary Specialization: <span style={{ color: '#E85D3F' }}>{history[0]?.recommended_domain}</span>
-                </h2>
-                <p style={{ color: '#50545B', maxWidth: '600px', margin: 0, fontSize: '0.9375rem' }}>
-                  Diagnostic confidence factor evaluated at {history[0]?.confidence_score || 88}%. Explore your detailed skill radar or review your semester progression milestones.
-                </p>
-              </div>
 
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <Link
-                  to="/results"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    padding: '0.9rem 1.75rem',
-                    backgroundColor: '#17191C',
-                    color: '#FFFFFF',
-                    fontFamily: "'Barlow Condensed', sans-serif",
-                    fontSize: '1rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.04em',
-                    textTransform: 'uppercase',
-                    textDecoration: 'none'
-                  }}
-                >
-                  <span>Inspect Result Telemetry</span>
-                  <ArrowRight size={16} />
-                </Link>
-                <Link
-                  to="/domains"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    padding: '0.9rem 1.75rem',
-                    backgroundColor: '#FFFFFF',
-                    color: '#17191C',
-                    border: '1px solid #D8DAD7',
-                    fontFamily: "'Barlow Condensed', sans-serif",
-                    fontSize: '1rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.04em',
-                    textTransform: 'uppercase',
-                    textDecoration: 'none'
-                  }}
-                >
-                  <span>Compare Disciplines</span>
-                </Link>
+                {/* Skill-Gap Readiness */}
+                {mlResult.skill_gap && (
+                  <div style={{ padding: '1rem', borderRadius: '10px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <h3 style={{ margin: 0, fontSize: '1.125rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <CheckCircle2 size={16} style={{ color: 'var(--color-success)' }} />
+                        <span>Skill-Gap Readiness</span>
+                      </h3>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-success)' }}>
+                        {Number(mlResult.skill_gap.readiness_score_pct || 0).toFixed(0)}%
+                      </span>
+                    </div>
+
+                    <div>
+                      <div style={{ width: '100%', height: '8px', borderRadius: '999px', backgroundColor: 'rgba(255, 255, 255, 0.55)', border: '1px solid var(--edge)', overflow: 'hidden' }}>
+                        <div
+                          style={{
+                            width: `${Math.max(0, Math.min(100, Number(mlResult.skill_gap.readiness_score_pct || 0)))}%`,
+                            height: '100%',
+                            backgroundColor: 'var(--color-success)',
+                            transition: 'width 0.3s ease',
+                          }}
+                        />
+                      </div>
+                      <div style={{ fontSize: '0.82rem', color: 'var(--color-text-2)', marginTop: '6px' }}>
+                        Matched {mlResult.skill_gap.matched_count || 0} of {mlResult.skill_gap.total_benchmark_skills || 15} benchmark skills in Indian job postings.
+                      </div>
+                    </div>
+
+                    {(mlResult.skill_gap.matched_skills || []).length > 0 && (
+                      <div>
+                        <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-text-2)', marginBottom: '4px' }}>
+                          Matched Skills
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                          {mlResult.skill_gap.matched_skills.map((skill) => (
+                            <span
+                              key={skill}
+                              style={{
+                                fontFamily: 'var(--font-mono)',
+                                fontSize: '0.75rem',
+                                padding: '2px 8px',
+                                borderRadius: '999px',
+                                backgroundColor: 'var(--color-success-lt)',
+                                color: '#0F5132',
+                                border: '1px solid var(--color-success)',
+                              }}
+                            >
+                              ✓ {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div>
+                      <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <AlertCircle size={13} />
+                        <span>Top 3 Missing High-Impact Skills</span>
+                      </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {(mlResult.skill_gap.missing_skills_top3 || []).map((skill) => (
+                          <span
+                            key={skill}
+                            style={{
+                              fontFamily: 'var(--font-mono)',
+                              fontSize: '0.75rem',
+                              padding: '3px 9px',
+                              borderRadius: '999px',
+                              backgroundColor: 'var(--color-accent-lt)',
+                              border: '1px solid var(--color-accent)',
+                              color: 'var(--color-text)',
+                              fontWeight: 600,
+                            }}
+                          >
+                            + {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-          </section>
-        )}
+          )}
+        </section>
 
       </div>
     </div>

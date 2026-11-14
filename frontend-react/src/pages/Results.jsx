@@ -1,997 +1,1434 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { QUIZ_DATA } from '../data/questions';
 import { useAuth } from '../context/AuthContext';
 import domainsData from '../data/domains.json';
 import { getApiBaseUrl } from '../utils/roadmapHelper';
-import { getMastery } from '../services/apiService';
+import { getMastery, predictDomainAndMarket } from '../services/apiService';
+import { buildPhase6RecommendationFromSession } from '../data/adaptive/recommendationEngine';
+import { getPhase4DomainBundle } from '../data/phase4DataLoader';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
-import { 
-  Activity, 
-  Compass, 
-  ArrowRight, 
-  TrendingUp, 
+  ArrowRight,
   Loader2,
-  Award,
   ExternalLink,
-  ChevronRight,
-  Zap,
-  AlertCircle
+  ChevronDown,
+  ChevronUp,
+  CheckCircle2,
+  HelpCircle,
+  RotateCcw,
+  Briefcase,
+  TrendingUp,
+  Sparkles,
+  MapPin,
+  AlertCircle,
 } from 'lucide-react';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+const DOMAIN_DEFAULT_SKILLS = {
+  ai: 'Python, Machine Learning, SQL',
+  data: 'Python, SQL, Data Analysis, Excel',
+  web: 'JavaScript, React, HTML/CSS, SQL',
+  security: 'Linux, Networking, Cybersecurity, Python',
+  cloud: 'AWS, Docker, Linux, Git',
+  systems: 'Linux, Networking, Python, Java',
+  iot: 'Python, C++, Arduino, Linux',
+  robotics: 'Python, C++, Machine Learning',
+  vlsi: 'Digital Logic, C++, Verilog',
+  networking: 'TCP/IP, Networking, Linux',
+};
+
+const PREREQ_TO_SKILL_TEXT = {
+  prog_fund: 'Python, Java, C++',
+  math_stats: 'Statistics, Excel, Data Analysis',
+  web_design: 'HTML/CSS, JavaScript, Figma, React',
+  dsa_logic: 'Data Structures, Algorithms',
+  dbms_data: 'SQL, Database Management',
+  linux_cloud: 'Linux, Git, AWS, Docker',
+  security_net: 'Networking, Cybersecurity',
+};
 
 export default function Results() {
   const [resultsData, setResultsData] = useState(() => {
-    const raw = sessionStorage.getItem("quiz_results");
-    return raw ? JSON.parse(raw) : null;
+    try {
+      const raw =
+        sessionStorage.getItem('quiz_results') ||
+        localStorage.getItem('cpath_latest_quiz_results');
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
   });
   const [loading, setLoading] = useState(false);
   const [adaptiveMastery, setAdaptiveMastery] = useState({});
+  const [showAuditLog, setShowAuditLog] = useState(false);
+  const [skillsInput, setSkillsInput] = useState('');
+  const [mlMarketData, setMlMarketData] = useState(null);
+  const [mlLoading, setMlLoading] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
   const apiBase = getApiBaseUrl();
 
   useEffect(() => {
+    let cancelled = false;
+
     const loadHistoricResult = async () => {
       try {
         const masteryResp = await getMastery(user?.email || 'guest_student@pathfinder.edu');
-        if (masteryResp && masteryResp.status === 'success') {
-          setAdaptiveMastery(masteryResp.mastery || {});
+        if (!cancelled && masteryResp && masteryResp.status === 'success') {
+          setAdaptiveMastery(masteryResp.current_mastery || masteryResp.mastery || {});
         }
       } catch (err) {
         console.warn('Could not load adaptive mastery:', err);
       }
 
-      if (resultsData) return;
-      if (!user) return;
-      
-      if (user.isGuest) {
-        navigate('/quiz');
-        return;
-      }
+      if (resultsData || !user || user.isGuest) return;
 
-      setLoading(true);
+      if (!cancelled) setLoading(true);
       try {
         const resp = await fetch(`${apiBase}/api/results/${user.email}`);
         const data = await resp.json();
+        if (cancelled) return;
+
         if (data.status === 'success' && data.results.length > 0) {
           const latest = data.results[0];
-          
+
           const matchedDom = domainsData.find(
-            d => d.title.toLowerCase().includes(latest.recommended_domain.toLowerCase()) || 
-                 latest.recommended_domain.toLowerCase().includes(d.title.toLowerCase())
+            (d) =>
+              d.title.toLowerCase().includes(latest.recommended_domain.toLowerCase()) ||
+              latest.recommended_domain.toLowerCase().includes(d.title.toLowerCase())
           );
 
           const rawScores = latest.all_scores || {};
           const cleanScores = {};
           Object.entries(rawScores).forEach(([k, v]) => {
-             cleanScores[k] = v > 100 ? Math.min(100, Math.round(v / 10)) : Math.min(100, Math.round(v));
+            cleanScores[k] = v > 100 ? Math.min(100, Math.round(v / 10)) : Math.min(100, Math.round(v));
           });
 
-          const reconstructed = {
+          setResultsData({
             track: latest.quiz_type,
             top_domain: latest.recommended_domain,
             confidence_score: latest.confidence_score,
             all_scores: cleanScores,
-            domain_id: matchedDom ? matchedDom.id : 'ai'
-          };
-          setResultsData(reconstructed);
+            domain_id: matchedDom ? matchedDom.id : 'ai',
+          });
         } else {
-          navigate('/quiz');
+          const cached = localStorage.getItem('cpath_latest_quiz_results');
+          if (cached) {
+            setResultsData(JSON.parse(cached));
+          }
         }
       } catch (err) {
-        console.error("Failed to load past results:", err);
-        navigate('/quiz');
+        console.error('Failed to load past results:', err);
+        if (!cancelled) {
+          try {
+            const cached = localStorage.getItem('cpath_latest_quiz_results');
+            if (cached) {
+              setResultsData(JSON.parse(cached));
+              return;
+            }
+          } catch { /* ignore malformed offline cache */ }
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     loadHistoricResult();
-  }, [user, apiBase, navigate, resultsData]);
+    return () => {
+      cancelled = true;
+    };
+  }, [user, apiBase, resultsData]);
 
+  const phase6Recommendation = useMemo(() => {
+    if (!resultsData) return null;
+    if (resultsData.phase6Recommendation?.topDomain) {
+      return resultsData.phase6Recommendation;
+    }
+    return buildPhase6RecommendationFromSession({
+      ...resultsData,
+      adaptiveMastery,
+    });
+  }, [resultsData, adaptiveMastery]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const domId = phase6Recommendation?.topDomain?.domainId || 'ai';
+
+    const prereqIds =
+      resultsData?.declaredPrerequisites ||
+      resultsData?.prerequisiteProfile?.declaredPrerequisites ||
+      [];
+    const mappedPrereqs = Array.isArray(prereqIds)
+      ? prereqIds.map((id) => PREREQ_TO_SKILL_TEXT[id] || id).filter(Boolean)
+      : [];
+    const customPart = resultsData?.customKnowledge ? [resultsData.customKnowledge] : [];
+    const combined = [...mappedPrereqs, ...customPart].join(', ').trim();
+    const initialSkills =
+      combined ||
+      (phase6Recommendation?.topDomain ? DOMAIN_DEFAULT_SKILLS[domId] : null) ||
+      'Python, SQL, Machine Learning';
+
+    setSkillsInput((prev) => prev || initialSkills);
+
+    const runInitialPrediction = async () => {
+      setMlLoading(true);
+      const data = await predictDomainAndMarket({
+        skills: initialSkills,
+        preferredDomain: domId,
+      });
+      if (!cancelled) {
+        setMlMarketData(data);
+        setMlLoading(false);
+      }
+    };
+
+    runInitialPrediction();
+    return () => {
+      cancelled = true;
+    };
+  }, [phase6Recommendation?.topDomain?.domainId]);
+
+  const handleAnalyzeSkills = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const domId = phase6Recommendation?.topDomain?.domainId || 'ai';
+    setMlLoading(true);
+    const data = await predictDomainAndMarket({
+      skills: skillsInput,
+      preferredDomain: domId,
+    });
+    setMlMarketData(data);
+    setMlLoading(false);
+  };
+
+  // Loading State
   if (loading) {
     return (
-      <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F7F7F4' }}>
-        <div style={{ textAlign: 'center' }}>
-          <Loader2 size={36} className="animate-spin" style={{ color: '#E85D3F', margin: '0 auto 1rem' }} />
-          <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', marginBottom: '0.5rem' }}>
-            Computing Diagnostic Telemetry...
-          </h2>
-          <p style={{ color: '#646A73', fontFamily: "'DM Mono', monospace", fontSize: '0.8125rem' }}>
-            SYNTHESIZING O*NET RIASEC CODES & COMPUTATIONAL PROFILES
-          </p>
+      <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-3)' }}>
+        <div className="state-container" style={{ maxWidth: '440px', width: '100%' }}>
+          <Loader2 size={36} className="animate-spin" style={{ color: 'var(--color-accent)' }} />
+          <h2 className="state-title">Loading your result...</h2>
+          <p className="state-description">Compiling weighted RIASEC, readiness, and India market demand scores.</p>
         </div>
       </div>
     );
   }
 
-  if (!resultsData) {
+  // Empty State (with interactive ML Skill-to-Domain & Market Predictor)
+  if (!resultsData || !phase6Recommendation?.topDomain) {
     return (
       <div style={{
-        minHeight: '80vh',
-        backgroundColor: '#F7F7F4',
-        color: '#17191C',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2.5rem 1.5rem'
+        minHeight: '100%',
+        backgroundColor: 'var(--color-bg)',
+        color: 'var(--color-text)',
+        padding: 'var(--space-4) var(--space-2) var(--space-8)',
       }}>
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          border: '1px solid #D8DAD7',
-          padding: 'clamp(2rem, 5vw, 3.5rem)',
-          maxWidth: '640px',
-          textAlign: 'center'
-        }}>
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            fontFamily: "'DM Mono', monospace",
-            fontSize: '0.75rem',
-            color: '#E85D3F',
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            marginBottom: '1rem',
-            backgroundColor: '#FFF0EB',
-            border: '1px solid #E85D3F',
-            padding: '0.35rem 0.85rem',
-            fontWeight: 700
-          }}>
-            NO ACTIVE TELEMETRY RECORD
+        <div style={{ maxWidth: '880px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+          <div className="state-container" style={{ width: '100%' }}>
+            <HelpCircle size={44} style={{ color: 'var(--color-text-3)' }} />
+            <h2 className="state-title">No Assessment Result Yet</h2>
+            <p className="state-description">
+              You haven&apos;t completed the career assessment yet. Answer short questions about logic and interests to see your recommended CSE domain, or test the live ML predictor below right away.
+            </p>
+            <div style={{ marginTop: 'var(--space-2)' }}>
+              <Link to="/quiz" className="btn-primary">
+                Start Assessment <ArrowRight size={18} />
+              </Link>
+            </div>
           </div>
-          <h2 style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 'clamp(2rem, 4vw, 2.75rem)',
-            fontWeight: 800,
-            textTransform: 'uppercase',
-            color: '#17191C',
-            marginBottom: '1rem'
-          }}>
-            Assessment Not Completed
-          </h2>
-          <p style={{ color: '#50545B', fontSize: '1rem', lineHeight: 1.6, marginBottom: '2rem' }}>
-            No diagnostic telemetry has been recorded for this session yet. Complete an assessment to generate your psychometric RIASEC profile, skill radar, and personalized career domain affinities.
-          </p>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link
-              to="/assess"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.85rem 1.75rem',
-                backgroundColor: '#17191C',
-                color: '#FFFFFF',
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: '1rem',
-                fontWeight: 700,
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                textDecoration: 'none'
-              }}
-            >
-              <span>Start Adaptive Assessment</span>
-              <ArrowRight size={16} />
-            </Link>
-            <Link
-              to="/quiz"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                padding: '0.85rem 1.75rem',
-                backgroundColor: '#FFFFFF',
-                color: '#17191C',
-                border: '1px solid #D8DAD7',
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: '1rem',
-                fontWeight: 700,
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                textDecoration: 'none'
-              }}
-            >
-              <span>Diagnostic Tracks</span>
-            </Link>
-          </div>
+
+          <MlMarketSection
+            skillsInput={skillsInput}
+            onSkillsChange={setSkillsInput}
+            onAnalyzeSkills={handleAnalyzeSkills}
+            mlMarketData={mlMarketData}
+            mlLoading={mlLoading}
+          />
         </div>
       </div>
     );
   }
 
-  const trackConfig = QUIZ_DATA[resultsData.track] || QUIZ_DATA['software'];
-  const clusters = trackConfig?.clusters || {};
+  const topDomain = phase6Recommendation.topDomain;
+  const weights = phase6Recommendation.weights || { riasec: 0.4, readiness: 0.3, market_demand: 0.3 };
+  const whyThisOneBullets = (phase6Recommendation.whyThisOne || []).slice(0, 3);
+  const lowerRankedDomains = phase6Recommendation.lowerRankedDomains || [];
 
-  const labels = Object.keys(resultsData.all_scores || {}).map(key => clusters[key]?.name || key);
-  const dataValues = Object.values(resultsData.all_scores || {});
+  const phase4Bundle = getPhase4DomainBundle(topDomain.domainId);
+  const matchedDomain =
+    domainsData.find((d) => d.id === topDomain.domainId) ||
+    phase4Bundle?.domain ||
+    domainsData[0];
 
-  const matchedDomain = domainsData.find(d => d.id === resultsData.domain_id) || domainsData[0];
-
-  const chartData = {
-    labels: labels,
-    datasets: [
-      {
-        label: 'Domain Affinity Match (%)',
-        data: dataValues,
-        backgroundColor: [
-          '#E85D3F',
-          '#2EC4B6',
-          '#D97706',
-          '#0284C7',
-          '#17191C',
-          '#6366F1',
-          '#EC4899'
-        ],
-        borderRadius: 0,
-        borderSkipped: false,
-      },
-    ],
-  };
-
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        backgroundColor: '#17191C',
-        titleColor: '#FFFFFF',
-        bodyColor: '#D8DAD7',
-        borderColor: '#D8DAD7',
-        borderWidth: 1,
-        padding: 12,
-        cornerRadius: 0,
-        callbacks: {
-          label: (ctx) => ` Affinity Match: ${ctx.parsed.y}%`
-        }
-      }
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        max: 100,
-        grid: {
-          color: '#D8DAD7',
-        },
-        ticks: {
-          color: '#646A73',
-          font: { family: 'DM Mono', size: 11 },
-          callback: (val) => `${val}%`
-        }
-      },
-      x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          color: '#17191C',
-          font: { family: 'Manrope', size: 12, weight: 600 }
-        }
-      }
-    }
-  };
-
-  const rankedDomains = Object.entries(resultsData.all_scores || {})
-    .sort(([, a], [, b]) => b - a);
+  const domainSummary =
+    phase4Bundle?.domain?.overview ||
+    topDomain.overview ||
+    matchedDomain?.description ||
+    'Best combined fit across your RIASEC interests, verified readiness, and Indian job-market demand.';
 
   return (
     <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#F7F7F4',
-      color: '#17191C',
-      fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif",
-      padding: '2.5rem 1.5rem 6rem'
+      minHeight: '100%',
+      backgroundColor: 'var(--color-bg)',
+      color: 'var(--color-text)',
+      padding: 'var(--space-4) var(--space-2) var(--space-8)',
     }}>
-      <div style={{ maxWidth: '1160px', margin: '0 auto' }}>
-        
-        {/* 1. TOP TELEMETRY STRIP */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          padding: '0.75rem 1.25rem',
-          border: '1px solid #D8DAD7',
-          backgroundColor: '#FFFFFF',
-          marginBottom: '3rem',
-          fontFamily: "'DM Mono', monospace",
-          fontSize: '0.75rem',
-          color: '#646A73'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <span style={{ 
-              display: 'inline-block', 
-              width: '8px', 
-              height: '8px', 
-              borderRadius: '50%',
-              backgroundColor: '#2EC4B6'
-            }} />
-            <span style={{ color: '#17191C', fontWeight: 700 }}>DIAGNOSTIC REPORT // VERDICT COMPILED</span>
-            <span style={{ color: '#D8DAD7' }}>|</span>
-            <span>STUDENT: {user?.email || 'GUEST_STUDENT'}</span>
+      <div style={{ maxWidth: '880px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+
+        {/* ============================================================
+            STEP 1: ONLY THE TOP RECOMMENDED DOMAIN
+            ============================================================ */}
+        <section aria-labelledby="recommended-domain-heading">
+          <div style={{ marginBottom: 'var(--space-1)' }}>
+            <span className="mono-tag">Your Recommended Specialization</span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-            <span>CONFIDENCE: <span style={{ color: '#17191C', fontWeight: 700 }}>{resultsData.confidence_score || resultsData.match_percentage || 88}%</span></span>
-            <span>PATHWAY: <span style={{ color: '#E85D3F', fontWeight: 700 }}>{resultsData.track?.toUpperCase() || 'FOUNDATIONS'}</span></span>
-          </div>
-        </div>
-
-        {/* 2. HEADER */}
-        <div style={{ marginBottom: '3rem' }}>
-          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 600, color: '#E85D3F', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-            EVALUATION VERDICT & DIRECTION
-          </div>
-          <h1 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 'clamp(2.8rem, 6vw, 4.5rem)', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: '0 0 1rem 0' }}>
-            Your Recommended Trajectory
-          </h1>
-          <p style={{ color: '#50545B', fontSize: '1.125rem', maxWidth: '720px', margin: 0 }}>
-            Synthesized through RIASEC occupational resonance, algorithmic logic deduction, and practical engineering simulation.
-          </p>
-        </div>
-
-        {/* 2.5 EXPLAINABLE CANDIDATE SHORTLIST (TOP 2-3 DOMAINS) */}
-        {resultsData.shortlist && resultsData.shortlist.length > 0 && (
-          <div style={{ marginBottom: '3.5rem' }}>
-            <div style={{
+          <div
+            className="card"
+            style={{
+              border: '2px solid var(--color-accent)',
+              padding: 'clamp(var(--space-3), 4vw, var(--space-5))',
               display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '1rem',
-              marginBottom: '1rem'
-            }}>
-              <div style={{
-                fontFamily: "'DM Mono', monospace",
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                color: '#E85D3F',
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase'
-              }}>
-                EXPLAINABLE CANDIDATE SHORTLIST // EXPLORE SUITABLE DOMAINS
+              flexDirection: 'column',
+              gap: 'var(--space-3)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+              <div style={{ flex: '1 1 320px' }}>
+                <h1 id="recommended-domain-heading" style={{ margin: '0 0 var(--space-1) 0', color: 'var(--color-text)' }}>
+                  {topDomain.title}
+                </h1>
+                <p style={{ fontSize: 'var(--text-base)', color: 'var(--color-text-2)', maxWidth: '620px', margin: 0, lineHeight: 1.6 }}>
+                  {domainSummary}
+                </p>
+
+                {mlMarketData && (
+                  <div
+                    data-testid="hero-ml-badge"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      gap: '8px',
+                      marginTop: 'var(--space-2)',
+                      padding: '6px 12px',
+                      borderRadius: 'var(--radius-full)',
+                      backgroundColor: mlMarketData.source === 'ml_backend' ? 'var(--color-success-lt)' : 'var(--color-amber-lt)',
+                      border: `1px solid ${mlMarketData.source === 'ml_backend' ? 'var(--color-success)' : 'var(--color-amber)'}`,
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.76rem',
+                      fontWeight: 700,
+                      color: mlMarketData.source === 'ml_backend' ? '#0F5132' : '#92400E',
+                    }}
+                  >
+                    <Sparkles size={13} />
+                    <span>
+                      ML Match: {mlMarketData.primary_domain}
+                      {mlMarketData.top_predictions?.[0]?.confidence_pct != null
+                        ? ` (${Number(mlMarketData.top_predictions[0].confidence_pct).toFixed(1)}%)`
+                        : ''}
+                    </span>
+                  </div>
+                )}
               </div>
 
-              {resultsData.uncertainty_index && (
-                <div style={{
+              <div
+                style={{
                   display: 'inline-flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.35rem 0.85rem',
-                  backgroundColor: '#FFFFFF',
-                  border: '1px solid #D8DAD7',
-                  fontFamily: "'DM Mono', monospace",
-                  fontSize: '0.75rem'
-                }}>
-                  <span style={{ color: '#50545B' }}>UNCERTAINTY INDEX:</span>
-                  <span style={{
-                    fontWeight: 700,
-                    color: resultsData.uncertainty_index === 'Low' ? '#10B981' : resultsData.uncertainty_index === 'Moderate' ? '#D97706' : '#6366F1'
-                  }}>
-                    {resultsData.uncertainty_index.toUpperCase()}
-                  </span>
+                  justifyContent: 'center',
+                  backgroundColor: 'var(--color-accent-lt)',
+                  border: '1.5px solid var(--color-accent)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: 'var(--space-2) var(--space-3)',
+                  minWidth: '124px',
+                }}
+              >
+                <span style={{ fontSize: 'var(--text-3xl)', fontWeight: 800, color: 'var(--color-accent)', lineHeight: 1 }}>
+                  {topDomain.finalScorePct}%
+                </span>
+                <span style={{ fontSize: 'var(--text-xs)', fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--color-text)', marginTop: '4px' }}>
+                  FINAL SCORE
+                </span>
+              </div>
+            </div>
+
+            {/* Single clear primary CTA directly to the recommended domain's page */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: 'var(--space-2)',
+                paddingTop: 'var(--space-2)',
+                borderTop: '1px solid var(--color-border)',
+              }}
+            >
+              <Link
+                to={`/domain/${topDomain.domainId}`}
+                className="btn-primary"
+                style={{ flex: '1 1 260px' }}
+              >
+                <span>Open {topDomain.title} Domain Page</span>
+                <ArrowRight size={18} />
+              </Link>
+              <Link
+                to={`/roadmap/${topDomain.domainId}`}
+                className="btn-secondary"
+                style={{ flex: '0 1 auto' }}
+              >
+                <span>Semester Roadmap</span>
+                <ExternalLink size={16} />
+              </Link>
+              <button
+                type="button"
+                onClick={() => navigate('/quiz')}
+                className="btn-ghost"
+                style={{ fontSize: 'var(--text-sm)' }}
+              >
+                <RotateCcw size={16} />
+                <span>Retake Assessment</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================================
+            STEP 2: WHY THIS ONE (MAX 3 BULLETS)
+            ============================================================ */}
+        <section id="why-this-one-section" aria-labelledby="why-this-one-heading">
+          <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+              <CheckCircle2 size={22} style={{ color: 'var(--color-success)' }} />
+              <h2 id="why-this-one-heading" style={{ fontSize: 'var(--text-xl)', margin: 0 }}>
+                Why this one
+              </h2>
+            </div>
+
+            <ul
+              style={{
+                margin: 0,
+                paddingLeft: 'var(--space-3)',
+                color: 'var(--color-text-2)',
+                fontSize: 'var(--text-base)',
+                lineHeight: 1.7,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 'var(--space-1)',
+              }}
+            >
+              {whyThisOneBullets.map((bullet, idx) => (
+                <li key={idx}>{bullet}</li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* ============================================================
+            STEP 2.5: ML DOMAIN PREDICTION & INDIAN TECH JOB MARKET (2026)
+            ============================================================ */}
+        <MlMarketSection
+          skillsInput={skillsInput}
+          onSkillsChange={setSkillsInput}
+          onAnalyzeSkills={handleAnalyzeSkills}
+          mlMarketData={mlMarketData}
+          mlLoading={mlLoading}
+        />
+
+        {/* ============================================================
+            STEP 3: EXPLAIN MY RESULT (SCORE BREAKDOWN + LOWER RANKINGS + AUDIT LOG)
+            ============================================================ */}
+        <section aria-labelledby="audit-log-heading">
+          <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+            <button
+              type="button"
+              onClick={() => setShowAuditLog(!showAuditLog)}
+              aria-expanded={showAuditLog}
+              style={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: 'var(--space-3) var(--space-4)',
+                background: 'var(--color-surface)',
+                border: 'none',
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+                  <span className="mono-tag" style={{ color: 'var(--color-cyan)' }}>Technical Audit Log</span>
+                </div>
+                <h2 id="audit-log-heading" style={{ fontSize: 'var(--text-xl)', margin: 'var(--space-0-5) 0 0 0' }}>
+                  Explain my result
+                </h2>
+                <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--color-text-3)' }}>
+                  View the weighted score breakdown, why other domains ranked lower, ladder levels, and audit trail.
+                </p>
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--color-bg-alt)',
+                  color: 'var(--color-text)',
+                }}
+              >
+                {showAuditLog ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+              </div>
+            </button>
+
+            {showAuditLog && (
+              <div
+                style={{
+                  padding: 'var(--space-4)',
+                  borderTop: '1px solid var(--color-border)',
+                  backgroundColor: 'var(--color-bg)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 'var(--space-4)',
+                }}
+              >
+                {/* 1. Score Breakdown */}
+                <div id="explain-score-breakdown">
+                  <h3 style={{ fontSize: 'var(--text-lg)', margin: '0 0 var(--space-1) 0' }}>
+                    Weighted Score Breakdown ({topDomain.title})
+                  </h3>
+                  <p style={{ fontSize: 'var(--text-sm)', fontFamily: 'var(--font-mono)', color: 'var(--color-text-2)', margin: '0 0 var(--space-2) 0' }}>
+                    {topDomain.formulaText}
+                  </p>
+
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+                      gap: 'var(--space-2)',
+                    }}
+                  >
+                    <div className="card" style={{ padding: 'var(--space-2)' }}>
+                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-3)' }}>
+                        RIASEC MATCH (WEIGHT {weights.riasec})
+                      </div>
+                      <div style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, color: 'var(--color-text)' }}>
+                        {topDomain.riasecScorePct}%
+                      </div>
+                      <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-2)' }}>
+                        Euclidean O*NET similarity &rarr; +{topDomain.contributions.riasecPct} pts
+                      </div>
+                    </div>
+
+                    <div className="card" style={{ padding: 'var(--space-2)' }}>
+                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-3)' }}>
+                        LADDER READINESS (WEIGHT {weights.readiness})
+                      </div>
+                      <div style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, color: 'var(--color-text)' }}>
+                        {topDomain.readinessScorePct}%
+                      </div>
+                      <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-2)' }}>
+                        {topDomain.readinessSource} &rarr; +{topDomain.contributions.readinessPct} pts
+                      </div>
+                    </div>
+
+                    <div className="card" style={{ padding: 'var(--space-2)' }}>
+                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-3)' }}>
+                        INDIA MARKET DEMAND (WEIGHT {weights.market_demand})
+                      </div>
+                      <div style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, color: 'var(--color-text)' }}>
+                        {topDomain.marketDemandScorePct}%
+                      </div>
+                      <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-2)' }}>
+                        Trend: {topDomain.demandTrend} &rarr; +{topDomain.contributions.marketDemandPct} pts
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Why Other Domains Ranked Lower */}
+                {lowerRankedDomains.length > 0 && (
+                  <div id="explain-lower-ranked-domains">
+                    <h3 style={{ fontSize: 'var(--text-lg)', margin: '0 0 var(--space-2) 0' }}>
+                      Why Other Domains Ranked Lower
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                      {lowerRankedDomains.map((cand) => (
+                        <div key={cand.domainId} className="card" style={{ padding: 'var(--space-2)' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-1)', marginBottom: 'var(--space-0-5)' }}>
+                            <strong style={{ fontSize: 'var(--text-base)', color: 'var(--color-text)' }}>
+                              #{cand.rank} {cand.title}
+                            </strong>
+                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--color-text-2)' }}>
+                              {cand.finalScorePct}%
+                            </span>
+                          </div>
+                          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-3)', marginBottom: 'var(--space-1)' }}>
+                            RIASEC: {cand.riasecScorePct}% | Readiness: {cand.readinessScorePct}% | India Demand ({cand.demandTrend}): {cand.marketDemandScorePct}%
+                          </div>
+                          <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--color-text-2)', lineHeight: 1.5 }}>
+                            {cand.whyRankedLower}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. Verified Knowledge Ladder Levels */}
+                <div>
+                  <h3 style={{ fontSize: 'var(--text-lg)', margin: '0 0 var(--space-2) 0' }}>
+                    Topic-Level Mastery Ladder
+                  </h3>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                      gap: 'var(--space-2)',
+                    }}
+                  >
+                    {[
+                      { topic: 'python', label: 'Python Foundations', defaultLevel: 2, defaultConfidence: 'medium' },
+                      { topic: 'sql', label: 'SQL & Relational Databases', defaultLevel: 1, defaultConfidence: 'medium' },
+                      { topic: 'java', label: 'Java Systems & OOP', defaultLevel: 2, defaultConfidence: 'low' },
+                      { topic: 'bebras_logic', label: 'Computational Logic', defaultLevel: 3, defaultConfidence: 'high' },
+                    ].map((t) => {
+                      const m = adaptiveMastery[t.topic] || { level: t.defaultLevel, confidence: t.defaultConfidence, evidence_count: 2 };
+                      const pct = (m.level / 4) * 100;
+                      const levelNames = [
+                        'Level 0: Gap Identified',
+                        'Level 1: Syntax & Variables',
+                        'Level 2: Applied Logic',
+                        'Level 3: Core Competency',
+                        'Level 4: Advanced Design',
+                      ];
+
+                      return (
+                        <div key={t.topic} className="card" style={{ padding: 'var(--space-2)' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-0-5)' }}>
+                            <span style={{ fontWeight: 700, fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>{t.label}</span>
+                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-accent)', fontWeight: 800 }}>
+                              L{m.level} / 4
+                            </span>
+                          </div>
+                          <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)', marginBottom: 'var(--space-1)' }}>
+                            {levelNames[m.level]}
+                          </div>
+                          <div style={{ width: '100%', height: '6px', backgroundColor: 'var(--color-border-subtle)', borderRadius: 'var(--radius-full)', marginBottom: 'var(--space-1)' }}>
+                            <div
+                              style={{
+                                width: `${Math.max(15, pct)}%`,
+                                height: '100%',
+                                backgroundColor: m.level >= 3 ? 'var(--color-success)' : m.level >= 2 ? 'var(--color-accent)' : 'var(--color-amber)',
+                                borderRadius: 'var(--radius-full)',
+                              }}
+                            />
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-xs)', color: 'var(--color-text-3)', fontFamily: 'var(--font-mono)' }}>
+                            <span>CONF: {m.confidence.toUpperCase()}</span>
+                            <span>{m.evidence_count || 1} PROBES</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 4. Question-by-Question Audit Trail */}
+                {Array.isArray(resultsData.auditTrail) && resultsData.auditTrail.length > 0 && (
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-1)', marginBottom: 'var(--space-2)' }}>
+                      <h3 style={{ fontSize: 'var(--text-lg)', margin: 0 }}>
+                        Question-by-Question Audit Trail
+                      </h3>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-2)' }}>
+                        Skipped: {resultsData.readiness_summary?.skipped_count ?? resultsData.auditTrail.filter((e) => e.status === 'skipped').length}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+                      {resultsData.auditTrail.map((entry, idx) => {
+                        const isSkippedEntry = entry.status === 'skipped';
+                        const isIdkEntry = entry.status === 'dont_know';
+                        return (
+                          <div
+                            key={`${entry.itemId}-${entry.step}-${idx}`}
+                            className="card"
+                            style={{
+                              padding: 'var(--space-1) var(--space-2)',
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              flexWrap: 'wrap',
+                              gap: 'var(--space-1)',
+                            }}
+                          >
+                            <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text)', flex: '1 1 260px' }}>
+                              <strong style={{ fontFamily: 'var(--font-mono)', marginRight: 'var(--space-1)' }}>
+                                #{entry.step}
+                              </strong>
+                              <span>{entry.prompt}</span>
+                              {entry.reServed && (
+                                <span style={{ marginLeft: 'var(--space-1)', fontSize: 'var(--text-xs)', fontFamily: 'var(--font-mono)', color: 'var(--color-accent)' }}>
+                                  (re-served)
+                                </span>
+                              )}
+                            </div>
+                            <span
+                              style={{
+                                padding: '0.15rem 0.5rem',
+                                borderRadius: 'var(--radius-sm)',
+                                fontFamily: 'var(--font-mono)',
+                                fontSize: 'var(--text-xs)',
+                                fontWeight: 700,
+                                textTransform: 'uppercase',
+                                backgroundColor: isSkippedEntry ? 'var(--color-bg-alt)' : isIdkEntry ? '#FEF3C7' : 'var(--color-accent-lt)',
+                                border: `1px solid ${isSkippedEntry ? 'var(--color-border)' : isIdkEntry ? '#D97706' : 'var(--color-accent)'}`,
+                                color: isSkippedEntry ? 'var(--color-text-2)' : isIdkEntry ? '#92400E' : 'var(--color-accent)',
+                              }}
+                            >
+                              {entry.status}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Interactive ML Domain Prediction & 2026 Indian Job Market section shared by
+ * both the Results empty state and completed assessment Results view.
+ */
+function MlMarketSection({
+  skillsInput,
+  onSkillsChange,
+  onAnalyzeSkills,
+  mlMarketData,
+  mlLoading,
+}) {
+  return (
+    <section aria-labelledby="ml-market-heading">
+      <div
+        className="card"
+        style={{
+          padding: '24px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            gap: '12px',
+          }}
+        >
+          <div>
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '0.78rem',
+                fontWeight: 700,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: 'var(--color-accent)',
+                marginBottom: '6px',
+              }}
+            >
+              <Sparkles size={14} />
+              <span>ML Domain Fit &amp; Indian Tech Market</span>
+            </div>
+            <h2
+              id="ml-market-heading"
+              style={{
+                margin: 0,
+                fontSize: '1.3rem',
+                fontWeight: 700,
+                color: 'var(--color-text)',
+              }}
+            >
+              Real-World Skill Readiness &amp; Job Openings
+            </h2>
+            <p
+              style={{
+                margin: '6px 0 0',
+                fontSize: '0.92rem',
+                color: 'var(--color-text-2)',
+              }}
+            >
+              Enter or refine your current technical skills to run TF-IDF + calibrated ML domain prediction and inspect matching Indian job listings.
+            </p>
+          </div>
+        </div>
+
+        {/* Interactive Skills Form */}
+        <form
+          onSubmit={onAnalyzeSkills}
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '10px',
+            alignItems: 'stretch',
+          }}
+        >
+          <label htmlFor="ml-skills-input" className="sr-only">
+            Your current skills (comma-separated)
+          </label>
+          <input
+            id="ml-skills-input"
+            type="text"
+            value={skillsInput}
+            onChange={(e) => onSkillsChange(e.target.value)}
+            placeholder="e.g. python, sql, machine learning, react, docker"
+            style={{
+              flex: '1 1 280px',
+              padding: '10px 14px',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--color-border)',
+              backgroundColor: 'var(--color-bg)',
+              color: 'var(--color-text)',
+              fontSize: '0.95rem',
+            }}
+          />
+          <button
+            type="submit"
+            className="btn-primary"
+            disabled={mlLoading}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '10px 18px',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {mlLoading ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                <span>Analyzing...</span>
+              </>
+            ) : (
+              <>
+                <Sparkles size={16} />
+                <span>Analyze Skills &amp; Market Fit</span>
+              </>
+            )}
+          </button>
+        </form>
+
+        {mlLoading && !mlMarketData && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '16px',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--color-border)',
+              color: 'var(--color-text-2)',
+            }}
+          >
+            <Loader2 size={18} className="animate-spin" />
+            <span>Running ML domain prediction and querying Indian job market data...</span>
+          </div>
+        )}
+
+        {mlMarketData && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                gap: '16px',
+              }}
+            >
+              {/* Top 3 Predicted Domains */}
+              <div
+                style={{
+                  padding: '16px',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--color-border)',
+                  backgroundColor: 'var(--color-bg)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '8px',
+                  }}
+                >
+                  <h3
+                    style={{
+                      margin: 0,
+                      fontSize: '1rem',
+                      fontWeight: 700,
+                      color: 'var(--color-text)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                    }}
+                  >
+                    <TrendingUp size={16} />
+                    <span>Top 3 ML Domain Matches</span>
+                  </h3>
+                  {mlMarketData.primary_domain && (
+                    <span
+                      className="mono-tag"
+                      style={{
+                        fontSize: '0.75rem',
+                        color: 'var(--color-accent)',
+                        fontWeight: 700,
+                      }}
+                    >
+                      Primary: {mlMarketData.primary_domain}
+                    </span>
+                  )}
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {(mlMarketData.top_predictions || []).slice(0, 3).map((pred, index) => {
+                    const pct = Math.max(0, Math.min(100, Number(pred.confidence_pct || 0)));
+                    return (
+                      <div key={`${pred.domain_label}-${index}`}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            fontSize: '0.9rem',
+                            marginBottom: '4px',
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontWeight: index === 0 ? 700 : 500,
+                              color: 'var(--color-text)',
+                            }}
+                          >
+                            {index + 1}. {pred.domain_label}
+                          </span>
+                          <span
+                            className="mono-tag"
+                            style={{
+                              fontWeight: 700,
+                              color: index === 0 ? 'var(--color-accent)' : 'var(--color-text-2)',
+                            }}
+                          >
+                            {pct.toFixed(1)}%
+                          </span>
+                        </div>
+                        <div
+                          style={{
+                            width: '100%',
+                            height: '8px',
+                            borderRadius: '999px',
+                            backgroundColor: 'var(--color-surface)',
+                            border: '1px solid var(--color-border)',
+                            overflow: 'hidden',
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: `${pct}%`,
+                              height: '100%',
+                              borderRadius: '999px',
+                              backgroundColor:
+                                index === 0 ? 'var(--color-accent)' : 'var(--color-cyan)',
+                              transition: 'width 0.3s ease',
+                            }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Skill-Gap Readiness Meter */}
+              {mlMarketData.skill_gap && (
+                <div
+                  style={{
+                    padding: '16px',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1px solid var(--color-border)',
+                    backgroundColor: 'var(--color-bg)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      gap: '8px',
+                    }}
+                  >
+                    <h3
+                      style={{
+                        margin: 0,
+                        fontSize: '1rem',
+                        fontWeight: 700,
+                        color: 'var(--color-text)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
+                      <CheckCircle2 size={16} />
+                      <span>Skill-Gap Readiness</span>
+                    </h3>
+                    <span
+                      className="mono-tag"
+                      style={{
+                        fontSize: '1rem',
+                        fontWeight: 800,
+                        color: 'var(--color-success)',
+                      }}
+                    >
+                      {Number(mlMarketData.skill_gap.readiness_score_pct || 0).toFixed(1)}%
+                    </span>
+                  </div>
+
+                  <div>
+                    <div
+                      style={{
+                        width: '100%',
+                        height: '10px',
+                        borderRadius: '999px',
+                        backgroundColor: 'var(--color-surface)',
+                        border: '1px solid var(--color-border)',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: `${Math.max(
+                            0,
+                            Math.min(100, Number(mlMarketData.skill_gap.readiness_score_pct || 0))
+                          )}%`,
+                          height: '100%',
+                          borderRadius: '999px',
+                          backgroundColor: 'var(--color-success)',
+                          transition: 'width 0.3s ease',
+                        }}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        marginTop: '6px',
+                        fontSize: '0.82rem',
+                        color: 'var(--color-text-2)',
+                      }}
+                    >
+                      Matched {mlMarketData.skill_gap.matched_count || 0} of{' '}
+                      {mlMarketData.skill_gap.total_benchmark_skills || 15} top required domain skills
+                    </div>
+                  </div>
+
+                  <div>
+                    <div
+                      style={{
+                        fontSize: '0.82rem',
+                        fontWeight: 700,
+                        color: 'var(--color-text)',
+                        marginBottom: '6px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                      }}
+                    >
+                      <AlertCircle size={14} />
+                      <span>Top 3 Missing Skills to Learn Next</span>
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      {(mlMarketData.skill_gap.missing_skills_top3 || []).length > 0 ? (
+                        mlMarketData.skill_gap.missing_skills_top3.map((skill) => (
+                          <span
+                            key={skill}
+                            className="mono-tag"
+                            style={{
+                              padding: '4px 10px',
+                              borderRadius: '999px',
+                              fontSize: '0.8rem',
+                              fontWeight: 600,
+                              backgroundColor: 'var(--color-accent-lt)',
+                              border: '1px solid var(--color-border)',
+                              color: 'var(--color-text)',
+                            }}
+                          >
+                            + {skill}
+                          </span>
+                        ))
+                      ) : (
+                        <span style={{ fontSize: '0.85rem', color: 'var(--color-success)' }}>
+                          Strong coverage across top benchmark skills!
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {(mlMarketData.skill_gap.matched_skills || []).length > 0 && (
+                    <div>
+                      <div
+                        style={{
+                          fontSize: '0.8rem',
+                          fontWeight: 600,
+                          color: 'var(--color-text-2)',
+                          marginBottom: '4px',
+                        }}
+                      >
+                        Matched in Your Profile
+                      </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {mlMarketData.skill_gap.matched_skills.map((skill) => (
+                          <span
+                            key={skill}
+                            className="mono-tag"
+                            style={{
+                              padding: '3px 9px',
+                              borderRadius: '999px',
+                              fontSize: '0.78rem',
+                              backgroundColor: 'var(--color-surface)',
+                              border: '1px solid var(--color-border)',
+                              color: 'var(--color-text-2)',
+                            }}
+                          >
+                            ✓ {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
 
-            {resultsData.uncertainty_description && (
-              <p style={{ color: '#50545B', fontSize: '0.9375rem', marginBottom: '1.5rem', maxWidth: '820px', lineHeight: 1.6 }}>
-                💡 <strong>Decision Support Note:</strong> {resultsData.uncertainty_description}
-              </p>
-            )}
-
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '1.5rem',
-              marginBottom: '2rem'
-            }}>
-              {resultsData.shortlist.map((cand) => {
-                const isRank1 = cand.rank === 1;
-                return (
-                  <div
-                    key={cand.domainId}
-                    style={{
-                      backgroundColor: '#FFFFFF',
-                      border: isRank1 ? '2px solid #E85D3F' : '1px solid #D8DAD7',
-                      padding: '2rem',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'space-between',
-                      boxShadow: isRank1 ? '0 8px 24px rgba(232, 93, 63, 0.08)' : 'none'
-                    }}
-                  >
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                        <span style={{
-                          fontFamily: "'DM Mono', monospace",
-                          fontSize: '0.6875rem',
-                          fontWeight: 700,
-                          color: isRank1 ? '#E85D3F' : '#50545B',
-                          backgroundColor: isRank1 ? '#FFF0EB' : '#F7F7F4',
-                          padding: '0.2rem 0.5rem',
-                          border: isRank1 ? '1px solid #E85D3F' : '1px solid #D8DAD7'
-                        }}>
-                          {cand.tier?.toUpperCase()}
-                        </span>
-                        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.9375rem', fontWeight: 800, color: '#17191C' }}>
-                          {cand.matchPct}% MATCH
-                        </span>
-                      </div>
-
-                      <h3 style={{
-                        fontFamily: "'Barlow Condensed', sans-serif",
-                        fontSize: '1.85rem',
-                        fontWeight: 800,
-                        textTransform: 'uppercase',
-                        color: '#17191C',
-                        margin: '0 0 0.75rem 0'
-                      }}>
-                        {cand.title}
-                      </h3>
-
-                      <p style={{ color: '#50545B', fontSize: '0.875rem', lineHeight: 1.5, margin: '0 0 1.25rem 0' }}>
-                        {cand.summary}
-                      </p>
-
-                      {cand.careers && (
-                        <div style={{
-                          fontFamily: "'DM Mono', monospace",
-                          fontSize: '0.6875rem',
-                          color: '#646A73',
-                          paddingTop: '0.75rem',
-                          borderTop: '1px dashed #D8DAD7',
-                          marginBottom: '1.5rem'
-                        }}>
-                          ROLES: {cand.careers.slice(0, 3).join(' · ')}
-                        </div>
-                      )}
-                    </div>
-
-                    <Link
-                      to={`/roadmap/${cand.domainId}`}
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '0.5rem',
-                        backgroundColor: isRank1 ? '#17191C' : '#FFFFFF',
-                        color: isRank1 ? '#FFFFFF' : '#17191C',
-                        border: '1px solid #17191C',
-                        fontFamily: "'Barlow Condensed', sans-serif",
-                        fontSize: '0.9375rem',
-                        fontWeight: 700,
-                        letterSpacing: '0.04em',
-                        textTransform: 'uppercase',
-                        padding: '0.75rem 1.25rem',
-                        textDecoration: 'none',
-                        transition: 'all 0.15s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#E85D3F';
-                        e.currentTarget.style.borderColor = '#E85D3F';
-                        e.currentTarget.style.color = '#FFFFFF';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = isRank1 ? '#17191C' : '#FFFFFF';
-                        e.currentTarget.style.borderColor = '#17191C';
-                        e.currentTarget.style.color = isRank1 ? '#FFFFFF' : '#17191C';
-                      }}
-                    >
-                      <span>CHOOSE & VIEW ROADMAP</span>
-                      <ArrowRight size={14} />
-                    </Link>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* DECOUPLED EVIDENCE LEDGER (WHY THIS FITS & CAUTIONS) */}
-            {resultsData.evidence_ledger && (
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                gap: '1.5rem',
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #D8DAD7',
-                padding: '2rem'
-              }}>
-                <div>
-                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 700, color: '#10B981', marginBottom: '0.75rem' }}>
-                    ✓ SUPPORTING SESSION EVIDENCE
-                  </div>
-                  <ul style={{ margin: 0, paddingLeft: '1.25rem', color: '#50545B', fontSize: '0.875rem', lineHeight: 1.6 }}>
-                    {resultsData.evidence_ledger.whyItFits?.map((point, idx) => (
-                      <li key={idx} style={{ marginBottom: '0.4rem' }}>{point}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div>
-                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 700, color: '#D97706', marginBottom: '0.75rem' }}>
-                    ⚠ CAUTIONS & DECISION EXPLORATION
-                  </div>
-                  <ul style={{ margin: 0, paddingLeft: '1.25rem', color: '#50545B', fontSize: '0.875rem', lineHeight: 1.6 }}>
-                    {resultsData.evidence_ledger.cautionOpenQuestions?.map((point, idx) => (
-                      <li key={idx} style={{ marginBottom: '0.4rem' }}>{point}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            )}
-
-          </div>
-        )}
-
-        {/* 3. HERO VERDICT: HIGH CONTRAST CARD */}
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          border: '2px solid #E85D3F',
-          padding: 'clamp(2rem, 4vw, 3rem)',
-          marginBottom: '3.5rem',
-          position: 'relative'
-        }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            flexWrap: 'wrap',
-            gap: '2rem'
-          }}>
-            <div>
-              <div style={{
-                fontFamily: "'DM Mono', monospace",
-                fontSize: '0.75rem',
-                letterSpacing: '0.14em',
-                textTransform: 'uppercase',
-                color: '#E85D3F',
-                fontWeight: 700,
-                marginBottom: '0.5rem'
-              }}>
-                PRIMARY SPECIALIZATION MATCH
-              </div>
-
-              <h2 style={{
-                fontSize: 'clamp(2.5rem, 5vw, 4rem)',
-                fontWeight: 800,
-                color: '#17191C',
-                lineHeight: 1,
-                margin: '0 0 1rem 0',
-                fontFamily: "'Barlow Condensed', sans-serif",
-                textTransform: 'uppercase'
-              }}>
-                {resultsData.top_domain}
-              </h2>
-
-              <p style={{
-                fontSize: '1.0625rem',
-                color: '#50545B',
-                maxWidth: '680px',
-                lineHeight: 1.6,
-                margin: '0 0 1.75rem 0'
-              }}>
-                {matchedDomain?.description || 
-                 'High alignment with computational problem-solving, algorithmic formulation, and core systems design.'}
-              </p>
-
-              <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', fontFamily: "'DM Mono', monospace", fontSize: '0.8125rem' }}>
-                <div>
-                  <span style={{ color: '#646A73' }}>ALIGNMENT SCORE: </span>
-                  <span style={{ fontWeight: 800, color: '#17191C' }}>{resultsData.match_percentage || resultsData.confidence_score || 88}%</span>
-                </div>
-                <div>
-                  <span style={{ color: '#646A73' }}>RECOMMENDED PATH: </span>
-                  <span style={{ fontWeight: 800, color: '#E85D3F' }}>8-SEMESTER ACADEMIC CURRICULUM</span>
-                </div>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: '240px' }}>
-              <Link 
-                to={`/roadmap/${matchedDomain.id}`}
+            {/* Indian Market Insights Stats Bar */}
+            {mlMarketData.market_insights && (
+              <div
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.5rem',
-                  backgroundColor: '#17191C',
-                  color: '#FFFFFF',
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: '1rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.04em',
-                  textTransform: 'uppercase',
-                  padding: '1rem 2rem',
-                  textDecoration: 'none',
-                  border: '1px solid #17191C',
-                  transition: 'all 0.15s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#E85D3F';
-                  e.currentTarget.style.borderColor = '#E85D3F';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#17191C';
-                  e.currentTarget.style.borderColor = '#17191C';
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                  gap: '12px',
                 }}
               >
-                <span>Explore Curriculum Roadmap</span>
-                <ArrowRight size={16} />
-              </Link>
-
-              <Link 
-                to={`/domain/${matchedDomain.id}`}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.5rem',
-                  backgroundColor: '#FFFFFF',
-                  color: '#17191C',
-                  border: '1px solid #D8DAD7',
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: '1rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.04em',
-                  textTransform: 'uppercase',
-                  padding: '0.85rem 1.5rem',
-                  textDecoration: 'none',
-                  transition: 'all 0.15s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#17191C';
-                  e.currentTarget.style.backgroundColor = '#FFF0EB';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#D8DAD7';
-                  e.currentTarget.style.backgroundColor = '#FFFFFF';
-                }}
-              >
-                <span>Domain Intelligence Specs</span>
-                <ExternalLink size={14} />
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* 4. MULTI-FACTOR ANALYSIS & RANKED DOMAINS GRID */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-          gap: '2rem',
-          marginBottom: '4rem'
-        }}>
-          
-          {/* Affinity Chart Panel */}
-          <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2.5rem', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 600, color: '#E85D3F', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-              DATA VECTOR // COMPARISON
-            </div>
-            <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', marginBottom: '1.5rem' }}>
-              Multi-Domain Affinity Spectrum
-            </h3>
-            <div style={{ height: '320px', position: 'relative' }}>
-              <Bar options={chartOptions} data={chartData} />
-            </div>
-          </div>
-
-          {/* Ranked Compatibility List */}
-          <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2.5rem' }}>
-            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 600, color: '#E85D3F', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
-              RANKED RESONANCE // TOPOLOGIES
-            </div>
-            <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.75rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', marginBottom: '1.5rem' }}>
-              Compatibility Matrix
-            </h3>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {rankedDomains.slice(0, 5).map(([domTitle, score], idx) => {
-                const matched = domainsData.find(d => d.title.toLowerCase().includes(domTitle.toLowerCase()) || domTitle.toLowerCase().includes(d.title.toLowerCase()));
-                const domId = matched ? matched.id : 'ai';
-                
-                let statusLabel = 'Moderate Fit';
-                let statusColor = '#D97706';
-                if (score >= 80) {
-                  statusLabel = 'Prime Direction';
-                  statusColor = '#E85D3F';
-                } else if (score >= 65) {
-                  statusLabel = 'Strong Affinity';
-                  statusColor = '#2EC4B6';
-                }
-
-                return (
-                  <div 
-                    key={idx}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '1rem 1.25rem',
-                      border: '1px solid #D8DAD7',
-                      backgroundColor: '#FFFFFF'
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                      <div style={{
-                        fontFamily: "'DM Mono', monospace",
-                        fontSize: '0.75rem',
-                        color: '#646A73',
-                        fontWeight: 700,
-                        width: '24px'
-                      }}>
-                        0{idx + 1}
-                      </div>
-                      <div>
-                        <div style={{ fontWeight: 700, fontSize: '0.9375rem', color: '#17191C' }}>
-                          {domTitle}
-                        </div>
-                        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.6875rem', color: statusColor, fontWeight: 700 }}>
-                          {statusLabel}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                      <span style={{ fontFamily: "'DM Mono', monospace", fontWeight: 800, fontSize: '1.125rem', color: '#17191C' }}>
-                        {score}%
-                      </span>
-                      <Link 
-                        to={`/domain/${domId}`}
-                        style={{ color: '#646A73', display: 'flex', alignItems: 'center' }}
-                        title="Inspect Domain"
-                      >
-                        <ChevronRight size={16} />
-                      </Link>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-        </div>
-
-        {/* 5. STRENGTHS, GROWTH AREAS & SKILL GAP ANALYSIS */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '2rem',
-          marginBottom: '4rem'
-        }}>
-          
-          {/* Identified Strengths */}
-          <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
-              <Zap size={18} style={{ color: '#E85D3F' }} />
-              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: 0 }}>
-                Identified Core Strengths
-              </h3>
-            </div>
-            <ul style={{ margin: 0, padding: '0 0 0 1.25rem', color: '#50545B', fontSize: '0.9375rem', lineHeight: 1.8 }}>
-              <li><strong style={{ color: '#17191C' }}>Algorithmic Logic:</strong> High proficiency in conditional state deduction and loop tracing.</li>
-              <li><strong style={{ color: '#17191C' }}>Pattern Recognition:</strong> Rapid identification of structural relationships and data transformations.</li>
-              <li><strong style={{ color: '#17191C' }}>Occupational Resonance:</strong> Strong alignment with Investigative and Realistic RIASEC technical dimensions.</li>
-            </ul>
-          </div>
-
-          {/* Growth Vectors */}
-          <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
-              <TrendingUp size={18} style={{ color: '#2EC4B6' }} />
-              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: 0 }}>
-                Target Growth Vectors
-              </h3>
-            </div>
-            <ul style={{ margin: 0, padding: '0 0 0 1.25rem', color: '#50545B', fontSize: '0.9375rem', lineHeight: 1.8 }}>
-              <li><strong style={{ color: '#17191C' }}>System Architecture:</strong> Transition from isolated code snippets to large-scale modular subsystems.</li>
-              <li><strong style={{ color: '#17191C' }}>Concurrency & Memory:</strong> Deep dive into threads, locks, and cache-conscious data layout.</li>
-              <li><strong style={{ color: '#17191C' }}>Practical Deployment:</strong> Containerizing microservices and establishing CI/CD pipelines.</li>
-            </ul>
-          </div>
-
-          {/* Skill Gap Analysis */}
-          <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
-              <AlertCircle size={18} style={{ color: '#D97706' }} />
-              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.5rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: 0 }}>
-                Prerequisite Gap Analysis
-              </h3>
-            </div>
-            <ul style={{ margin: 0, padding: '0 0 0 1.25rem', color: '#50545B', fontSize: '0.9375rem', lineHeight: 1.8 }}>
-              <li><strong style={{ color: '#17191C' }}>SQL & Relational Schemas:</strong> Normalization and query optimization need practical reinforcement.</li>
-              <li><strong style={{ color: '#17191C' }}>System Modeling:</strong> Formal UML state charts and API contracts before implementation.</li>
-            </ul>
-            <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid #D8DAD7' }}>
-              <Link 
-                to="/assess"
-                style={{
-                  fontFamily: "'DM Mono', monospace",
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  color: '#E85D3F',
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.35rem'
-                }}
-              >
-                <span>EVALUATE TOPIC MASTERY LADDER</span>
-                <ArrowRight size={13} />
-              </Link>
-            </div>
-          </div>
-
-        </div>
-
-        {/* 6. VERIFIED KNOWLEDGE LADDER LEVELS */}
-        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #D8DAD7', padding: '2.5rem', marginBottom: '4rem' }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            flexWrap: 'wrap',
-            gap: '1rem',
-            marginBottom: '2rem'
-          }}>
-            <div>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', fontWeight: 600, color: '#E85D3F', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
-                TOPIC-LEVEL MASTERY LADDER
-              </div>
-              <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '2rem', fontWeight: 800, textTransform: 'uppercase', color: '#17191C', margin: 0 }}>
-                Verified Core Engineering Competencies
-              </h3>
-            </div>
-            
-            <Link 
-              to="/assess" 
-              style={{
-                padding: '0.75rem 1.5rem',
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #D8DAD7',
-                color: '#17191C',
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: '0.9375rem',
-                fontWeight: 700,
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}
-            >
-              <span>Retest Adaptive Ladder</span>
-              <ArrowRight size={14} />
-            </Link>
-          </div>
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '1.5rem'
-          }}>
-            {[
-              { topic: 'python', label: 'Python Foundations', defaultLevel: 2, defaultConfidence: 'medium' },
-              { topic: 'sql', label: 'SQL & Relational Databases', defaultLevel: 1, defaultConfidence: 'medium' },
-              { topic: 'java', label: 'Java Systems & OOP', defaultLevel: 2, defaultConfidence: 'low' },
-              { topic: 'bebras_logic', label: 'Computational Logic (Bebras)', defaultLevel: 3, defaultConfidence: 'high' }
-            ].map(t => {
-              const m = adaptiveMastery[t.topic] || { level: t.defaultLevel, confidence: t.defaultConfidence, evidence_count: 2 };
-              const pct = (m.level / 4) * 100;
-              const levelNames = ['Level 0: Prerequisite Gap', 'Level 1: Syntax & Variables', 'Level 2: Applied Logic', 'Level 3: Core Competency', 'Level 4: Advanced Design'];
-
-              return (
-                <div 
-                  key={t.topic} 
+                <div
                   style={{
-                    backgroundColor: '#F7F7F4',
-                    border: '1px solid #D8DAD7',
-                    padding: '1.5rem'
+                    padding: '14px',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1px solid var(--color-border)',
+                    backgroundColor: 'var(--color-bg)',
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                    <span style={{ fontWeight: 700, fontSize: '0.9375rem', color: '#17191C' }}>{t.label}</span>
-                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#E85D3F', fontWeight: 800 }}>
-                      L{m.level} / 4
-                    </span>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--color-text-3)' }}>
+                    Total Active Openings
                   </div>
-
-                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.6875rem', color: '#646A73', marginBottom: '0.75rem' }}>
-                    {levelNames[m.level]}
-                  </div>
-
-                  <div style={{ width: '100%', height: '4px', backgroundColor: '#D8DAD7', marginBottom: '0.75rem' }}>
-                    <div style={{
-                      width: `${Math.max(15, pct)}%`,
-                      height: '100%',
-                      backgroundColor: m.level >= 3 ? '#2EC4B6' : m.level >= 2 ? '#E85D3F' : '#D97706',
-                      transition: 'width 0.4s ease'
-                    }} />
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: "'DM Mono', monospace", fontSize: '0.6875rem', color: '#646A73' }}>
-                    <span>CONF: {m.confidence.toUpperCase()}</span>
-                    <span>{m.evidence_count || 1} CHECKPOINTS</span>
+                  <div
+                    style={{
+                      fontSize: '1.25rem',
+                      fontWeight: 800,
+                      color: 'var(--color-text)',
+                      marginTop: '4px',
+                    }}
+                  >
+                    {Number(mlMarketData.market_insights.total_openings || 0).toLocaleString('en-IN')}
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
 
-        {/* 7. RE-EVALUATION FOOTER */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '1.5rem',
-          padding: '2rem',
-          border: '1px solid #D8DAD7',
-          backgroundColor: '#FFFFFF'
-        }}>
-          <div>
-            <h4 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '1.25rem', fontWeight: 800, textTransform: 'uppercase', margin: '0 0 0.25rem 0', color: '#17191C' }}>
-              Need to recalculate under different assumptions?
-            </h4>
-            <p style={{ color: '#50545B', margin: 0, fontSize: '0.875rem' }}>
-              Retake the 21-question diagnostic or choose an alternate CSE specialization directly.
-            </p>
-          </div>
+                <div
+                  style={{
+                    padding: '14px',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1px solid var(--color-border)',
+                    backgroundColor: 'var(--color-bg)',
+                  }}
+                >
+                  <div style={{ fontSize: '0.78rem', color: 'var(--color-text-3)' }}>
+                    Fresher-Friendly Share
+                  </div>
+                  <div
+                    style={{
+                      fontSize: '1.25rem',
+                      fontWeight: 800,
+                      color: 'var(--color-success)',
+                      marginTop: '4px',
+                    }}
+                  >
+                    {Number(mlMarketData.market_insights.fresher_friendly_ratio_pct || 0).toFixed(1)}%
+                  </div>
+                  <div style={{ fontSize: '0.76rem', color: 'var(--color-text-2)', marginTop: '2px' }}>
+                    {Number(mlMarketData.market_insights.fresher_friendly_count || 0).toLocaleString('en-IN')} entry-level roles
+                  </div>
+                </div>
 
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <Link 
-              to="/quiz" 
-              style={{
-                padding: '0.75rem 1.5rem',
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #D8DAD7',
-                color: '#17191C',
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: '0.9375rem',
-                fontWeight: 700,
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                textDecoration: 'none'
-              }}
-            >
-              <span>Retake Diagnostic</span>
-            </Link>
-            <Link 
-              to="/domains" 
-              style={{
-                padding: '0.75rem 1.5rem',
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #D8DAD7',
-                color: '#17191C',
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: '0.9375rem',
-                fontWeight: 700,
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                textDecoration: 'none'
-              }}
-            >
-              <span>Explore All 9 Domains</span>
-            </Link>
-          </div>
-        </div>
+                <div
+                  style={{
+                    padding: '14px',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1px solid var(--color-border)',
+                    backgroundColor: 'var(--color-bg)',
+                  }}
+                >
+                  <div style={{ fontSize: '0.78rem', color: 'var(--color-text-3)' }}>
+                    Median Salary &amp; IQR
+                  </div>
+                  <div
+                    style={{
+                      fontSize: '1.25rem',
+                      fontWeight: 800,
+                      color: 'var(--color-accent)',
+                      marginTop: '4px',
+                    }}
+                  >
+                    {mlMarketData.market_insights.median_salary_lpa != null
+                      ? `₹${mlMarketData.market_insights.median_salary_lpa} LPA`
+                      : 'N/A'}
+                  </div>
+                  <div style={{ fontSize: '0.76rem', color: 'var(--color-text-2)', marginTop: '2px' }}>
+                    Range: {mlMarketData.market_insights.salary_range_lpa || 'Competitive'}
+                  </div>
+                </div>
 
+                <div
+                  style={{
+                    padding: '14px',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1px solid var(--color-border)',
+                    backgroundColor: 'var(--color-bg)',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: '0.78rem',
+                      color: 'var(--color-text-3)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                    }}
+                  >
+                    <MapPin size={13} />
+                    <span>Top Hiring Hubs</span>
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: '6px',
+                      marginTop: '6px',
+                    }}
+                  >
+                    {(mlMarketData.market_insights.top_hiring_hubs || []).slice(0, 4).map((hub) => (
+                      <span
+                        key={hub.city}
+                        className="mono-tag"
+                        style={{
+                          fontSize: '0.75rem',
+                          padding: '2px 8px',
+                          borderRadius: '999px',
+                          backgroundColor: 'var(--color-surface)',
+                          border: '1px solid var(--color-border)',
+                          color: 'var(--color-text)',
+                        }}
+                      >
+                        {hub.city} ({hub.count})
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Matching Indian Job Listings */}
+            <div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '8px',
+                  marginBottom: '12px',
+                }}
+              >
+                <h3
+                  style={{
+                    margin: 0,
+                    fontSize: '1.05rem',
+                    fontWeight: 700,
+                    color: 'var(--color-text)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  <Briefcase size={18} />
+                  <span>Matching Indian Tech Job Openings</span>
+                </h3>
+                <span style={{ fontSize: '0.82rem', color: 'var(--color-text-3)' }}>
+                  Prioritizing fresher-friendly roles
+                </span>
+              </div>
+
+              {(mlMarketData.job_listings || []).length > 0 ? (
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                    gap: '12px',
+                  }}
+                >
+                  {mlMarketData.job_listings.map((job, idx) => (
+                    <div
+                      key={`${job.job_title}-${job.company_name}-${idx}`}
+                      style={{
+                        padding: '14px',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--color-border)',
+                        backgroundColor: 'var(--color-bg)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        gap: '10px',
+                      }}
+                    >
+                      <div>
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-start',
+                            gap: '8px',
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontWeight: 700,
+                              fontSize: '0.95rem',
+                              color: 'var(--color-text)',
+                              lineHeight: 1.35,
+                            }}
+                          >
+                            {job.job_title}
+                          </div>
+                          {job.is_fresher_friendly && (
+                            <span
+                              className="mono-tag"
+                              style={{
+                                flexShrink: 0,
+                                fontSize: '0.7rem',
+                                padding: '2px 7px',
+                                borderRadius: '999px',
+                                backgroundColor: 'var(--color-accent-lt)',
+                                color: 'var(--color-success)',
+                                border: '1px solid var(--color-border)',
+                                fontWeight: 700,
+                              }}
+                            >
+                              Fresher Friendly
+                            </span>
+                          )}
+                        </div>
+
+                        <div
+                          style={{
+                            fontSize: '0.86rem',
+                            color: 'var(--color-text-2)',
+                            marginTop: '4px',
+                          }}
+                        >
+                          {job.company_name} &bull; {job.primary_city}
+                        </div>
+                      </div>
+
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          gap: '8px',
+                          paddingTop: '8px',
+                          borderTop: '1px solid var(--color-border)',
+                          fontSize: '0.82rem',
+                        }}
+                      >
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
+                          <span
+                            className="mono-tag"
+                            style={{ fontWeight: 700, color: 'var(--color-accent)' }}
+                          >
+                            {job.salary_display ||
+                              (job.salary_midpoint_lpa != null
+                                ? `₹${job.salary_midpoint_lpa} LPA`
+                                : 'Competitive')}
+                          </span>
+                          {job.experience_raw && (
+                            <span style={{ color: 'var(--color-text-3)' }}>
+                              {job.experience_raw}
+                            </span>
+                          )}
+                        </div>
+
+                        {job.job_url && (
+                          <a
+                            href={job.job_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              fontWeight: 600,
+                              color: 'var(--color-accent)',
+                              textDecoration: 'none',
+                            }}
+                          >
+                            <span>Apply</span>
+                            <ExternalLink size={13} />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div
+                  style={{
+                    padding: '14px',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1px solid var(--color-border)',
+                    color: 'var(--color-text-2)',
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  No live job openings returned for the current filter.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
-    </div>
+    </section>
   );
 }

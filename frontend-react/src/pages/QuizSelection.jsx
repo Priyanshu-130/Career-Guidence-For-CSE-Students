@@ -1,775 +1,329 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { 
-  Sparkles, 
   ArrowRight, 
-  Compass, 
   Terminal, 
   Cpu, 
-  Globe, 
-  Layers, 
-  CheckCircle2,
-  ChevronRight,
-  Activity
+  Check, 
+  GraduationCap, 
+  HelpCircle 
 } from 'lucide-react';
+import { 
+  TRACK_DESCRIPTIONS, 
+  PREREQUISITE_DEFINITIONS,
+  SEMESTER_OPTIONS,
+  DOMAIN_FACTOR_OPTIONS
+} from '../data/adaptive/domainAdvisorAgent';
 
 export default function QuizSelection() {
   const navigate = useNavigate();
-  const [selectedTrack, setSelectedTrack] = useState('adaptive');
+  
+  // Track selection: 'software' | 'hardware'
+  const [selectedTrack, setSelectedTrack] = useState('software');
+  
+  // Current Semester & Domain-shaping factors
+  const [semester, setSemester] = useState('1-2');
+  const [mathComfort, setMathComfort] = useState('balanced');
+  const [workStyle, setWorkStyle] = useState('mix');
+  const [careerGoal, setCareerGoal] = useState('job_ready');
+
+  // Prerequisite mode: 'zero' | 'prerequisites'
+  const [prereqMode, setPrereqMode] = useState('zero');
+  
+  // Selected prerequisites IDs
+  const [selectedPrereqs, setSelectedPrereqs] = useState([]);
+  const [customKnowledge, setCustomKnowledge] = useState('');
+
+  const currentTrackMeta = TRACK_DESCRIPTIONS[selectedTrack];
+  const trackPrereqs = PREREQUISITE_DEFINITIONS[selectedTrack] || [];
+
+  const handleTrackChange = (newTrack) => {
+    setSelectedTrack(newTrack);
+    setSelectedPrereqs([]);
+    setCustomKnowledge('');
+  };
+
+  const togglePrereq = (id) => {
+    if (selectedPrereqs.includes(id)) {
+      setSelectedPrereqs(selectedPrereqs.filter(p => p !== id));
+    } else {
+      setSelectedPrereqs([...selectedPrereqs, id]);
+    }
+  };
+
+  const handleStartAssessment = () => {
+    navigate(`/quiz/${selectedTrack}`, {
+      state: {
+        track: selectedTrack,
+        semester,
+        prerequisiteMode: prereqMode,
+        declaredPrerequisites: prereqMode === 'zero' ? [] : selectedPrereqs,
+        domainFactors: {
+          mathComfort,
+          workStyle,
+          careerGoal
+        },
+        customKnowledge: prereqMode === 'zero' ? '' : customKnowledge
+      }
+    });
+  };
 
   return (
     <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#F7F7F4',
-      color: '#17191C',
-      fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif",
-      padding: '2.5rem 1.5rem 6rem'
+      minHeight: '100%',
+      backgroundColor: 'var(--color-bg)',
+      color: 'var(--color-text)',
+      padding: 'var(--space-4) var(--space-2) var(--space-8)'
     }}>
-      <div style={{ maxWidth: '1160px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '960px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
 
-        {/* 1. MINIMAL HEADER & BREADCRUMBS */}
-        <header style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          paddingBottom: '1.5rem',
-          borderBottom: '1px solid #D8DAD7',
-          marginBottom: '3.5rem'
-        }}>
-          {/* Logo & Breadcrumb */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{
-              fontFamily: "'Barlow Condensed', sans-serif",
-              fontWeight: 800,
-              fontSize: '1.25rem',
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-              color: '#17191C',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem'
-            }}>
-              <span>PATHFINDER</span>
-            </div>
-
-            <span style={{ color: '#D8DAD7' }}>/</span>
-
-            <div style={{
-              fontFamily: "'DM Mono', monospace",
-              fontSize: '0.8125rem',
-              color: '#646A73',
-              letterSpacing: '0.04em'
-            }}>
-              <Link to="/" style={{ color: '#50545B', textDecoration: 'none' }}>Dashboard</Link>
-              <span style={{ margin: '0 0.5rem', color: '#D8DAD7' }}>/</span>
-              <span style={{ color: '#17191C', fontWeight: 600 }}>Assessment</span>
-            </div>
-          </div>
-
-          {/* Assessment status indicator */}
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.35rem 0.85rem',
-            backgroundColor: '#FFFFFF',
-            border: '1px solid #D8DAD7',
-            fontFamily: "'DM Mono', monospace",
-            fontSize: '0.75rem',
-            color: '#17191C',
-            letterSpacing: '0.04em'
-          }}>
-            <span style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              backgroundColor: '#2EC4B6'
-            }} />
-            <span style={{ fontWeight: 600 }}>DIAGNOSTIC ENGINE: READY</span>
-          </div>
-        </header>
-
-        {/* 2. MAIN EDITORIAL HEADING */}
-        <div style={{ marginBottom: '4rem', maxWidth: '820px' }}>
-          <div style={{
-            fontFamily: "'DM Mono', monospace",
-            fontSize: '0.75rem',
-            fontWeight: 600,
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            color: '#E85D3F',
-            marginBottom: '0.85rem'
-          }}>
-            DIAGNOSTIC SELECTION
-          </div>
-
-          <h1 style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
-            fontSize: 'clamp(3rem, 7vw, 5.5rem)',
-            fontWeight: 800,
-            lineHeight: 0.95,
-            letterSpacing: '-0.02em',
-            textTransform: 'uppercase',
-            color: '#17191C',
-            margin: '0 0 1.5rem 0'
-          }}>
-            CHOOSE YOUR PATH.
+        {/* 1. EDITORIAL HEADING */}
+        <div>
+          <span className="mono-tag">Assessment Calibration</span>
+          <h1 style={{ margin: 'var(--space-1) 0 var(--space-2) 0', color: 'var(--color-text)' }}>
+            Choose Your Track
           </h1>
-
-          <p style={{
-            fontSize: 'clamp(1.0625rem, 2vw, 1.25rem)',
-            lineHeight: 1.6,
-            color: '#50545B',
-            margin: 0
-          }}>
-            Tell us where you are in your CSE journey. We'll adapt your assessment to your existing knowledge and experience.
+          <p style={{ fontSize: 'var(--text-lg)', color: 'var(--color-text-2)', margin: 0, maxWidth: '720px' }}>
+            Select whether you want to evaluate Software Engineering or Hardware Engineering, and tell us your current semester to personalize your assessment.
           </p>
         </div>
 
-        {/* 3. TWO PRIMARY STARTING ROUTES */}
-        <section style={{ marginBottom: '3.5rem' }}>
-          <div style={{
-            fontFamily: "'DM Mono', monospace",
-            fontSize: '0.75rem',
-            fontWeight: 700,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            color: '#E85D3F',
-            marginBottom: '1rem'
-          }}>
-            STARTING TRAJECTORY // SELECT YOUR EXPERIENCE LEVEL
-          </div>
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
-            gap: '2rem'
-          }}>
-
-            {/* ROUTE 1: ZERO-PREREQUISITE BEGINNER DISCOVERY */}
-            <div style={{
-              backgroundColor: '#FFFFFF',
-              border: '2px solid #E85D3F',
-              boxShadow: '0 8px 24px rgba(232, 93, 63, 0.06)',
-              padding: 'clamp(2rem, 3.5vw, 2.75rem)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between'
-            }}>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-                  <span style={{
-                    fontFamily: "'DM Mono', monospace",
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    color: '#E85D3F',
-                    backgroundColor: '#FFF0EB',
-                    padding: '0.25rem 0.65rem',
-                    border: '1px solid #E85D3F'
-                  }}>
-                    ROUTE 01 · RECOMMENDED FOR BEGINNERS
-                  </span>
-                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#646A73' }}>
-                    25 ADAPTIVE ITEMS
-                  </span>
-                </div>
-
-                <h2 style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: 'clamp(2rem, 3.5vw, 2.75rem)',
-                  fontWeight: 800,
-                  textTransform: 'uppercase',
-                  color: '#17191C',
-                  margin: '0 0 1rem 0'
-                }}>
-                  Zero-Prerequisite Discovery
-                </h2>
-
-                <p style={{ color: '#50545B', fontSize: '1rem', lineHeight: 1.6, margin: '0 0 1.5rem 0' }}>
-                  You don’t need any coding knowledge yet. Our AI Agent guides you through intuitive problem-solving scenarios, work preferences, and plain-English role explainers to reveal where your natural strengths lie.
-                </p>
-
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.5rem',
-                  fontFamily: "'DM Mono', monospace",
-                  fontSize: '0.75rem',
-                  color: '#50545B',
-                  marginBottom: '2rem',
-                  paddingTop: '1rem',
-                  borderTop: '1px solid #D8DAD7'
-                }}>
-                  <div>✓ 0% Coding Syntax Required · 100% Intuitive</div>
-                  <div>✓ Plain-English Career Meaning for Every Option</div>
-                  <div>✓ Explainable Shortlist of Top 2–3 Domains + Uncertainty</div>
-                </div>
-              </div>
-
-              <Link
-                to="/quiz/beginner"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.75rem',
-                  backgroundColor: '#17191C',
-                  color: '#FFFFFF',
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: '1.125rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  padding: '1.125rem 2rem',
-                  textDecoration: 'none',
-                  border: '1px solid #17191C',
-                  transition: 'all 0.15s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#E85D3F';
-                  e.currentTarget.style.borderColor = '#E85D3F';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#17191C';
-                  e.currentTarget.style.borderColor = '#17191C';
-                }}
-              >
-                <span>LAUNCH BEGINNER DISCOVERY</span>
-                <ArrowRight size={18} />
-              </Link>
-            </div>
-
-            {/* ROUTE 2: TARGETED CALIBRATION & READINESS */}
-            <div style={{
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #D8DAD7',
-              padding: 'clamp(2rem, 3.5vw, 2.75rem)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between'
-            }}>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-                  <span style={{
-                    fontFamily: "'DM Mono', monospace",
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    color: '#50545B',
-                    backgroundColor: '#F7F7F4',
-                    padding: '0.25rem 0.65rem',
-                    border: '1px solid #D8DAD7'
-                  }}>
-                    ROUTE 02 · FOR EXPERIENCED STUDENTS
-                  </span>
-                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#646A73' }}>
-                    25 ADAPTIVE ITEMS
-                  </span>
-                </div>
-
-                <h2 style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: 'clamp(2rem, 3.5vw, 2.75rem)',
-                  fontWeight: 800,
-                  textTransform: 'uppercase',
-                  color: '#17191C',
-                  margin: '0 0 1rem 0'
-                }}>
-                  Targeted Calibration & Readiness
-                </h2>
-
-                <p style={{ color: '#50545B', fontSize: '1rem', lineHeight: 1.6, margin: '0 0 1.5rem 0' }}>
-                  Have existing coding experience or a specific domain in mind? Test your technical depth against realistic engineering trade-offs and evaluate prerequisite readiness without penalties.
-                </p>
-
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.5rem',
-                  fontFamily: "'DM Mono', monospace",
-                  fontSize: '0.75rem',
-                  color: '#50545B',
-                  marginBottom: '2rem',
-                  paddingTop: '1rem',
-                  borderTop: '1px solid #D8DAD7'
-                }}>
-                  <div>✓ Domain Depth Scenarios & Production Incidents</div>
-                  <div>✓ Decoupled Readiness Checks (Low score ≠ Eliminated)</div>
-                  <div>✓ Prerequisite Gap Tagging for Personalized Roadmap</div>
-                </div>
-              </div>
-
-              <Link
-                to="/quiz/experienced"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.75rem',
-                  backgroundColor: '#FFFFFF',
-                  color: '#17191C',
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: '1.125rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  padding: '1.125rem 2rem',
-                  textDecoration: 'none',
-                  border: '1px solid #17191C',
-                  transition: 'all 0.15s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#17191C';
-                  e.currentTarget.style.color = '#FFFFFF';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#FFFFFF';
-                  e.currentTarget.style.color = '#17191C';
-                }}
-              >
-                <span>CALIBRATE TECHNICAL READINESS</span>
-                <ArrowRight size={18} />
-              </Link>
-            </div>
-
-          </div>
-        </section>
-
-        {/* 4. THREE DISTINCT DIAGNOSTIC TRACKS */}
-        <section>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-end',
-            marginBottom: '1.5rem',
-            paddingBottom: '0.75rem',
-            borderBottom: '1px solid #D8DAD7'
-          }}>
-            <div style={{
-              fontFamily: "'DM Mono', monospace",
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: '#646A73'
-            }}>
-              SPECIALIZED ASSESSMENT TRACKS
-            </div>
-            <div style={{
-              fontFamily: "'DM Mono', monospace",
-              fontSize: '0.75rem',
-              color: '#646A73'
-            }}>
-              [SELECT ONE TO PROCEED]
-            </div>
-          </div>
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: '1.75rem'
-          }}>
-
-            {/* TRACK 01: SOFTWARE TRACK */}
-            <div
-              onClick={() => setSelectedTrack('software')}
-              style={{
-                backgroundColor: selectedTrack === 'software' ? '#FFF0EB' : '#FFFFFF',
-                border: selectedTrack === 'software' ? '2px solid #E85D3F' : '1px solid #D8DAD7',
-                padding: '2.5rem 2rem',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                transition: 'all 0.2s ease',
-                cursor: 'pointer'
-              }}
-            >
-              <div>
-                {/* Minimalist Icon & Track Number */}
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '2rem'
-                }}>
-                  <div style={{
-                    width: '48px',
-                    height: '48px',
-                    border: '1px solid #D8DAD7',
-                    backgroundColor: '#FFFFFF',
-                    color: '#17191C',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    <Terminal size={22} style={{ color: '#E85D3F' }} />
-                  </div>
-
-                  <span style={{
-                    fontFamily: "'DM Mono', monospace",
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.1em',
-                    color: '#646A73'
-                  }}>
-                    TRACK 01
-                  </span>
-                </div>
-
-                {/* Title */}
-                <h3 style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: '1.75rem',
-                  fontWeight: 800,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.02em',
-                  color: '#17191C',
-                  margin: '0 0 1rem 0'
-                }}>
-                  01 — SOFTWARE TRACK
-                </h3>
-
-                {/* Description per user requirement */}
-                <p style={{
-                  fontSize: '0.9375rem',
-                  lineHeight: 1.6,
-                  color: '#50545B',
-                  margin: '0 0 1.5rem 0'
-                }}>
-                  For students interested in programming, software engineering, algorithms, AI/ML, databases, and software systems.
-                </p>
-
-                {/* Technical topics */}
-                <div style={{
-                  fontFamily: "'DM Mono', monospace",
-                  fontSize: '0.6875rem',
-                  color: '#646A73',
-                  paddingTop: '1rem',
-                  borderTop: '1px solid #D8DAD7',
-                  marginBottom: '2rem'
-                }}>
-                  DOMAINS: AI/ML · WEB · SYSTEMS · CLOUD · DB
-                </div>
-              </div>
-
-              {/* Action Button */}
-              <Link
-                to="/quiz/software"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.5rem',
-                  width: '100%',
-                  padding: '0.875rem 1.25rem',
-                  backgroundColor: selectedTrack === 'software' ? '#E85D3F' : '#FFFFFF',
-                  color: selectedTrack === 'software' ? '#FFFFFF' : '#17191C',
-                  border: selectedTrack === 'software' ? '1px solid #E85D3F' : '1px solid #D8DAD7',
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: '1rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  textDecoration: 'none',
-                  transition: 'all 0.15s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#17191C';
-                  e.currentTarget.style.borderColor = '#17191C';
-                  e.currentTarget.style.color = '#FFFFFF';
-                }}
-                onMouseLeave={(e) => {
-                  if (selectedTrack === 'software') {
-                    e.currentTarget.style.backgroundColor = '#E85D3F';
-                    e.currentTarget.style.borderColor = '#E85D3F';
-                    e.currentTarget.style.color = '#FFFFFF';
-                  } else {
-                    e.currentTarget.style.backgroundColor = '#FFFFFF';
-                    e.currentTarget.style.borderColor = '#D8DAD7';
-                    e.currentTarget.style.color = '#17191C';
-                  }
-                }}
-              >
-                <span>EXPLORE SOFTWARE</span>
-                <ArrowRight size={15} />
-              </Link>
-            </div>
-
-            {/* TRACK 02: HARDWARE TRACK */}
-            <div
-              onClick={() => setSelectedTrack('hardware')}
-              style={{
-                backgroundColor: selectedTrack === 'hardware' ? '#FFF0EB' : '#FFFFFF',
-                border: selectedTrack === 'hardware' ? '2px solid #E85D3F' : '1px solid #D8DAD7',
-                padding: '2.5rem 2rem',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                transition: 'all 0.2s ease',
-                cursor: 'pointer'
-              }}
-            >
-              <div>
-                {/* Minimalist Icon & Track Number */}
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '2rem'
-                }}>
-                  <div style={{
-                    width: '48px',
-                    height: '48px',
-                    border: '1px solid #D8DAD7',
-                    backgroundColor: '#FFFFFF',
-                    color: '#17191C',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    <Cpu size={22} style={{ color: '#E85D3F' }} />
-                  </div>
-
-                  <span style={{
-                    fontFamily: "'DM Mono', monospace",
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.1em',
-                    color: '#646A73'
-                  }}>
-                    TRACK 02
-                  </span>
-                </div>
-
-                {/* Title */}
-                <h3 style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: '1.75rem',
-                  fontWeight: 800,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.02em',
-                  color: '#17191C',
-                  margin: '0 0 1rem 0'
-                }}>
-                  02 — HARDWARE TRACK
-                </h3>
-
-                {/* Description per user requirement */}
-                <p style={{
-                  fontSize: '0.9375rem',
-                  lineHeight: 1.6,
-                  color: '#50545B',
-                  margin: '0 0 1.5rem 0'
-                }}>
-                  For students interested in computer architecture, embedded systems, electronics, digital logic, and hardware technologies.
-                </p>
-
-                {/* Technical topics */}
-                <div style={{
-                  fontFamily: "'DM Mono', monospace",
-                  fontSize: '0.6875rem',
-                  color: '#646A73',
-                  paddingTop: '1rem',
-                  borderTop: '1px solid #D8DAD7',
-                  marginBottom: '2rem'
-                }}>
-                  DOMAINS: VLSI · ROBOTICS · EMBEDDED · IOT · NETWORKS
-                </div>
-              </div>
-
-              {/* Action Button */}
-              <Link
-                to="/quiz/hardware"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.5rem',
-                  width: '100%',
-                  padding: '0.875rem 1.25rem',
-                  backgroundColor: selectedTrack === 'hardware' ? '#E85D3F' : '#FFFFFF',
-                  color: selectedTrack === 'hardware' ? '#FFFFFF' : '#17191C',
-                  border: selectedTrack === 'hardware' ? '1px solid #E85D3F' : '1px solid #D8DAD7',
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: '1rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  textDecoration: 'none',
-                  transition: 'all 0.15s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#17191C';
-                  e.currentTarget.style.borderColor = '#17191C';
-                  e.currentTarget.style.color = '#FFFFFF';
-                }}
-                onMouseLeave={(e) => {
-                  if (selectedTrack === 'hardware') {
-                    e.currentTarget.style.backgroundColor = '#E85D3F';
-                    e.currentTarget.style.borderColor = '#E85D3F';
-                    e.currentTarget.style.color = '#FFFFFF';
-                  } else {
-                    e.currentTarget.style.backgroundColor = '#FFFFFF';
-                    e.currentTarget.style.borderColor = '#D8DAD7';
-                    e.currentTarget.style.color = '#17191C';
-                  }
-                }}
-              >
-                <span>EXPLORE HARDWARE</span>
-                <ArrowRight size={15} />
-              </Link>
-            </div>
-
-            {/* TRACK 03: GENERAL CSE TRACK */}
-            <div
-              onClick={() => setSelectedTrack('general')}
-              style={{
-                backgroundColor: selectedTrack === 'general' ? '#FFF0EB' : '#FFFFFF',
-                border: selectedTrack === 'general' ? '2px solid #E85D3F' : '1px solid #D8DAD7',
-                padding: '2.5rem 2rem',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                transition: 'all 0.2s ease',
-                cursor: 'pointer'
-              }}
-            >
-              <div>
-                {/* Minimalist Icon & Track Number */}
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '2rem'
-                }}>
-                  <div style={{
-                    width: '48px',
-                    height: '48px',
-                    border: '1px solid #D8DAD7',
-                    backgroundColor: '#FFFFFF',
-                    color: '#17191C',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    <Globe size={22} style={{ color: '#E85D3F' }} />
-                  </div>
-
-                  <span style={{
-                    fontFamily: "'DM Mono', monospace",
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.1em',
-                    color: '#646A73'
-                  }}>
-                    TRACK 03
-                  </span>
-                </div>
-
-                {/* Title */}
-                <h3 style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: '1.75rem',
-                  fontWeight: 800,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.02em',
-                  color: '#17191C',
-                  margin: '0 0 1rem 0'
-                }}>
-                  03 — GENERAL CSE TRACK
-                </h3>
-
-                {/* Description per user requirement */}
-                <p style={{
-                  fontSize: '0.9375rem',
-                  lineHeight: 1.6,
-                  color: '#50545B',
-                  margin: '0 0 1.5rem 0'
-                }}>
-                  For students who are still exploring and want to discover their interests across multiple CSE domains.
-                </p>
-
-                {/* Technical topics */}
-                <div style={{
-                  fontFamily: "'DM Mono', monospace",
-                  fontSize: '0.6875rem',
-                  color: '#646A73',
-                  paddingTop: '1rem',
-                  borderTop: '1px solid #D8DAD7',
-                  marginBottom: '2rem'
-                }}>
-                  EVALUATION: BROAD MULTI-DISCIPLINE RESONANCE
-                </div>
-              </div>
-
-              {/* Action Button */}
-              <Link
-                to="/quiz/general"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.5rem',
-                  width: '100%',
-                  padding: '0.875rem 1.25rem',
-                  backgroundColor: selectedTrack === 'general' ? '#E85D3F' : '#FFFFFF',
-                  color: selectedTrack === 'general' ? '#FFFFFF' : '#17191C',
-                  border: selectedTrack === 'general' ? '1px solid #E85D3F' : '1px solid #D8DAD7',
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: '1rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  textDecoration: 'none',
-                  transition: 'all 0.15s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#17191C';
-                  e.currentTarget.style.borderColor = '#17191C';
-                  e.currentTarget.style.color = '#FFFFFF';
-                }}
-                onMouseLeave={(e) => {
-                  if (selectedTrack === 'general') {
-                    e.currentTarget.style.backgroundColor = '#E85D3F';
-                    e.currentTarget.style.borderColor = '#E85D3F';
-                    e.currentTarget.style.color = '#FFFFFF';
-                  } else {
-                    e.currentTarget.style.backgroundColor = '#FFFFFF';
-                    e.currentTarget.style.borderColor = '#D8DAD7';
-                    e.currentTarget.style.color = '#17191C';
-                  }
-                }}
-              >
-                <span>EXPLORE GENERAL CSE</span>
-                <ArrowRight size={15} />
-              </Link>
-            </div>
-
-          </div>
-        </section>
-
-        {/* 5. EDITORIAL FOOTNOTE */}
-        <footer style={{
-          marginTop: '4rem',
-          paddingTop: '1.5rem',
-          borderTop: '1px solid #D8DAD7',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          fontFamily: "'DM Mono', monospace",
-          fontSize: '0.75rem',
-          color: '#646A73'
+        {/* 2. TRACK SELECTOR TABS */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          gap: 'var(--space-2)'
         }}>
-          <div>
-            FRAMEWORK: U.S. DEPT OF LABOR O*NET RIASEC · ACM/IEEE CS2023
+          <button
+            type="button"
+            onClick={() => handleTrackChange('software')}
+            className={`card card-interactive ${selectedTrack === 'software' ? 'selected' : ''}`}
+            style={{
+              padding: 'var(--space-3)',
+              textAlign: 'left',
+              border: selectedTrack === 'software' ? '2px solid var(--color-accent)' : '2px solid var(--color-border)',
+              backgroundColor: selectedTrack === 'software' ? 'var(--color-accent-lt)' : '#FFFFFF'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-1)' }}>
+              <Terminal size={22} color={selectedTrack === 'software' ? 'var(--color-accent)' : 'var(--color-text-2)'} />
+              <h3 style={{ margin: 0, fontSize: 'var(--text-xl)' }}>Software Track</h3>
+            </div>
+            <p style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--color-text-2)' }}>
+              Full Stack, AI/ML, Cloud & Distributed Systems, Data Engineering, and Cybersecurity.
+            </p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleTrackChange('hardware')}
+            className={`card card-interactive ${selectedTrack === 'hardware' ? 'selected' : ''}`}
+            style={{
+              padding: 'var(--space-3)',
+              textAlign: 'left',
+              border: selectedTrack === 'hardware' ? '2px solid var(--color-accent)' : '2px solid var(--color-border)',
+              backgroundColor: selectedTrack === 'hardware' ? 'var(--color-accent-lt)' : '#FFFFFF'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-1)' }}>
+              <Cpu size={22} color={selectedTrack === 'hardware' ? 'var(--color-accent)' : 'var(--color-text-2)'} />
+              <h3 style={{ margin: 0, fontSize: 'var(--text-xl)' }}>Hardware Track</h3>
+            </div>
+            <p style={{ margin: 0, fontSize: 'var(--text-base)', color: 'var(--color-text-2)' }}>
+              Embedded Systems, IoT, Robotics, VLSI Design, and Computer Networking.
+            </p>
+          </button>
+        </div>
+
+        {/* 3. TRACK PROFILE CARD */}
+        <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+            <div>
+              <h2 style={{ margin: 0, fontSize: 'var(--text-2xl)' }}>{currentTrackMeta.title}</h2>
+              <p style={{ margin: 'var(--space-0-5) 0 0 0', fontSize: 'var(--text-base)', color: 'var(--color-text-2)' }}>
+                {currentTrackMeta.overview}
+              </p>
+            </div>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 'var(--space-1)',
+              padding: 'var(--space-1) var(--space-2)',
+              backgroundColor: 'var(--color-bg-alt)',
+              borderRadius: 'var(--radius-sm)',
+              fontSize: 'var(--text-sm)',
+              fontWeight: 700,
+              fontFamily: 'var(--font-mono)'
+            }}>
+              <GraduationCap size={16} color="var(--color-accent)" />
+              <span>ACM / IEEE CS2023 ALIGNED</span>
+            </div>
           </div>
+
+          {/* SEMESTER SELECTION */}
           <div>
-            SECURE ADAPTIVE ROUTING · CONFIDENCE CALIBRATED
+            <label style={{ display: 'block', fontWeight: 700, fontSize: 'var(--text-base)', marginBottom: 'var(--space-1)' }}>
+              Which semester are you in?
+            </label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-2)' }}>
+              {SEMESTER_OPTIONS.map((sem) => {
+                const active = semester === sem.id;
+                return (
+                  <button
+                    key={sem.id}
+                    type="button"
+                    onClick={() => setSemester(sem.id)}
+                    className="card card-interactive"
+                    style={{
+                      textAlign: 'left',
+                      padding: 'var(--space-2)',
+                      border: active ? '2px solid var(--color-accent)' : '1px solid var(--color-border)',
+                      backgroundColor: active ? 'var(--color-accent-lt)' : '#FFFFFF'
+                    }}
+                  >
+                    <div style={{ fontWeight: 800, fontSize: 'var(--text-base)', color: active ? 'var(--color-accent)' : 'var(--color-text)' }}>
+                      {sem.label}
+                    </div>
+                    <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-2)', marginTop: 'var(--space-0-5)' }}>
+                      {sem.sublabel}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </footer>
+
+          {/* ENTRY MODE: ZERO PREREQS VS PRIOR EXPERIENCE */}
+          <div>
+            <label style={{ display: 'block', fontWeight: 700, fontSize: 'var(--text-base)', marginBottom: 'var(--space-1)' }}>
+              How would you like to start?
+            </label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 'var(--space-2)' }}>
+              
+              <button
+                type="button"
+                onClick={() => setPrereqMode('zero')}
+                className="card card-interactive"
+                style={{
+                  textAlign: 'left',
+                  padding: 'var(--space-3)',
+                  border: prereqMode === 'zero' ? '2px solid var(--color-accent)' : '1px solid var(--color-border)',
+                  backgroundColor: prereqMode === 'zero' ? 'var(--color-accent-lt)' : '#FFFFFF'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', marginBottom: 'var(--space-1)' }}>
+                  <span style={{
+                    width: '18px',
+                    height: '18px',
+                    borderRadius: '50%',
+                    border: `2px solid ${prereqMode === 'zero' ? 'var(--color-accent)' : 'var(--color-border)'}`,
+                    backgroundColor: prereqMode === 'zero' ? 'var(--color-accent)' : '#FFFFFF',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    {prereqMode === 'zero' && <Check size={12} color="#FFFFFF" strokeWidth={3} />}
+                  </span>
+                  <strong style={{ fontSize: 'var(--text-base)' }}>Beginner / Starting Fresh</strong>
+                </div>
+                <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--color-text-2)' }}>
+                  No prior coding or hardware knowledge assumed. Evaluates intuitive logic and problem solving.
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPrereqMode('prerequisites')}
+                className="card card-interactive"
+                style={{
+                  textAlign: 'left',
+                  padding: 'var(--space-3)',
+                  border: prereqMode === 'prerequisites' ? '2px solid var(--color-accent)' : '1px solid var(--color-border)',
+                  backgroundColor: prereqMode === 'prerequisites' ? 'var(--color-accent-lt)' : '#FFFFFF'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', marginBottom: 'var(--space-1)' }}>
+                  <span style={{
+                    width: '18px',
+                    height: '18px',
+                    borderRadius: '50%',
+                    border: `2px solid ${prereqMode === 'prerequisites' ? 'var(--color-accent)' : 'var(--color-border)'}`,
+                    backgroundColor: prereqMode === 'prerequisites' ? 'var(--color-accent)' : '#FFFFFF',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    {prereqMode === 'prerequisites' && <Check size={12} color="#FFFFFF" strokeWidth={3} />}
+                  </span>
+                  <strong style={{ fontSize: 'var(--text-base)' }}>I Have Prior Coursework</strong>
+                </div>
+                <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--color-text-2)' }}>
+                  Declare subjects you have already studied so we can calibrate conceptual depth.
+                </p>
+              </button>
+
+            </div>
+          </div>
+
+          {/* PRIOR COURSEWORK CHECKLIST (if selected) */}
+          {prereqMode === 'prerequisites' && (
+            <div style={{ backgroundColor: 'var(--color-bg-alt)', padding: 'var(--space-3)', borderRadius: 'var(--radius-md)' }}>
+              <label style={{ display: 'block', fontWeight: 700, fontSize: 'var(--text-base)', marginBottom: 'var(--space-2)' }}>
+                Select subjects you've already covered:
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--space-2)' }}>
+                {trackPrereqs.map((prereq) => {
+                  const isChecked = selectedPrereqs.includes(prereq.id);
+                  return (
+                    <label
+                      key={prereq.id}
+                      onClick={() => togglePrereq(prereq.id)}
+                      className="card card-interactive"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 'var(--space-2)',
+                        padding: 'var(--space-2)',
+                        border: isChecked ? '2px solid var(--color-accent)' : '1px solid var(--color-border)',
+                        backgroundColor: isChecked ? 'var(--color-accent-lt)' : '#FFFFFF',
+                        margin: 0
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => {}}
+                        style={{ marginTop: '3px' }}
+                      />
+                      <div>
+                        <strong style={{ display: 'block', fontSize: 'var(--text-base)', color: 'var(--color-text)' }}>
+                          {prereq.name}
+                        </strong>
+                        <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-2)' }}>
+                          {prereq.desc}
+                        </span>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* SINGLE CLEAR PRIMARY ACTION */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 'var(--space-2)', borderTop: '1px solid var(--color-border)' }}>
+            <button
+              type="button"
+              onClick={handleStartAssessment}
+              className="btn-primary"
+              style={{ width: '100%', maxWidth: '340px' }}
+            >
+              <span>Start Assessment</span>
+              <ArrowRight size={18} />
+            </button>
+          </div>
+
+        </div>
 
       </div>
     </div>

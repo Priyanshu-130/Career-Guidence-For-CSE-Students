@@ -112,3 +112,36 @@ test('Admin can inspect, flag, and retire a defective item', () => {
   assert.equal(retiredInBank.status, 'retired');
 });
 
+test('Phase 3 Skip: computeItemAnalytics computes skipRate and explainResult logs skipped items without breaking streaks', () => {
+  const mockAttempts = [
+    { question_id: 'py_k_008', student_email: 's1', correct: true, is_skipped: false, time_taken: 10 },
+    { question_id: 'py_k_008', student_email: 's2', correct: false, is_skipped: true, status: 'skipped', answer: 'skipped', time_taken: 3 },
+    { question_id: 'py_k_008', student_email: 's3', correct: true, is_skipped: false, time_taken: 12 },
+    { question_id: 'py_k_008', student_email: 's4', correct: false, is_skipped: false, answer: 'wrong', time_taken: 18 }
+  ];
+
+  const analytics = computeItemAnalytics(itemBank, mockAttempts);
+  const py8 = analytics.find(a => a.questionId === 'py_k_008');
+  assert.ok(py8);
+  assert.equal(py8.skipRate, 0.25);
+  assert.equal(py8.skippedCount, 1);
+  assert.equal(py8.facility, 0.5);
+
+  const explanation = explainResult({
+    studentEmail: 'skip.test@pathfinder.edu',
+    studentProfile: { topicExperience: { python: 'basic' } },
+    attempts: [
+      { question_id: 'py_k_001', topic: 'python', correct: true, time_taken: 8 },
+      { question_id: 'py_k_002', topic: 'python', correct: false, is_skipped: true, status: 'skipped', answer: 'skipped', time_taken: 2 },
+      { question_id: 'py_k_003', topic: 'python', correct: true, time_taken: 9 }
+    ],
+    mastery: { python: { level: 3, confidence: 'medium' } }
+  });
+
+  const pyExp = explanation.topicExplanations.python;
+  assert.equal(pyExp.skippedCount, 1);
+  assert.equal(pyExp.correctCount, 2);
+  assert.ok(pyExp.ladderTransitions.some(t => t.includes('Skipped (status: "skipped")')));
+  assert.ok(pyExp.ladderTransitions.some(t => t.includes('Second consecutive correct answer triggered level promotion')));
+});
+

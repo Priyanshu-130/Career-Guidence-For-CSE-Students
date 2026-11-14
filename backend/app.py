@@ -2,13 +2,40 @@ import sqlite3
 import hashlib
 import json
 import os
+import re
 import uuid
 import datetime
+import warnings
+import joblib
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
+import market_data
 
 FRONTEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'frontend-react', 'dist'))
 DATA_ADAPTIVE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'frontend-react', 'src', 'data', 'adaptive'))
+DATA_FOUNDATION_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data'))
+MODELS_DIR = os.path.join(os.path.dirname(__file__), 'models')
+
+# Load pre-trained ML model & TF-IDF vectorizer once at startup (no retraining)
+TFIDF_VECTORIZER = None
+DOMAIN_MODEL = None
+try:
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        vec_path = os.path.join(MODELS_DIR, 'tfidf_vectorizer.pkl')
+        mod_path = os.path.join(MODELS_DIR, 'domain_model.pkl')
+        if os.path.exists(vec_path) and os.path.exists(mod_path):
+            TFIDF_VECTORIZER = joblib.load(vec_path)
+            DOMAIN_MODEL = joblib.load(mod_path)
+            print(f"[ML] Loaded domain_model.pkl ({len(DOMAIN_MODEL.classes_)} classes) & tfidf_vectorizer.pkl")
+except Exception as ml_err:
+    print(f"[ML] Warning: failed to load pre-trained models: {ml_err}")
+
+try:
+    market_data.init_market_data()
+    print("[Market] Indian tech job market cache ready.")
+except Exception as mkt_err:
+    print(f"[Market] Warning: failed to initialize market data: {mkt_err}")
 
 app = Flask(__name__, static_folder=FRONTEND_DIR, static_url_path='')
 
@@ -16,7 +43,7 @@ cors_origins = os.environ.get('CORS_ORIGINS', '*')
 if cors_origins != '*':
     cors_origins = [origin.strip() for origin in cors_origins.split(',') if origin.strip()]
 
-CORS(app, resources={r"/api/*": {"origins": cors_origins}})
+CORS(app, resources={r"/api/*": {"origins": cors_origins}, r"/data/*": {"origins": cors_origins}})
 
 DB_FILE = os.environ.get('DB_PATH', os.path.join(os.path.dirname(__file__), 'database.db'))
 
@@ -139,6 +166,31 @@ def init_db():
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS domain_assessments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_email TEXT NOT NULL,
+            domain_id TEXT NOT NULL,
+            session_id TEXT NOT NULL,
+            knowledge_score REAL NOT NULL,
+            evaluation_report TEXT NOT NULL,
+            roadmap_data TEXT NOT NULL,
+            trajectory_data TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (student_email) REFERENCES students(email),
+            UNIQUE(student_email, domain_id)
+        )
+    ''')
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS domain_selections (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_email TEXT UNIQUE NOT NULL,
+            primary_domain TEXT NOT NULL,
+            secondary_domains TEXT NOT NULL,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (student_email) REFERENCES students(email)
+        )
+    ''')
     conn.commit()
     conn.close()
 
@@ -152,6 +204,13 @@ def load_adaptive_json(filename):
             return json.load(f)
     return {}
 
+def load_foundation_json(filename):
+    file_path = os.path.join(DATA_FOUNDATION_DIR, filename)
+    if os.path.exists(file_path):
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return None
+
 # -----------------------------------------------------------------
 # Core Routes
 # -----------------------------------------------------------------
@@ -164,7 +223,220 @@ def serve_index():
 
 @app.route('/api/health')
 def health_check():
-    return jsonify({"status": "ok", "message": "Backend server is reachable"}), 200
+    return jsonify({
+        "status": "ok",
+        "message": "Backend server is reachable",
+        "ml_model_loaded": DOMAIN_MODEL is not None and TFIDF_VECTORIZER is not None
+    }), 200
+
+# -----------------------------------------------------------------
+# Pre-trained ML Model Inference & Indian Job Market Endpoints
+# -----------------------------------------------------------------
+
+DOMAIN_FALLBACK_KEYWORDS = {
+    'ai': 'python machine learning deep learning tensorflow llm',
+    'data': 'python sql data analysis pandas tableau power bi',
+    'web': 'javascript react html css rest api node',
+    'security': 'cybersecurity network security owasp cryptography siem',
+    'cloud': 'aws docker kubernetes devops cloud linux terraform',
+    'systems': 'linux networking troubleshooting itil java python',
+    'iot': 'python c++ linux networking embedded',
+    'robotics': 'python c++ machine learning computer vision',
+    'vlsi': 'hardware architecture c++ linux verification',
+    'networking': 'networking tcp/ip firewalls cloud linux',
+}
+
+@app.route('/api/predict-domain', methods=['POST'])
+def predict_domain():
+    if TFIDF_VECTORIZER is None or DOMAIN_MODEL is None:
+        return jsonify({
+            "status": "error",
+            "message": "Pre-trained ML model files are not loaded on the server."
+        }), 503
+
+    data = request.json or {}
+    raw_skills = data.get('skills', '')
+    preferred_domain = str(data.get('preferred_domain', '')).strip().lower()
+
+    if isinstance(raw_skills, list):
+        skills_list = [str(s).strip() for s in raw_skills if str(s).strip()]
+        skills_text = ', '.join(skills_list)
+    else:
+        skills_text = str(raw_skills).strip()
+        skills_list = [s.strip() for s in re.split(r'[,;\n]+', skills_text) if s.strip()]
+
+    inference_text = skills_text
+    if not inference_text:
+        if preferred_domain and preferred_domain in DOMAIN_FALLBACK_KEYWORDS:
+            inference_text = DOMAIN_FALLBACK_KEYWORDS[preferred_domain]
+        else:
+            return jsonify({
+                "status": "error",
+                "message": "Please provide a 'skills' string or array to run domain prediction."
+            }), 400
+
+    try:
+        features = TFIDF_VECTORIZER.transform([inference_text])
+        probs = DOMAIN_MODEL.predict_proba(features)[0]
+        classes = list(DOMAIN_MODEL.classes_)
+
+        ranked = sorted(
+            zip(classes, probs),
+            key=lambda pair: float(pair[1]),
+            reverse=True
+        )
+
+        top_predictions = [
+            {
+                "domain_label": str(label),
+                "canonical_domain_id": market_data.CANONICAL_DOMAIN_MAP.get(str(label), 'ai'),
+                "confidence_pct": round(float(prob) * 100, 1)
+            }
+            for label, prob in ranked[:3]
+        ]
+
+        primary_label = top_predictions[0]["domain_label"]
+        market_bundle = market_data.get_domain_market_intelligence(primary_label, skills_list)
+
+        return jsonify({
+            "status": "success",
+            "input_skills": skills_list,
+            "primary_domain": primary_label,
+            "canonical_domain_id": top_predictions[0]["canonical_domain_id"],
+            "top_predictions": top_predictions,
+            "market_insights": market_bundle["market_insights"],
+            "skill_gap": market_bundle["skill_gap"],
+            "job_listings": market_bundle["job_listings"]
+        }), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route('/api/market-insights/<domain_id>', methods=['GET'])
+def get_market_insights(domain_id):
+    raw_skills = request.args.get('skills', '')
+    skills_list = [s.strip() for s in re.split(r'[,;\n]+', raw_skills) if s.strip()]
+    bundle = market_data.get_domain_market_intelligence(domain_id, skills_list)
+    return jsonify({
+        "status": "success",
+        **bundle
+    }), 200
+
+# -----------------------------------------------------------------
+# Phase 4 Data Foundation Endpoints (/api/data/* and /data/*.json)
+# -----------------------------------------------------------------
+
+@app.route('/api/data/domains', methods=['GET'])
+@app.route('/data/domains.json', methods=['GET'])
+def get_foundation_domains():
+    payload = load_foundation_json('domains.json')
+    if payload is None:
+        return jsonify({"status": "error", "message": "domains.json not found"}), 404
+
+    domain_id = request.args.get('domain_id', '').strip().lower()
+    if domain_id:
+        filtered = [d for d in payload.get('domains', []) if d.get('id') == domain_id]
+        return jsonify({**payload, "domains": filtered})
+    return jsonify(payload)
+
+@app.route('/api/data/domains/<domain_id>', methods=['GET'])
+def get_foundation_domain_bundle(domain_id):
+    domain_id = domain_id.strip().lower()
+    domains_payload = load_foundation_json('domains.json')
+    demand_payload = load_foundation_json('market_demand.json')
+    boosters_payload = load_foundation_json('market_boosters.json')
+    resources_payload = load_foundation_json('resources.json')
+
+    if domains_payload is None:
+        return jsonify({"status": "error", "message": "domains.json not found"}), 404
+
+    domain_obj = next((d for d in domains_payload.get('domains', []) if d.get('id') == domain_id), None)
+    if not domain_obj:
+        return jsonify({"status": "not_found", "message": f"Domain '{domain_id}' not found"}), 404
+
+    demand_obj = next(
+        (m for m in (demand_payload or {}).get('market_demand', []) if m.get('domain_id') == domain_id),
+        None
+    )
+    booster_obj = next(
+        (b for b in (boosters_payload or {}).get('market_boosters', []) if b.get('domain_id') == domain_id),
+        None
+    )
+    domain_resources = [
+        r for r in (resources_payload or {}).get('resources', []) if r.get('domain_id') == domain_id
+    ]
+
+    return jsonify({
+        "status": "success",
+        "domain": domain_obj,
+        "market_demand": demand_obj,
+        "market_booster": booster_obj,
+        "resources": domain_resources
+    })
+
+@app.route('/api/data/market-demand', methods=['GET'])
+@app.route('/api/data/market_demand', methods=['GET'])
+@app.route('/data/market_demand.json', methods=['GET'])
+def get_foundation_market_demand():
+    payload = load_foundation_json('market_demand.json')
+    if payload is None:
+        return jsonify({"status": "error", "message": "market_demand.json not found"}), 404
+
+    domain_id = request.args.get('domain_id', '').strip().lower()
+    trend = request.args.get('trend', '').strip().lower()
+    items = payload.get('market_demand', [])
+
+    if domain_id:
+        items = [m for m in items if m.get('domain_id') == domain_id]
+    if trend:
+        items = [m for m in items if (m.get('demand_trend') or '').lower() == trend]
+
+    if domain_id or trend:
+        return jsonify({**payload, "market_demand": items})
+    return jsonify(payload)
+
+@app.route('/api/data/market-boosters', methods=['GET'])
+@app.route('/api/data/market_boosters', methods=['GET'])
+@app.route('/data/market_boosters.json', methods=['GET'])
+def get_foundation_market_boosters():
+    payload = load_foundation_json('market_boosters.json')
+    if payload is None:
+        return jsonify({"status": "error", "message": "market_boosters.json not found"}), 404
+
+    domain_id = request.args.get('domain_id', '').strip().lower()
+    if domain_id:
+        items = [b for b in payload.get('market_boosters', []) if b.get('domain_id') == domain_id]
+        return jsonify({**payload, "market_boosters": items})
+    return jsonify(payload)
+
+@app.route('/api/data/resources', methods=['GET'])
+@app.route('/data/resources.json', methods=['GET'])
+def get_foundation_resources():
+    payload = load_foundation_json('resources.json')
+    if payload is None:
+        return jsonify({"status": "error", "message": "resources.json not found"}), 404
+
+    domain_id = request.args.get('domain_id', '').strip().lower()
+    cost = request.args.get('cost', '').strip().lower()
+    level = request.args.get('level', '').strip().lower()
+    res_type = request.args.get('type', '').strip().lower()
+    language = request.args.get('language', '').strip().lower()
+
+    items = payload.get('resources', [])
+    if domain_id:
+        items = [r for r in items if (r.get('domain_id') or '').lower() == domain_id]
+    if cost:
+        items = [r for r in items if (r.get('cost') or '').lower() == cost]
+    if level:
+        items = [r for r in items if (r.get('level') or '').lower() == level]
+    if res_type:
+        items = [r for r in items if (r.get('type') or '').lower() == res_type]
+    if language:
+        items = [r for r in items if language in (r.get('language') or '').lower()]
+
+    if any([domain_id, cost, level, res_type, language]):
+        return jsonify({**payload, "resources": items})
+    return jsonify(payload)
 
 @app.route('/<path:filename>')
 def serve_frontend(filename):
@@ -736,6 +1008,166 @@ def save_session():
     conn.close()
 
     return jsonify({"status": "success", "session_id": session_id})
+
+# -----------------------------------------------------------------
+# Domain-Specific Assessments, Roadmaps & Comparison Routes
+# -----------------------------------------------------------------
+
+@app.route('/api/domain-assessment/save', methods=['POST'])
+def save_domain_assessment():
+    data = request.json or {}
+    student_email = data.get('student_email', '').strip().lower()
+    domain_id = data.get('domain_id', '').strip()
+    session_id = data.get('session_id') or f"dom_{uuid.uuid4().hex[:10]}"
+    knowledge_score = float(data.get('knowledge_score', 0))
+    evaluation_report = json.dumps(data.get('evaluation_report', {}))
+    roadmap_data = json.dumps(data.get('roadmap_data', {}))
+    trajectory_data = json.dumps(data.get('trajectory_data', {}))
+
+    if not student_email or not domain_id:
+        return jsonify({"status": "error", "message": "student_email and domain_id are required"}), 400
+
+    try:
+        conn = get_db_connection()
+        c = conn.cursor()
+        c.execute('''
+            INSERT INTO domain_assessments (student_email, domain_id, session_id, knowledge_score, evaluation_report, roadmap_data, trajectory_data, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(student_email, domain_id) DO UPDATE SET
+                session_id = excluded.session_id,
+                knowledge_score = excluded.knowledge_score,
+                evaluation_report = excluded.evaluation_report,
+                roadmap_data = excluded.roadmap_data,
+                trajectory_data = excluded.trajectory_data,
+                created_at = CURRENT_TIMESTAMP
+        ''', (student_email, domain_id, session_id, knowledge_score, evaluation_report, roadmap_data, trajectory_data))
+        conn.commit()
+        conn.close()
+        return jsonify({"status": "success", "message": f"Domain assessment for {domain_id} saved successfully", "domain_id": domain_id})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/domain-assessment/<email>/<domain_id>', methods=['GET'])
+def get_domain_assessment(email, domain_id):
+    email = email.strip().lower()
+    domain_id = domain_id.strip()
+    try:
+        conn = get_db_connection()
+        c = conn.cursor()
+        c.execute('''
+            SELECT student_email, domain_id, session_id, knowledge_score, evaluation_report, roadmap_data, trajectory_data, created_at
+            FROM domain_assessments
+            WHERE student_email = ? AND domain_id = ?
+        ''', (email, domain_id))
+        row = c.fetchone()
+        conn.close()
+
+        if not row:
+            return jsonify({"status": "not_found", "message": f"No assessment recorded for {domain_id}"}), 404
+
+        return jsonify({
+            "status": "success",
+            "assessment": {
+                "student_email": row["student_email"],
+                "domain_id": row["domain_id"],
+                "session_id": row["session_id"],
+                "knowledge_score": row["knowledge_score"],
+                "evaluation_report": json.loads(row["evaluation_report"]) if row["evaluation_report"] else {},
+                "roadmap_data": json.loads(row["roadmap_data"]) if row["roadmap_data"] else {},
+                "trajectory_data": json.loads(row["trajectory_data"]) if row["trajectory_data"] else {},
+                "created_at": row["created_at"]
+            }
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/domain-assessments/<email>', methods=['GET'])
+def get_all_domain_assessments(email):
+    email = email.strip().lower()
+    try:
+        conn = get_db_connection()
+        c = conn.cursor()
+        c.execute('''
+            SELECT student_email, domain_id, session_id, knowledge_score, evaluation_report, roadmap_data, trajectory_data, created_at
+            FROM domain_assessments
+            WHERE student_email = ?
+            ORDER BY created_at DESC
+        ''', (email,))
+        rows = c.fetchall()
+        conn.close()
+
+        assessments = []
+        for row in rows:
+            assessments.append({
+                "student_email": row["student_email"],
+                "domain_id": row["domain_id"],
+                "session_id": row["session_id"],
+                "knowledge_score": row["knowledge_score"],
+                "evaluation_report": json.loads(row["evaluation_report"]) if row["evaluation_report"] else {},
+                "roadmap_data": json.loads(row["roadmap_data"]) if row["roadmap_data"] else {},
+                "trajectory_data": json.loads(row["trajectory_data"]) if row["trajectory_data"] else {},
+                "created_at": row["created_at"]
+            })
+
+        return jsonify({"status": "success", "assessments": assessments})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/domain-selection/save', methods=['POST'])
+def save_domain_selection():
+    data = request.json or {}
+    student_email = data.get('student_email', '').strip().lower()
+    primary_domain = data.get('primary_domain', '').strip()
+    secondary_domains = json.dumps(data.get('secondary_domains', []))
+
+    if not student_email or not primary_domain:
+        return jsonify({"status": "error", "message": "student_email and primary_domain are required"}), 400
+
+    try:
+        conn = get_db_connection()
+        c = conn.cursor()
+        c.execute('''
+            INSERT INTO domain_selections (student_email, primary_domain, secondary_domains, updated_at)
+            VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(student_email) DO UPDATE SET
+                primary_domain = excluded.primary_domain,
+                secondary_domains = excluded.secondary_domains,
+                updated_at = CURRENT_TIMESTAMP
+        ''', (student_email, primary_domain, secondary_domains))
+        conn.commit()
+        conn.close()
+        return jsonify({"status": "success", "message": "Domain selections updated successfully", "primary_domain": primary_domain})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/domain-selection/<email>', methods=['GET'])
+def get_domain_selection(email):
+    email = email.strip().lower()
+    try:
+        conn = get_db_connection()
+        c = conn.cursor()
+        c.execute('''
+            SELECT student_email, primary_domain, secondary_domains, updated_at
+            FROM domain_selections
+            WHERE student_email = ?
+        ''', (email,))
+        row = c.fetchone()
+        conn.close()
+
+        if not row:
+            return jsonify({"status": "not_found", "message": "No domain selections recorded"}), 404
+
+        return jsonify({
+            "status": "success",
+            "selection": {
+                "student_email": row["student_email"],
+                "primary_domain": row["primary_domain"],
+                "secondary_domains": json.loads(row["secondary_domains"]) if row["secondary_domains"] else [],
+                "updated_at": row["updated_at"]
+            }
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 # Initialize DB schema on module load
 init_db()

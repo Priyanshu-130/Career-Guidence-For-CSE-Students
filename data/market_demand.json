@@ -1,0 +1,211 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-11-01",
+  "disclaimer": "Demand tags and salary figures are indicative estimates based on Indian job boards and industry reports, not guaranteed facts. Compensation varies significantly by city, college tier, and company type.",
+  "market_demand": [
+    {
+      "domain_id": "web",
+      "demand_trend": "Saturated at entry level",
+      "fresher_salary_range_inr": {
+        "min_lpa": 3.5,
+        "max_lpa": 12.0,
+        "median_lpa": 6.0,
+        "display": "₹3.5 – ₹12.0 LPA (Service vs Product/Startup)",
+        "notes": "Indicative 0-2 yr India range: service firms typically ₹3.5-5.5 LPA; product startups and GCCs in Bengaluru/Hyderabad/NCR ₹7.0-12.0+ LPA."
+      },
+      "hot_skills": [
+        "TypeScript & React 19",
+        "Next.js (SSR & App Router)",
+        "PostgreSQL & Redis",
+        "Automated E2E & Unit Testing (Playwright, Vitest)",
+        "Docker, AWS/Vercel & CI/CD",
+        "AI / LLM API Integration"
+      ],
+      "saturated_skills": [
+        "HTML/CSS-only static portfolios",
+        "Basic React + JavaScript TODO CRUD apps",
+        "Unauthenticated MERN clones without tests",
+        "jQuery & legacy Bootstrap templates"
+      ],
+      "entry_level_reality": "High volume of entry-level applicants with identical MERN clones on Naukri and LinkedIn India (0-2 yrs). Startups on Wellfound and Instahyre filter heavily for TypeScript, Next.js, database modeling, testing, and deployed production apps.",
+      "last_updated": "2026-11-01",
+      "source": "Naukri JobSpeak Index, LinkedIn Jobs India (0-2 yrs), Wellfound, Instahyre & AmbitionBox",
+      "source_url": "https://www.naukri.com/jobspeak",
+      "verified": false
+    },
+    {
+      "domain_id": "ai",
+      "demand_trend": "Rising",
+      "fresher_salary_range_inr": {
+        "min_lpa": 5.0,
+        "max_lpa": 18.0,
+        "median_lpa": 9.0,
+        "display": "₹5.0 – ₹18.0 LPA (Analyst vs Product/Research GCC)",
+        "notes": "Indicative 0-2 yr India range: entry-level ML/GenAI roles pay higher at GCCs and AI startups in Bengaluru/Hyderabad, while notebook-only resumes struggle to clear technical screens."
+      },
+      "hot_skills": [
+        "PyTorch & Deep Learning Fundamentals",
+        "LLM Integration, RAG & Evaluation Harnesses",
+        "FastAPI / Docker Model Serving",
+        "Python Data Engineering & Vector Search",
+        "Classical ML & Feature Engineering (Scikit-learn, XGBoost)",
+        "MLOps & Experiment Tracking"
+      ],
+      "saturated_skills": [
+        "Kaggle Titanic / Iris copy-paste notebooks",
+        "Prompt-only ChatGPT wrapper demos",
+        "Unexplained pre-trained API calls without evaluation"
+      ],
+      "entry_level_reality": "NASSCOM and LinkedIn India show rising demand for applied AI engineers who can ship, evaluate, and monitor models in production. Pure research roles remain scarce for B.Tech freshers without strong math, software engineering, and deployed projects.",
+      "last_updated": "2026-11-01",
+      "source": "NASSCOM AI Reports, LinkedIn Jobs India (0-2 yrs), Stack Overflow Survey & Levels.fyi",
+      "source_url": "https://nasscom.in/knowledge-center/publications",
+      "verified": false
+    },
+    {
+      "domain_id": "data",
+      "demand_trend": "Rising",
+      "fresher_salary_range_inr": {
+        "min_lpa": 4.0,
+        "max_lpa": 14.0,
+        "median_lpa": 7.0,
+        "display": "₹4.0 – ₹14.0 LPA (Data Analyst to Junior Data Engineer)",
+        "notes": "Indicative 0-2 yr India range: pure dashboard-only analyst roles are competitive, whereas SQL + Python + PySpark/dbt data engineering roles command stronger offers across GCCs and fintech."
+      },
+      "hot_skills": [
+        "Window Functions & Query Tuning in SQL",
+        "PySpark & Distributed Data Processing",
+        "dbt & Dimensional Data Modeling",
+        "Apache Airflow / Pipeline Orchestration",
+        "Cloud Data Warehouses (Snowflake / BigQuery)",
+        "Kafka Streaming Basics"
+      ],
+      "saturated_skills": [
+        "Basic Excel VLOOKUP-only reporting",
+        "Static PowerBI/Tableau dashboards with zero SQL modeling",
+        "Unsupervised CSV cleanup scripts without schema design"
+      ],
+      "entry_level_reality": "Indian GCCs, banks, and SaaS companies consistently hire 0-2 year candidates who combine strong SQL and data modeling with Python ETL pipelines. Pure BI drag-and-drop skills without SQL depth face high applicant competition.",
+      "last_updated": "2026-11-01",
+      "source": "Naukri JobSpeak Index, TeamLease Digital, LinkedIn Jobs India & AmbitionBox",
+      "source_url": "https://www.teamleasedigital.com/",
+      "verified": false
+    },
+    {
+      "domain_id": "cloud",
+      "demand_trend": "Rising",
+      "fresher_salary_range_inr": {
+        "min_lpa": 4.5,
+        "max_lpa": 14.0,
+        "median_lpa": 7.5,
+        "display": "₹4.5 – ₹14.0 LPA (Cloud Support to DevOps / SRE-1)",
+        "notes": "Indicative 0-2 yr India range: entry-level openings strongly favor hands-on Linux, Docker, CI/CD, and Terraform labs over theory-only cloud certificates."
+      },
+      "hot_skills": [
+        "Docker & Kubernetes",
+        "Terraform (Infrastructure as Code)",
+        "CI/CD (GitHub Actions / Jenkins)",
+        "AWS / Azure Networking & IAM",
+        "Linux Troubleshooting & Bash/Python Scripting",
+        "Prometheus, Grafana & Observability"
+      ],
+      "saturated_skills": [
+        "Unpracticed Cloud Practitioner badge without labs",
+        "Manual EC2 click-ops setups",
+        "Shared-hosting cPanel administration"
+      ],
+      "entry_level_reality": "While senior DevOps is massive on Naukri, entry-level roles (0-2 yrs) require proving real Linux, networking, containerization, and automation projects rather than memorizing cloud service names.",
+      "last_updated": "2026-11-01",
+      "source": "LinkedIn Jobs India (0-2 yrs), Naukri.com, Stack Overflow Developer Survey & AmbitionBox",
+      "source_url": "https://survey.stackoverflow.co/",
+      "verified": false
+    },
+    {
+      "domain_id": "security",
+      "demand_trend": "Rising",
+      "fresher_salary_range_inr": {
+        "min_lpa": 4.0,
+        "max_lpa": 13.0,
+        "median_lpa": 6.5,
+        "display": "₹4.0 – ₹13.0 LPA (SOC Tier-1 to AppSec / Cloud Sec)",
+        "notes": "Indicative 0-2 yr India range: fintech, SaaS, and Big-4/MSSP practices in Bengaluru, Mumbai, Pune, and NCR actively recruit SOC and AppSec graduates with lab portfolios."
+      },
+      "hot_skills": [
+        "Cloud Security & IAM Hardening",
+        "AppSec & OWASP Top 10 Remediation",
+        "SIEM Log Triage & Threat Hunting",
+        "Network Packet Analysis & Linux Hardening",
+        "DevSecOps (SAST/DAST in CI/CD)",
+        "Python Security Automation"
+      ],
+      "saturated_skills": [
+        "Automated Kali Linux tool-running without understanding protocols",
+        "Generic phishing-awareness slide decks",
+        "Unverified Nmap scan screenshots"
+      ],
+      "entry_level_reality": "India's DPDP Act compliance and enterprise cloud adoption are driving steady AppSec and SOC hiring. Freshers break in fastest via TryHackMe/Hack The Box writeups, networking mastery, and understanding how to fix vulnerable code.",
+      "last_updated": "2026-11-01",
+      "source": "NASSCOM Cybersecurity Reports, LinkedIn Jobs India (0-2 yrs) & AmbitionBox",
+      "source_url": "https://nasscom.in/knowledge-center/publications",
+      "verified": false
+    },
+    {
+      "domain_id": "mobile",
+      "demand_trend": "Stable",
+      "fresher_salary_range_inr": {
+        "min_lpa": 3.8,
+        "max_lpa": 12.5,
+        "median_lpa": 6.5,
+        "display": "₹3.8 – ₹12.5 LPA (Consumer Startups & Product Firms)",
+        "notes": "Indicative 0-2 yr India range: consumer startups and fintechs in Bengaluru/NCR pay well for Kotlin/Compose, React Native, or Flutter engineers who ship polished apps."
+      },
+      "hot_skills": [
+        "Kotlin & Jetpack Compose",
+        "React Native with TypeScript",
+        "Flutter & Clean Architecture",
+        "Offline-First SQLite Sync & Caching",
+        "App Profiling, Crashlytics & CI/CD",
+        "Secure Auth, Deep Linking & Payments Integration"
+      ],
+      "saturated_skills": [
+        "Java XML legacy Android starter apps",
+        "Single-screen UI-only templates without API or local state",
+        "Copy-pasted calculator / weather apps"
+      ],
+      "entry_level_reality": "Hiring is steady across Indian consumer-tech and fintech startups, though overall posting volume is smaller than backend/full-stack. Candidates who publish a real app with offline storage, tests, and clean state management stand out immediately.",
+      "last_updated": "2026-11-01",
+      "source": "Wellfound, Instahyre, Naukri.com & Stack Overflow Developer Survey",
+      "source_url": "https://survey.stackoverflow.co/",
+      "verified": false
+    },
+    {
+      "domain_id": "systems",
+      "demand_trend": "Stable",
+      "fresher_salary_range_inr": {
+        "min_lpa": 4.5,
+        "max_lpa": 16.0,
+        "median_lpa": 8.0,
+        "display": "₹4.5 – ₹16.0 LPA (Embedded, Semiconductor GCCs & Core Infra)",
+        "notes": "Indicative 0-2 yr India range: semiconductor, automotive R&D, and storage/database GCCs in Bengaluru, Hyderabad, and Pune offer strong compensation for deep C/C++/Rust and OS skills."
+      },
+      "hot_skills": [
+        "Modern C++ (C++17/20) & Rust",
+        "Embedded C, FreeRTOS & Linux Kernel Modules",
+        "Concurrency, Lock-Free & Memory Profiling",
+        "Networking Stacks & Storage Engines",
+        "Embedded Linux (Yocto / Device Trees)",
+        "GDB, Valgrind & Hardware-in-the-Loop Testing"
+      ],
+      "saturated_skills": [
+        "Turbo C / outdated pre-C++11 console snippets",
+        "Arduino copy-paste blink sketches without datasheet literacy",
+        "Theory-only OS memorization with zero systems coding"
+      ],
+      "entry_level_reality": "Smaller overall posting count than web, but far lower applicant noise because few freshers build genuine C/C++/Rust systems or RTOS firmware projects. Very resilient hiring in automotive, telecom, and semiconductor GCCs in India.",
+      "last_updated": "2026-11-01",
+      "source": "LinkedIn Jobs India (0-2 yrs), GitHub Octoverse, Quess IT Staffing & Levels.fyi",
+      "source_url": "https://octoverse.github.com/",
+      "verified": false
+    }
+  ]
+}

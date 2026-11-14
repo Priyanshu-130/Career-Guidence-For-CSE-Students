@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "cd frontend-react && npm run dev",
     "build": "cd frontend-react && npm run build",
-    "test": "cd frontend-react && npm run test"
+    "test": "cd frontend-react && npm run test",
+    "validate:data": "node scripts/validate_data.js"
   }
 }

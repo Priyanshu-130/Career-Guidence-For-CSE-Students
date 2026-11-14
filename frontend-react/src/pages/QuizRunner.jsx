@@ -1,79 +1,75 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { getApiBaseUrl } from '../utils/roadmapHelper';
 import { useAuth } from '../context/AuthContext';
 import { 
   initAgentSession, 
   agentNextQuestion, 
   computeFinalResults, 
-  DOMAIN_METADATA,
-  BEGINNER_EXPLAINERS 
+  DOMAIN_METADATA 
 } from '../data/adaptive/domainAdvisorAgent';
-import { QUIZ_DATA } from '../data/questions';
-import { 
-  ArrowRight, 
-  ArrowLeft, 
-  Check, 
-  Terminal, 
-  Activity, 
-  Sparkles, 
-  ShieldCheck, 
-  Compass, 
-  Cpu, 
-  Layers,
-  HelpCircle,
-  Lightbulb,
-  Bot,
-  BrainCircuit
-} from 'lucide-react';
+import { ArrowRight, ArrowLeft, Check, Loader2 } from 'lucide-react';
 
 export default function QuizRunner() {
-  const { track = 'beginner' } = useParams();
+  const { track = 'software' } = useParams();
+  const location = useLocation();
+  const passedState = location.state || {};
+
+  // Track normalization: only 'software' or 'hardware'
+  const activeTrack = (track === 'hardware' || passedState.track === 'hardware') ? 'hardware' : 'software';
+
+  // Keying by activeTrack resets the inner session state cleanly when the route track changes.
+  return (
+    <QuizRunnerSession
+      key={activeTrack}
+      activeTrack={activeTrack}
+      passedState={passedState}
+    />
+  );
+}
+
+function QuizRunnerSession({ activeTrack, passedState }) {
   const navigate = useNavigate();
   const { user } = useAuth();
 
   const TOTAL_TARGET_QUESTIONS = 25;
 
-  // Track choice: 'beginner' | 'experienced' | 'software' | 'hardware'
-  const routeType = (track === 'experienced' || track === 'hardware') ? 'experienced' : 'beginner';
-  const [activeTrack, setActiveTrack] = useState(routeType);
-
   // AI Agent Guided Session - Instantly initialize on mount with Question 1
-  const [agentSession, setAgentSession] = useState(() => initAgentSession(routeType, TOTAL_TARGET_QUESTIONS));
+  const [agentSession, setAgentSession] = useState(() => initAgentSession({
+    track: activeTrack,
+    semester: passedState.semester || '1-2',
+    prerequisiteMode: passedState.prerequisiteMode || 'zero',
+    declaredPrerequisites: passedState.declaredPrerequisites || [],
+    domainFactors: passedState.domainFactors || {},
+    customKnowledge: passedState.customKnowledge || '',
+    totalTarget: TOTAL_TARGET_QUESTIONS
+  }));
+
   const [selectedOptionKey, setSelectedOptionKey] = useState(null);
-  const [showPlainEnglishHelper, setShowPlainEnglishHelper] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  // Sync track when URL param changes
-  useEffect(() => {
-    const currentRoute = (track === 'experienced' || track === 'hardware') ? 'experienced' : 'beginner';
-    if (currentRoute !== activeTrack) {
-      setActiveTrack(currentRoute);
-      setAgentSession(initAgentSession(currentRoute, TOTAL_TARGET_QUESTIONS));
-      setSelectedOptionKey(null);
+  const recordAttemptToLocalStorage = ({ questionId, isCorrect, isDontKnow, isSkipped, selectedAnswer }) => {
+    try {
+      const raw = localStorage.getItem('cpath_assessment_attempts');
+      const existing = raw ? JSON.parse(raw) : [];
+      const list = Array.isArray(existing) ? existing : [];
+      list.push({
+        questionId,
+        isCorrect: Boolean(isCorrect),
+        isDontKnow: Boolean(isDontKnow),
+        isSkipped: Boolean(isSkipped),
+        status: isSkipped ? 'skipped' : isDontKnow ? 'dont_know' : isCorrect ? 'correct' : 'answered',
+        selectedAnswer,
+        studentEmail: user?.email || 'guest_student@pathfinder.edu',
+        timestamp: new Date().toISOString()
+      });
+      localStorage.setItem('cpath_assessment_attempts', JSON.stringify(list.slice(-500)));
+    } catch (err) {
+      console.warn('Could not store attempt in localStorage:', err);
     }
-  }, [track]);
-
-  const handleTrackChange = (newTrack) => {
-    const targetRoute = (newTrack === 'experienced' || newTrack === 'hardware') ? 'experienced' : 'beginner';
-    setActiveTrack(targetRoute);
-    setAgentSession(initAgentSession(targetRoute, TOTAL_TARGET_QUESTIONS));
-    setSelectedOptionKey(null);
   };
 
-  const handleSelectOption = (key) => {
-    setSelectedOptionKey(key);
-  };
-
-  const handleNextStep = () => {
-    if (!selectedOptionKey || !agentSession) return;
-
-    // Pass the student's answer to the AI Agent to evaluate & adapt
-    const nextSession = agentNextQuestion({
-      currentSession: agentSession,
-      selectedOptionKey
-    });
-
+  const advanceSession = (nextSession) => {
     if (nextSession.isComplete) {
       finalizeResults(nextSession);
     } else {
@@ -82,10 +78,84 @@ export default function QuizRunner() {
     }
   };
 
+  const handleSelectOption = (key) => {
+    setSelectedOptionKey(key);
+  };
+
+  const handleNextStep = () => {
+    if (!selectedOptionKey || !agentSession || loading) return;
+
+    const currentQ = agentSession.currentQuestion;
+    const chosenOpt = Array.isArray(currentQ?.options)
+      ? currentQ.options.find(o => o.key === selectedOptionKey)
+      : null;
+    const optText = chosenOpt?.text || selectedOptionKey;
+    const optIsDontKnow = Boolean(optText && /haven.t learned|haven.t explored|haven.t worked|haven.t built|don.t know/i.test(optText));
+
+    recordAttemptToLocalStorage({
+      questionId: currentQ?.id,
+      isCorrect: Boolean(chosenOpt?.isCorrect),
+      isDontKnow: optIsDontKnow,
+      isSkipped: false,
+      selectedAnswer: optText
+    });
+
+    const nextSession = agentNextQuestion({
+      currentSession: agentSession,
+      selectedOptionKey
+    });
+
+    advanceSession(nextSession);
+  };
+
+  const handleDontKnow = () => {
+    if (!agentSession || loading) return;
+
+    recordAttemptToLocalStorage({
+      questionId: agentSession.currentQuestion?.id,
+      isCorrect: false,
+      isDontKnow: true,
+      isSkipped: false,
+      selectedAnswer: "I don't know / haven't learned this yet"
+    });
+
+    const nextSession = agentNextQuestion({
+      currentSession: agentSession,
+      selectedOptionKey: 'IDK',
+      isDontKnow: true
+    });
+
+    advanceSession(nextSession);
+  };
+
+  const handleSkipQuestion = () => {
+    if (!agentSession || loading) return;
+
+    recordAttemptToLocalStorage({
+      questionId: agentSession.currentQuestion?.id,
+      isCorrect: false,
+      isDontKnow: false,
+      isSkipped: true,
+      selectedAnswer: 'skipped'
+    });
+
+    const nextSession = agentNextQuestion({
+      currentSession: agentSession,
+      selectedOptionKey: 'SKIP',
+      isSkipped: true
+    });
+
+    advanceSession(nextSession);
+  };
+
   const finalizeResults = async (completedSession) => {
     setLoading(true);
 
-    const finalResults = computeFinalResults(completedSession);
+    const finalResults = {
+      ...computeFinalResults(completedSession),
+      customKnowledge: passedState.customKnowledge || '',
+      declaredPrerequisites: passedState.declaredPrerequisites || []
+    };
 
     // Save to backend if authenticated
     if (user && !user.isGuest) {
@@ -107,418 +177,284 @@ export default function QuizRunner() {
       }
     }
 
-    sessionStorage.setItem('quiz_results', JSON.stringify(finalResults));
+    const serialized = JSON.stringify(finalResults);
+    sessionStorage.setItem('quiz_results', serialized);
+    try {
+      localStorage.setItem('cpath_latest_quiz_results', serialized);
+    } catch (err) {
+      console.warn('Could not persist offline result copy to localStorage:', err);
+    }
     navigate('/results');
   };
 
-  // -------------------------------------------------------------
-  // ADAPTIVE AI AGENT QUESTION INTERFACE (ZERO-PREREQUISITE DOMAIN DISCOVERY)
-  // -------------------------------------------------------------
-  if (!agentSession || !agentSession.currentQuestion) return null;
+  // Loading / Empty fallback
+  if (!agentSession || !agentSession.currentQuestion) {
+    return (
+      <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-3)' }}>
+        <div className="state-container" style={{ maxWidth: '420px', width: '100%' }}>
+          <Loader2 size={32} className="animate-spin" style={{ color: 'var(--color-accent)' }} />
+          <h2 className="state-title" style={{ fontSize: 'var(--text-xl)' }}>Preparing your assessment...</h2>
+          <p className="state-description">Calibrating questions for your selected track.</p>
+        </div>
+      </div>
+    );
+  }
 
   const currentQ = agentSession.currentQuestion;
   const currentStep = agentSession.currentStep;
   const totalQuestions = agentSession.totalTarget;
+  const progressPercent = Math.round((currentStep / totalQuestions) * 100);
 
   // Options can be an object { A: '...', B: '...' } or array
   const optionsList = Array.isArray(currentQ.options)
     ? currentQ.options.map((opt, idx) => (typeof opt === 'string' ? { key: String.fromCharCode(65 + idx), text: opt } : opt))
     : Object.entries(currentQ.options).map(([key, text]) => ({ key, text }));
 
-  // Leading domain info
-  const leadingDomainMeta = agentSession.emergingLeader 
-    ? DOMAIN_METADATA[agentSession.emergingLeader] 
-    : null;
-
   return (
     <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#F7F7F4',
-      color: '#17191C',
-      fontFamily: "'Manrope', -apple-system, BlinkMacSystemFont, sans-serif",
-      padding: '2rem 1.5rem 6rem'
+      minHeight: '100%',
+      backgroundColor: 'var(--color-bg)',
+      color: 'var(--color-text)',
+      padding: 'var(--space-4) var(--space-2) var(--space-8)'
     }}>
-      <div style={{ maxWidth: '920px', margin: '0 auto' }}>
-        
-        {/* 1. TOP STATUS & TELEMETRY BAR */}
+      <div style={{ maxWidth: '780px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+
+        {/* 1. TOP HEADER: Simple Track & Navigation */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
-          gap: '1rem',
-          padding: '0.85rem 1.25rem',
-          border: '1px solid #D8DAD7',
-          backgroundColor: '#FFFFFF',
-          marginBottom: '2rem',
-          fontFamily: "'DM Mono', monospace",
-          fontSize: '0.75rem',
-          color: '#646A73'
+          gap: 'var(--space-2)'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <button 
-              type="button"
-              onClick={() => navigate('/quiz')}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: '#50545B',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.25rem',
-                padding: 0,
-                fontFamily: 'inherit',
-                fontSize: 'inherit',
-                fontWeight: 600
-              }}
-            >
-              <ArrowLeft size={14} />
-              <span>EXIT</span>
-            </button>
-            <span style={{ color: '#D8DAD7' }}>|</span>
-            <span style={{ color: '#E85D3F', fontWeight: 700 }}>
-              {currentQ.category?.toUpperCase() || 'CAREER ALIGNMENT'}
-            </span>
-            <span style={{ color: '#D8DAD7' }}>|</span>
-            <span style={{ color: '#50545B' }}>ROUTE:</span>
-            <div style={{ display: 'inline-flex', gap: '4px' }}>
-              {[
-                { id: 'beginner', label: 'Route 1: Discovery' },
-                { id: 'experienced', label: 'Route 2: Calibration' }
-              ].map(({ id, label }) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => handleTrackChange(id)}
-                  style={{
-                    border: activeTrack === id ? '1px solid #E85D3F' : '1px solid #D8DAD7',
-                    backgroundColor: activeTrack === id ? '#FFF0EB' : '#FFFFFF',
-                    color: activeTrack === id ? '#E85D3F' : '#50545B',
-                    padding: '2px 8px',
-                    fontSize: '0.6875rem',
-                    fontFamily: "'DM Mono', monospace",
-                    textTransform: 'uppercase',
-                    cursor: 'pointer',
-                    fontWeight: activeTrack === id ? 700 : 500
-                  }}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
+          <button
+            type="button"
+            onClick={() => navigate('/quiz')}
+            className="btn-ghost"
+            style={{ padding: 'var(--space-1) var(--space-2)', minHeight: '36px', fontSize: 'var(--text-sm)' }}
+          >
+            <ArrowLeft size={16} />
+            <span>Change Track</span>
+          </button>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            {leadingDomainMeta && (
-              <span style={{ color: '#50545B' }}>
-                LEADING TRAIT: <strong style={{ color: '#17191C' }}>{leadingDomainMeta.name.split('&')[0]}</strong>
-              </span>
-            )}
-            <span style={{ color: '#D8DAD7' }}>|</span>
-            <span style={{ color: '#17191C', fontWeight: 700 }}>
-              QUESTION {String(currentStep).padStart(2, '0')} OF {String(totalQuestions).padStart(2, '0')}
-            </span>
-          </div>
-        </div>
-
-        {/* 2. PROGRESS STEPPER */}
-        <div style={{
-          display: 'flex',
-          gap: '4px',
-          marginBottom: '2rem'
-        }}>
-          {Array.from({ length: totalQuestions }).map((_, idx) => {
-            const stepNum = idx + 1;
-            const isPassed = stepNum < currentStep;
-            const isCurrent = stepNum === currentStep;
-            return (
-              <div 
-                key={idx}
-                style={{
-                  flex: 1,
-                  height: isCurrent ? '4px' : '2px',
-                  backgroundColor: isPassed 
-                    ? '#E85D3F' 
-                    : isCurrent 
-                    ? '#17191C' 
-                    : '#D8DAD7',
-                  transition: 'all 0.2s ease'
-                }}
-              />
-            );
-          })}
-        </div>
-
-        {/* 3. DYNAMIC AI AGENT REASONING BANNER */}
-        {agentSession.agentReasoning && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: '1rem',
-            padding: '1rem 1.25rem',
-            backgroundColor: '#FFF0EB',
-            borderLeft: '4px solid #E85D3F',
-            border: '1px solid #D8DAD7',
-            marginBottom: '2rem'
-          }}>
-            <Bot size={20} style={{ color: '#E85D3F', flexShrink: 0, marginTop: '2px' }} />
-            <div>
-              <div style={{
-                fontFamily: "'DM Mono', monospace",
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                color: '#E85D3F',
-                letterSpacing: '0.08em',
-                marginBottom: '0.25rem'
-              }}>
-                AI ADVISOR ADAPTIVE SELECTION
-              </div>
-              <p style={{
-                fontSize: '0.875rem',
-                lineHeight: 1.5,
-                color: '#17191C',
-                margin: 0,
-                fontFamily: "'Manrope', sans-serif"
-              }}>
-                {agentSession.agentReasoning}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* 4. MAIN QUESTION CONTROL PANEL */}
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          border: '1px solid #D8DAD7',
-          padding: 'clamp(2rem, 4vw, 3rem)',
-          marginBottom: '2.5rem'
-        }}>
-          
-          {/* Header & Helper toggle */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '1.5rem',
-            flexWrap: 'wrap',
-            gap: '0.75rem'
-          }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
             <span style={{
-              fontFamily: "'DM Mono', monospace",
-              fontSize: '0.75rem',
-              color: '#646A73',
-              letterSpacing: '0.06em'
+              display: 'inline-block',
+              padding: 'var(--space-0-5) var(--space-2)',
+              backgroundColor: 'var(--color-bg-alt)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-sm)',
+              fontSize: 'var(--text-xs)',
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 700,
+              textTransform: 'uppercase'
             }}>
-              SECTION: {currentQ.category || 'ORIENTATION'}
+              {activeTrack} Track
             </span>
-
-            <button
-              type="button"
-              onClick={() => setShowPlainEnglishHelper(!showPlainEnglishHelper)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                background: 'transparent',
-                border: '1px solid #D8DAD7',
-                padding: '0.35rem 0.75rem',
-                fontFamily: "'DM Mono', monospace",
-                fontSize: '0.75rem',
-                color: showPlainEnglishHelper ? '#E85D3F' : '#50545B',
-                backgroundColor: showPlainEnglishHelper ? '#FFF0EB' : '#FFFFFF',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              <Lightbulb size={13} style={{ color: showPlainEnglishHelper ? '#E85D3F' : '#646A73' }} />
-              <span>{showPlainEnglishHelper ? 'Hide Beginner Helper' : 'Explain Options in Plain English'}</span>
-            </button>
-          </div>
-
-          {/* Source Attribution Tag */}
-          {currentQ.provenance && (
-            <div style={{
-              fontFamily: "'DM Mono', monospace",
-              fontSize: '0.6875rem',
-              color: '#646A73',
-              marginBottom: '0.85rem'
+            <span style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 'var(--text-sm)',
+              fontWeight: 700,
+              color: 'var(--color-text-2)'
             }}>
-              <span style={{ color: '#E85D3F', fontWeight: 700 }}>[ATTRIBUTION:</span> {currentQ.provenance.source} · {currentQ.provenance.license}
-              {currentQ.provenance.is_modified && <span> · Adapted</span>}
-              <span style={{ color: '#E85D3F', fontWeight: 700 }}>]</span>
+              Question {currentStep} of {totalQuestions}
+            </span>
+          </div>
+        </div>
+
+        {/* 2. PROGRESS BAR */}
+        <div
+          role="progressbar"
+          aria-valuenow={currentStep}
+          aria-valuemin="1"
+          aria-valuemax={totalQuestions}
+          aria-label="Assessment progress"
+          style={{
+            width: '100%',
+            height: '8px',
+            backgroundColor: 'var(--color-border-subtle)',
+            borderRadius: 'var(--radius-full)',
+            overflow: 'hidden'
+          }}
+        >
+          <div style={{
+            width: `${progressPercent}%`,
+            height: '100%',
+            backgroundColor: 'var(--color-accent)',
+            borderRadius: 'var(--radius-full)',
+            transition: 'width 0.25s ease'
+          }} />
+        </div>
+
+        {/* 3. MAIN DISTRACTION-FREE QUESTION CARD */}
+        <div className="card" style={{ padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+          {currentQ.reServed && (
+            <div>
+              <span style={{
+                display: 'inline-block',
+                padding: 'var(--space-0-5) var(--space-2)',
+                backgroundColor: 'var(--color-accent-lt)',
+                border: '1px solid var(--color-accent)',
+                borderRadius: 'var(--radius-sm)',
+                fontSize: 'var(--text-xs)',
+                fontFamily: 'var(--font-mono)',
+                fontWeight: 700,
+                color: 'var(--color-accent)'
+              }}>
+                Previously skipped — re-served once
+              </span>
             </div>
           )}
 
           {/* Question Text */}
           <h2 style={{
-            fontFamily: "'Manrope', sans-serif",
-            fontSize: 'clamp(1.35rem, 2.5vw, 1.85rem)',
+            fontFamily: 'var(--font-body)',
+            fontSize: 'clamp(1.25rem, 3vw, 1.625rem)',
             fontWeight: 700,
-            color: '#17191C',
-            lineHeight: 1.5,
-            marginBottom: '2.5rem'
+            lineHeight: 1.4,
+            textTransform: 'none',
+            margin: 0,
+            color: 'var(--color-text)'
           }}>
             {currentQ.q}
           </h2>
 
-          {/* Options Grid */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {/* Plain English helper if present */}
+          {currentQ.plainEnglishHelper && (
+            <p style={{
+              fontSize: 'var(--text-sm)',
+              color: 'var(--color-text-2)',
+              backgroundColor: 'var(--color-bg-alt)',
+              padding: 'var(--space-2)',
+              borderRadius: 'var(--radius-sm)',
+              borderLeft: '3px solid var(--color-accent)',
+              margin: 0
+            }}>
+              💡 {currentQ.plainEnglishHelper}
+            </p>
+          )}
+
+          {/* 4. LARGE TAPPABLE ANSWER BUTTONS */}
+          <div
+            role="radiogroup"
+            aria-label="Answer options"
+            style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}
+          >
             {optionsList.map((opt) => {
               const key = opt.key;
               const text = opt.text;
               const isChecked = selectedOptionKey === key;
-              const explainer = BEGINNER_EXPLAINERS[key];
-              const careerInsight = opt.careerMeaning || explainer?.description;
 
               return (
-                <div
+                <button
                   key={key}
+                  type="button"
+                  role="radio"
+                  aria-checked={isChecked}
                   onClick={() => handleSelectOption(key)}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    padding: '1.25rem 1.5rem',
-                    border: isChecked 
-                      ? '2px solid #E85D3F' 
-                      : '1px solid #D8DAD7',
-                    backgroundColor: isChecked 
-                      ? '#FFF0EB' 
-                      : '#FFFFFF',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isChecked) {
-                      e.currentTarget.style.borderColor = '#17191C';
-                      e.currentTarget.style.backgroundColor = '#F8F8F6';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isChecked) {
-                      e.currentTarget.style.borderColor = '#D8DAD7';
-                      e.currentTarget.style.backgroundColor = '#FFFFFF';
-                    }
-                  }}
+                  className={`quiz-option-btn ${isChecked ? 'selected' : ''}`}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-                      <div style={{
-                        fontFamily: "'DM Mono', monospace",
-                        fontSize: '0.8125rem',
-                        fontWeight: 700,
-                        width: '32px',
-                        height: '32px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        border: isChecked ? '1px solid #E85D3F' : '1px solid #D8DAD7',
-                        backgroundColor: isChecked ? '#E85D3F' : '#F7F7F4',
-                        color: isChecked ? '#FFFFFF' : '#17191C',
-                        flexShrink: 0
-                      }}>
-                        {key}
-                      </div>
-                      <span style={{ 
-                        fontFamily: "'Manrope', sans-serif", 
-                        fontSize: '1rem',
-                        fontWeight: isChecked ? 700 : 500,
-                        lineHeight: 1.5,
-                        color: '#17191C'
-                      }}>
-                        {text}
-                      </span>
-                    </div>
-
-                    <div style={{
-                      width: '20px',
-                      height: '20px',
-                      border: `1px solid ${isChecked ? '#E85D3F' : '#D8DAD7'}`,
-                      backgroundColor: isChecked ? '#E85D3F' : 'transparent',
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flex: 1 }}>
+                    <span style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 'var(--text-sm)',
+                      fontWeight: 700,
+                      width: '32px',
+                      height: '32px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      flexShrink: 0,
-                      marginLeft: '1rem'
+                      border: `1.5px solid ${isChecked ? 'var(--color-accent)' : 'var(--color-border)'}`,
+                      backgroundColor: isChecked ? 'var(--color-accent)' : 'var(--color-bg-alt)',
+                      color: isChecked ? '#FFFFFF' : 'var(--color-text)',
+                      borderRadius: 'var(--radius-sm)',
+                      flexShrink: 0
                     }}>
-                      {isChecked && <Check size={14} color="#FFFFFF" />}
-                    </div>
+                      {key}
+                    </span>
+                    <span style={{
+                      fontSize: 'var(--text-base)',
+                      fontWeight: isChecked ? 600 : 400,
+                      lineHeight: 1.5,
+                      color: 'var(--color-text)'
+                    }}>
+                      {text}
+                    </span>
                   </div>
 
-                  {/* Career Meaning & Beginner Plain English Helper Card */}
-                  {(showPlainEnglishHelper || isChecked) && careerInsight && (
-                    <div style={{
-                      marginTop: '0.85rem',
-                      paddingTop: '0.75rem',
-                      borderTop: '1px dashed #D8DAD7',
-                      fontSize: '0.8125rem',
-                      color: '#50545B',
-                      lineHeight: 1.5
-                    }}>
-                      <strong style={{ color: '#E85D3F', fontFamily: "'DM Mono', monospace" }}>
-                        Career Connection:
-                      </strong>{' '}
-                      {careerInsight}
-                    </div>
-                  )}
-
-                </div>
+                  <div style={{
+                    width: '22px',
+                    height: '22px',
+                    borderRadius: '50%',
+                    border: `2px solid ${isChecked ? 'var(--color-accent)' : 'var(--color-border)'}`,
+                    backgroundColor: isChecked ? 'var(--color-accent)' : '#FFFFFF',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    marginLeft: 'var(--space-2)'
+                  }}>
+                    {isChecked && <Check size={14} color="#FFFFFF" strokeWidth={3} />}
+                  </div>
+                </button>
               );
             })}
           </div>
 
         </div>
 
-        {/* 5. BOTTOM NAVIGATION BAR */}
+        {/* 5. ACTION BAR: "I don't know" + "Skip question" + PRIMARY ACTION */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
-          gap: '1rem'
+          gap: 'var(--space-2)',
+          marginTop: 'var(--space-2)'
         }}>
-          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: '0.75rem', color: '#646A73' }}>
-            SELECTION: {selectedOptionKey ? `OPTION [${selectedOptionKey}] CHOSEN` : 'PLEASE SELECT AN ANSWER'}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              disabled={loading}
+              onClick={handleDontKnow}
+              className="btn-secondary"
+            >
+              I don&apos;t know
+            </button>
+            <button
+              type="button"
+              disabled={loading}
+              onClick={handleSkipQuestion}
+              className="btn-ghost"
+              style={{ border: '1px solid var(--color-border)' }}
+            >
+              Skip question
+            </button>
           </div>
 
           <button
             type="button"
             disabled={!selectedOptionKey || loading}
             onClick={handleNextStep}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-              backgroundColor: '#17191C',
-              color: '#FFFFFF',
-              fontFamily: "'Barlow Condensed', sans-serif",
-              fontSize: '1.125rem',
-              fontWeight: 700,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-              padding: '1rem 2.5rem',
-              border: '1px solid #17191C',
-              cursor: (!selectedOptionKey || loading) ? 'not-allowed' : 'pointer',
-              opacity: (!selectedOptionKey || loading) ? 0.4 : 1,
-              transition: 'all 0.15s ease'
-            }}
-            onMouseEnter={(e) => {
-              if (selectedOptionKey && !loading) {
-                e.currentTarget.style.backgroundColor = '#E85D3F';
-                e.currentTarget.style.borderColor = '#E85D3F';
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#17191C';
-              e.currentTarget.style.borderColor = '#17191C';
-            }}
+            className="btn-primary"
+            style={{ minWidth: '220px' }}
           >
-            <span>
-              {currentStep === totalQuestions 
-                ? (loading ? 'ANALYZING DOMAIN AFFINITY...' : 'COMPLETE & VIEW CAREER OBSERVATORY REPORT') 
-                : 'NEXT QUESTION'}
-            </span>
-            <ArrowRight size={18} />
+            {loading ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                <span>Processing...</span>
+              </>
+            ) : currentStep === totalQuestions ? (
+              <>
+                <span>Complete Assessment</span>
+                <ArrowRight size={18} />
+              </>
+            ) : (
+              <>
+                <span>Next Question</span>
+                <ArrowRight size={18} />
+              </>
+            )}
           </button>
         </div>
 

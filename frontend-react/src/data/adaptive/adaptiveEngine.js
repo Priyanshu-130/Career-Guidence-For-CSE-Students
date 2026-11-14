@@ -323,8 +323,17 @@ export function checkEvidenceSkip(topicId, priorEvidence, config = defaultRulesC
  * reassessment threshold, previous mistakes, and skill tags.
  */
 export function nextQuestion(state, bank, config = defaultRulesConfig) {
+  const maxQuestions = state?.maxQuestions ?? state?.totalTarget ?? config?.max_questions ?? 25;
+  const stepsTaken = state?.stepsTaken ?? state?.history?.length ?? 0;
+  if (stepsTaken >= maxQuestions) {
+    return null;
+  }
+
   const questionsList = Array.isArray(bank) ? bank : (bank?.questions || []);
   const askedIds = new Set(state?.askedQuestionIds || []);
+  const reservedIds = new Set(state?.reservedQuestionIds || []);
+  const pendingSkippedIds = (state?.skippedQuestionIds || []).filter(id => !reservedIds.has(id));
+  const remainingSteps = maxQuestions - stepsTaken;
   const currentTopic = state?.topic || 'python';
   const currentLevel = typeof state?.level === 'number' ? state.level : 1;
 
@@ -344,13 +353,36 @@ export function nextQuestion(state, bank, config = defaultRulesConfig) {
   // 2. Filter candidates for current topic that are unasked and approved
   let candidates = questionsList.filter(q => {
     if (askedIds.has(q.id)) return false;
-    if (q.status && q.status === 'draft') return false;
+    if (q.status && (q.status === 'draft' || q.status === 'retired')) return false;
     return q.topic === currentTopic;
   });
 
   // If no candidates exist for topic, fallback to any unasked approved question
   if (candidates.length === 0) {
-    candidates = questionsList.filter(q => !askedIds.has(q.id) && q.status !== 'draft');
+    candidates = questionsList.filter(
+      q => !askedIds.has(q.id) && q.status !== 'draft' && q.status !== 'retired'
+    );
+  }
+
+  // 2b. Re-serve skipped items at most once near the end (respecting the maxQuestions cap)
+  const shouldReServe = pendingSkippedIds.length > 0 &&
+    (remainingSteps <= pendingSkippedIds.length || candidates.length === 0);
+
+  if (shouldReServe) {
+    const targetDifficulty = currentLevel === 0 ? 1 : Math.min(4, Math.max(1, currentLevel));
+    for (const skipId of pendingSkippedIds) {
+      const skippedItem = questionsList.find(
+        q => q.id === skipId && q.status !== 'draft' && q.status !== 'retired'
+      );
+      if (skippedItem) {
+        return {
+          ...skippedItem,
+          explainerFirst: false,
+          assignedDifficulty: targetDifficulty,
+          reServed: true
+        };
+      }
+    }
   }
 
   // 3. Explainer-First / Prerequisite guidance triggered (Level 0 or Demoted / Previous Mistakes)
@@ -438,6 +470,71 @@ export function updateMastery(state, answer, config = defaultRulesConfig) {
   let consecutiveCorrect = state?.consecutiveCorrect || 0;
   let consecutiveWrong = state?.consecutiveWrong || 0;
 
+  const isSkipped =
+    answer === 'skip' ||
+    answer === 'skipped' ||
+    (typeof answer === 'object' &&
+      answer !== null &&
+      Boolean(
+        answer.isSkipped ||
+          answer.skipped ||
+          answer.status === 'skipped' ||
+          answer.action === 'skip' ||
+          answer.selectedOption === 'SKIP' ||
+          answer.selectedAnswer === 'SKIP' ||
+          answer.selectedKey === 'SKIP'
+      ));
+
+  const qId =
+    typeof answer === 'object' && answer !== null
+      ? answer.questionId || answer.itemId || answer.id || null
+      : null;
+
+  const prevSkipped = [...(state?.skippedQuestionIds || [])];
+  const reservedSet = new Set(state?.reservedQuestionIds || []);
+  const everSkippedSet = new Set(state?.everSkippedIds || []);
+  let skippedQuestionIds = [...prevSkipped];
+
+  const prevHistory = state?.history || [];
+  const stepsTaken = (state?.stepsTaken ?? prevHistory.length) + 1;
+
+  if (isSkipped) {
+    if (qId) {
+      if (everSkippedSet.has(qId) || (typeof answer === 'object' && answer?.reServed)) {
+        skippedQuestionIds = skippedQuestionIds.filter(id => id !== qId);
+        reservedSet.add(qId);
+      } else {
+        if (!skippedQuestionIds.includes(qId)) {
+          skippedQuestionIds.push(qId);
+        }
+        everSkippedSet.add(qId);
+      }
+    }
+
+    const skippedEntry =
+      typeof answer === 'object' && answer !== null
+        ? { ...answer, isSkipped: true, isCorrect: null, status: 'skipped' }
+        : { isSkipped: true, isCorrect: null, status: 'skipped' };
+
+    return {
+      ...state,
+      level: currentLevel,
+      source: state?.source || 'assessed',
+      confidence: state?.confidence || 'low',
+      consecutiveCorrect,
+      consecutiveWrong,
+      transitionEvent: 'skipped',
+      prerequisiteGuidance: false,
+      showExplainer: false,
+      previousMistakes: [...(state?.previousMistakes || [])],
+      skippedQuestionIds,
+      reservedQuestionIds: [...reservedSet],
+      everSkippedIds: [...everSkippedSet],
+      stepsTaken,
+      history: [...prevHistory, skippedEntry]
+    };
+  }
+
   let isCorrect = false;
   let isDontKnow = false;
 
@@ -458,6 +555,11 @@ export function updateMastery(state, answer, config = defaultRulesConfig) {
   let showExplainer = false;
 
   const previousMistakes = [...(state?.previousMistakes || [])];
+
+  if (qId && (skippedQuestionIds.includes(qId) || everSkippedSet.has(qId))) {
+    skippedQuestionIds = skippedQuestionIds.filter(id => id !== qId);
+    reservedSet.add(qId);
+  }
 
   if (isCorrect) {
     consecutiveCorrect += 1;
@@ -494,12 +596,12 @@ export function updateMastery(state, answer, config = defaultRulesConfig) {
     }
   }
 
-  // Confidence updates: low -> medium -> high as verified data accumulates
-  const historyCount = (state?.history?.length || 0) + 1;
+  // Confidence updates: low -> medium -> high as verified non-skipped data accumulates
+  const nonSkippedCount = prevHistory.filter(h => !(h && (h.isSkipped || h.status === 'skipped'))).length + 1;
   let confidence = 'low';
-  if (historyCount >= 4) {
+  if (nonSkippedCount >= 4) {
     confidence = 'high';
-  } else if (historyCount >= 2 || (isDontKnow && currentLevel >= 2)) {
+  } else if (nonSkippedCount >= 2 || (isDontKnow && currentLevel >= 2)) {
     confidence = 'medium';
   }
 
@@ -514,7 +616,11 @@ export function updateMastery(state, answer, config = defaultRulesConfig) {
     prerequisiteGuidance,
     showExplainer,
     previousMistakes,
-    history: [...(state?.history || []), answer]
+    skippedQuestionIds,
+    reservedQuestionIds: [...reservedSet],
+    everSkippedIds: [...everSkippedSet],
+    stepsTaken,
+    history: [...prevHistory, answer]
   };
 }
 
@@ -528,6 +634,30 @@ export function updateKnowledgeLadder(currentState, isCorrect, config = defaultR
 
   let currentLevelIdx = levels.indexOf(currentState.currentLevel);
   if (currentLevelIdx === -1) currentLevelIdx = 0;
+
+  const isSkipped =
+    isCorrect === 'skip' ||
+    isCorrect === 'skipped' ||
+    (typeof isCorrect === 'object' &&
+      isCorrect !== null &&
+      Boolean(
+        isCorrect.isSkipped ||
+          isCorrect.skipped ||
+          isCorrect.status === 'skipped' ||
+          isCorrect.action === 'skip'
+      ));
+
+  if (isSkipped) {
+    return {
+      currentLevel: levels[currentLevelIdx],
+      consecutiveCorrect: currentState.consecutiveCorrect || 0,
+      consecutiveWrong: currentState.consecutiveWrong || 0,
+      transitionEvent: 'skipped',
+      triggerPrerequisite: false,
+      showExplainer: false,
+      previousLevel: levels[currentLevelIdx]
+    };
+  }
 
   let consecutiveCorrect = isCorrect ? (currentState.consecutiveCorrect || 0) + 1 : 0;
   let consecutiveWrong = !isCorrect ? (currentState.consecutiveWrong || 0) + 1 : 0;

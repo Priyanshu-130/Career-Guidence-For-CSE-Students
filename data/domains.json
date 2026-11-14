@@ -1,0 +1,275 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-11-01",
+  "domains": [
+    {
+      "id": "web",
+      "name": "Web / Full-Stack Development",
+      "overview": "Build responsive web applications, REST/GraphQL APIs, and database-backed products deployed to the cloud. For B.Tech CSE students in India, moving beyond basic CRUD into TypeScript, Next.js, testing, and cloud deployment is essential to stand out in product and startup hiring.",
+      "core_skills": [
+        "HTML5, CSS3 & Accessibility (WCAG)",
+        "JavaScript (ES2023+) & TypeScript",
+        "React & Next.js (SSR / App Router)",
+        "Node.js, Express / Fastify or Python FastAPI",
+        "Relational Databases (PostgreSQL) & SQL",
+        "REST & GraphQL API Design with Auth (JWT/OAuth)",
+        "Automated Testing (Vitest / Playwright)"
+      ],
+      "prerequisites": [
+        "Programming Fundamentals (C/Python/JS)",
+        "Data Structures & Algorithms (Sem 3)",
+        "Database Management Systems (DBMS, Sem 4)",
+        "Computer Networks & HTTP Basics (Sem 5)"
+      ],
+      "career_paths": [
+        "Full-Stack Engineer",
+        "Frontend Engineer (React / Next.js)",
+        "Backend API Engineer",
+        "Software Development Engineer (SDE-1, Product/Startup)",
+        "Solutions / Developer Experience Engineer"
+      ],
+      "onet_code": "15-1254.00",
+      "cs2023_alignment": [
+        "Software Engineering (SE)",
+        "Systems Fundamentals (SF)",
+        "Networking and Communication (NC)",
+        "Human-Computer Interaction (HCI)"
+      ],
+      "roadmap_url": "https://roadmap.sh/full-stack",
+      "source": "O*NET OnLine, ACM/IEEE CS2023 Curriculum & roadmap.sh",
+      "source_url": "https://roadmap.sh/full-stack",
+      "last_updated": "2026-11-01",
+      "verified": true
+    },
+    {
+      "id": "ai",
+      "name": "AI / Machine Learning",
+      "overview": "Design statistical models, neural networks, and LLM-powered applications that learn patterns from structured data, text, and images. Students need solid mathematics, Python engineering discipline, and real evaluation/deployment skills rather than notebook-only tutorials.",
+      "core_skills": [
+        "Python, NumPy & Pandas",
+        "Probability, Statistics & Linear Algebra",
+        "Classical ML (Scikit-learn, XGBoost)",
+        "Deep Learning (PyTorch)",
+        "LLM Integration, Prompt Engineering & RAG",
+        "Model Evaluation, Error Analysis & Experiment Tracking",
+        "FastAPI Model Serving & Containerization"
+      ],
+      "prerequisites": [
+        "Engineering Mathematics (Linear Algebra, Calculus, Probability)",
+        "Python Programming & Object-Oriented Design",
+        "Data Structures & Algorithms (Sem 3)",
+        "Database & SQL Basics"
+      ],
+      "career_paths": [
+        "Machine Learning Engineer",
+        "Applied AI / GenAI Engineer",
+        "Data Scientist (Entry Level)",
+        "Computer Vision / NLP Engineer",
+        "ML Research Intern"
+      ],
+      "onet_code": "15-2051.00",
+      "cs2023_alignment": [
+        "Artificial Intelligence (AI)",
+        "Mathematical Foundations (MSF)",
+        "Algorithmic Foundations (AL)"
+      ],
+      "roadmap_url": "https://roadmap.sh/ai-data-scientist",
+      "source": "O*NET OnLine, ACM/IEEE CS2023 Curriculum & roadmap.sh",
+      "source_url": "https://roadmap.sh/ai-data-scientist",
+      "last_updated": "2026-11-01",
+      "verified": true
+    },
+    {
+      "id": "data",
+      "name": "Data Engineering & Analytics",
+      "overview": "Architect reliable data pipelines, warehouses, and business analytics systems that turn raw operational logs into decision-ready datasets. This domain bridges software engineering and analytics, with strong demand across Indian GCCs, fintech, and e-commerce.",
+      "core_skills": [
+        "Advanced SQL & Query Optimization",
+        "Python & PySpark for Data Processing",
+        "Data Modeling (Star/Snowflake Schemas, Normalization)",
+        "ETL/ELT Orchestration (Airflow, dbt)",
+        "Distributed Storage & Warehouses (BigQuery, Snowflake, Redshift)",
+        "Streaming Ingestion Basics (Kafka)",
+        "BI Visualization & Statistical Storytelling"
+      ],
+      "prerequisites": [
+        "Database Management Systems (DBMS, Sem 4)",
+        "Python or Java/Scala Fundamentals",
+        "Probability & Descriptive Statistics",
+        "Linux Command Line & Git"
+      ],
+      "career_paths": [
+        "Junior Data Engineer",
+        "Analytics Engineer",
+        "Data Analyst / Business Intelligence Engineer",
+        "ETL / Big Data Developer",
+        "Platform Data Operations Engineer"
+      ],
+      "onet_code": "15-1243.00",
+      "cs2023_alignment": [
+        "Data Management (DM)",
+        "Parallel and Distributed Computing (PDC)",
+        "Software Engineering (SE)"
+      ],
+      "roadmap_url": "https://roadmap.sh/data-engineer",
+      "source": "O*NET OnLine, ACM/IEEE CS2023 Curriculum & roadmap.sh",
+      "source_url": "https://roadmap.sh/data-engineer",
+      "last_updated": "2026-11-01",
+      "verified": true
+    },
+    {
+      "id": "cloud",
+      "name": "Cloud & DevOps Engineering",
+      "overview": "Automate build pipelines, container orchestration, infrastructure-as-code, and production observability on cloud platforms like AWS and Azure. Ideal for students who enjoy Linux internals, networking, automation, and keeping large distributed services reliable.",
+      "core_skills": [
+        "Linux Administration & Shell Scripting (Bash)",
+        "Networking (DNS, TCP/IP, Load Balancing, TLS)",
+        "Containers & Orchestration (Docker, Kubernetes)",
+        "CI/CD Pipelines (GitHub Actions, Jenkins/GitLab CI)",
+        "Infrastructure as Code (Terraform)",
+        "Cloud Platforms (AWS / Microsoft Azure / GCP)",
+        "Monitoring & Logging (Prometheus, Grafana, OpenTelemetry)"
+      ],
+      "prerequisites": [
+        "Operating Systems (Sem 4-5)",
+        "Computer Networks (Sem 5)",
+        "Git & Scripting (Python/Go/Bash)",
+        "Basic Web / Backend Architecture"
+      ],
+      "career_paths": [
+        "DevOps Engineer",
+        "Cloud Infrastructure Engineer",
+        "Site Reliability Engineer (SRE - Entry Level)",
+        "Platform Engineer",
+        "Build & Release Automation Engineer"
+      ],
+      "onet_code": "15-1244.00",
+      "cs2023_alignment": [
+        "Systems Fundamentals (SF)",
+        "Networking and Communication (NC)",
+        "Operating Systems (OS)",
+        "Software Engineering (SE)"
+      ],
+      "roadmap_url": "https://roadmap.sh/devops",
+      "source": "O*NET OnLine, ACM/IEEE CS2023 Curriculum & roadmap.sh",
+      "source_url": "https://roadmap.sh/devops",
+      "last_updated": "2026-11-01",
+      "verified": true
+    },
+    {
+      "id": "security",
+      "name": "Cybersecurity",
+      "overview": "Protect applications, networks, and cloud workloads by finding vulnerabilities, hardening systems, and responding to incidents. Requires strong fundamentals in operating systems, networks, and web protocols before specializing in offensive or defensive security.",
+      "core_skills": [
+        "TCP/IP Networking, Packet Analysis & Firewalls",
+        "Linux & Windows Internals and Permissions",
+        "Web Application Security (OWASP Top 10, Burp Suite)",
+        "Authentication, Cryptography & PKI Fundamentals",
+        "Security Operations (SIEM, Log Triage, Incident Response)",
+        "Cloud IAM & Container Security Hardening",
+        "Scripting for Automation (Python / Bash)"
+      ],
+      "prerequisites": [
+        "Computer Networks (Sem 5)",
+        "Operating Systems (Sem 4-5)",
+        "Web HTTP & Database Basics",
+        "Python / C Scripting Fundamentals"
+      ],
+      "career_paths": [
+        "SOC Analyst (Tier 1)",
+        "Application Security (AppSec) Engineer",
+        "Junior Penetration Tester / Ethical Hacker",
+        "Cloud Security Analyst",
+        "Vulnerability Management Analyst"
+      ],
+      "onet_code": "15-1212.00",
+      "cs2023_alignment": [
+        "Security (SEC)",
+        "Networking and Communication (NC)",
+        "Operating Systems (OS)"
+      ],
+      "roadmap_url": "https://roadmap.sh/cyber-security",
+      "source": "O*NET OnLine, ACM/IEEE CS2023 Curriculum & roadmap.sh",
+      "source_url": "https://roadmap.sh/cyber-security",
+      "last_updated": "2026-11-01",
+      "verified": true
+    },
+    {
+      "id": "mobile",
+      "name": "Mobile App Development",
+      "overview": "Build performant, offline-capable iOS and Android applications used by millions of mobile-first users in India. Focuses on native Kotlin/Swift or cross-platform React Native/Flutter architecture, state management, device APIs, and app-store release engineering.",
+      "core_skills": [
+        "Kotlin (Android / Jetpack Compose) or Dart (Flutter) / React Native",
+        "TypeScript / Java / Swift Fundamentals",
+        "Mobile UI Architecture, Navigation & Animations",
+        "Local Storage (SQLite/Room) & Offline Sync",
+        "REST/GraphQL Networking, Push Notifications & Auth",
+        "App Performance Profiling & Memory Management",
+        "Automated UI/Unit Testing & Play Store / App Store CI/CD"
+      ],
+      "prerequisites": [
+        "Object-Oriented Programming (Java/Kotlin/OOP, Sem 2-3)",
+        "Data Structures & Algorithms (Sem 3)",
+        "REST APIs & JSON Basics",
+        "Git Version Control"
+      ],
+      "career_paths": [
+        "Android Developer (Kotlin / Compose)",
+        "Cross-Platform Mobile Engineer (Flutter / React Native)",
+        "iOS Developer (Swift)",
+        "Mobile Product Engineer",
+        "Mobile SDK / Performance Engineer"
+      ],
+      "onet_code": "15-1252.00",
+      "cs2023_alignment": [
+        "Software Engineering (SE)",
+        "Human-Computer Interaction (HCI)",
+        "Specialized Platform Development (SPD)"
+      ],
+      "roadmap_url": "https://roadmap.sh/android",
+      "source": "O*NET OnLine, ACM/IEEE CS2023 Curriculum & roadmap.sh",
+      "source_url": "https://roadmap.sh/android",
+      "last_updated": "2026-11-01",
+      "verified": true
+    },
+    {
+      "id": "systems",
+      "name": "Systems & Embedded Engineering",
+      "overview": "Engineer low-level software, compilers, storage engines, and embedded firmware where memory, latency, and hardware interfaces matter directly. Strongly valued in semiconductor GCCs, automotive electronics, robotics, and core infrastructure companies across Bengaluru, Hyderabad, and Pune.",
+      "core_skills": [
+        "C, Modern C++ (C++17/20) & Rust",
+        "Pointers, Memory Layout & Manual Resource Management",
+        "Concurrency, Multithreading & Synchronization",
+        "OS Internals (Processes, Scheduling, Virtual Memory, File Systems)",
+        "Embedded Firmware (RTOS, Microcontrollers, UART/SPI/I2C)",
+        "Debugging & Profiling (GDB, Valgrind, perf)",
+        "Computer Architecture & Cross-Compilation Toolchains"
+      ],
+      "prerequisites": [
+        "C Programming & Pointers (Sem 1-2)",
+        "Digital Logic & Computer Organization (Sem 3)",
+        "Data Structures & Algorithms (Sem 3)",
+        "Operating Systems (Sem 4-5)"
+      ],
+      "career_paths": [
+        "Systems Software Engineer (C++ / Rust)",
+        "Embedded Firmware Engineer",
+        "RTOS / Automotive Software Engineer",
+        "Kernel / Device Driver Developer",
+        "Database or Distributed Storage Intern"
+      ],
+      "onet_code": "15-1252.00",
+      "cs2023_alignment": [
+        "Architecture and Organization (AR)",
+        "Operating Systems (OS)",
+        "Systems Fundamentals (SF)",
+        "Parallel and Distributed Computing (PDC)"
+      ],
+      "roadmap_url": "https://roadmap.sh/cpp",
+      "source": "O*NET OnLine, ACM/IEEE CS2023 Curriculum & roadmap.sh",
+      "source_url": "https://roadmap.sh/cpp",
+      "last_updated": "2026-11-01",
+      "verified": true
+    }
+  ]
+}

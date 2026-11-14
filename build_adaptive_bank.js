@@ -769,8 +769,8 @@ const completeBank = {
   ]
 };
 
-const outputPath = path.join(__dirname, 'frontend-react', 'src', 'data', 'adaptive', 'adaptiveQuestionBank.json');
-fs.writeFileSync(outputPath, JSON.stringify(completeBank, null, 2), 'utf8');
+const outputPath = path.join(__dirname, 'frontend-react', 'src', 'data', 'adaptive', 'adaptiveQuestionBank.js');
+fs.writeFileSync(outputPath, `export default ${JSON.stringify(completeBank, null, 2)};\n`, 'utf8');
 
 console.log('Successfully generated complete adaptive question bank!');
 console.log('Total items:', completeBank.summary.total_items);
@@ -778,3 +778,4 @@ console.log('Interest & Work-Preference items:', completeBank.summary.interest_w
 console.log('Logic & Reasoning items:', completeBank.summary.logic_reasoning_items);
 console.log('Technical Readiness items:', completeBank.summary.readiness_diagnostic_items);
 console.log('Saved to:', outputPath);
+
